@@ -48,3 +48,7 @@ export default tseslint.config({
   },
 })
 ```
+
+# Lembretes e Informativos
+npm install -- baixar dependencias
+npm run dev -- rodar aplicação
