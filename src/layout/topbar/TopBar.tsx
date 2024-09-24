@@ -25,37 +25,37 @@ const TopBar = () => {
             <Toolbar className="flex justify-between items-center">
                 <div className="flex items-center space-x-4">
                     <img
-                        src="/src/assets/logo/logo.png"
+                        src="/src/assets/logo/logo.svg"
                         alt="Logo"
                         className="h-8 cursor-pointer"
                         onClick={() => navigate('/')}
                     />
                     <div className="flex items-center space-x-2 cursor-pointer border-r border-gray-300 pr-4" onClick={() => navigate('/inicio')}>
-                        <HomeIcon className="text-salmon" />
-                        <Typography variant="h6" className="text-salmon">
+                        <HomeIcon className="" />
+                        <Typography variant="h6" className="">
                             Início
                         </Typography>
                     </div>
                     <div className="flex items-center space-x-2 cursor-pointer border-r border-gray-300 pr-4" onClick={() => navigate('/boleto')}>
-                        <ReceiptIcon className="text-salmon" />
-                        <Typography variant="h6" className="text-salmon">
+                        <ReceiptIcon className="" />
+                        <Typography variant="h6" className="">
                             Boleto
                         </Typography>
                     </div>
                     <div className="flex items-center space-x-2 cursor-pointer border-r border-gray-300 pr-4" onClick={() => navigate('/nota-fiscal')}>
-                        <AssignmentIcon className="text-salmon" />
-                        <Typography variant="h6" className="text-salmon">
+                        <AssignmentIcon className="" />
+                        <Typography variant="h6" className="">
                             Nota Fiscal
                         </Typography>
                     </div>
                     <div className="flex items-center space-x-2 cursor-pointer border-r border-gray-300 pr-4" onClick={() => navigate('/acompanhamento')}>
-                        <AssignmentIcon className="text-salmon" />
-                        <Typography variant="h6" className="text-salmon">
+                        <AssignmentIcon className="" />
+                        <Typography variant="h6" className="">
                             Acompanhamento
                         </Typography>
                     </div>
-                    <Typography variant="h6" className="pl-4 text-salmon">
-                        Empresa Fictícia
+                    <Typography variant="h6" className="pl-4 ">
+                        Unicesumar LTDA
                     </Typography>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -86,7 +86,7 @@ const TopBar = () => {
                         onClose={handleClose}
                     >
                         <MenuItem onClick={handleClose}>Manutenção do Usuário</MenuItem>
-                        <MenuItem onClick={handleClose}>Sair</MenuItem>
+                        <MenuItem onClick={()=>{handleClose(); navigate('/login')}}>Sair</MenuItem>
                     </Menu>
                 </div>
             </Toolbar>

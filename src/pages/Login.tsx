@@ -11,8 +11,12 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
 import apiSuper from "../services/apiSuper";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+
+  const navigate = useNavigate();
+
   const handleSubmit = () => {
     apiSuper
       .get("/usuario/corno")
@@ -119,6 +123,7 @@ export default function Login() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              onClick={()=>{navigate('/inicio')}}
             >
               Entrar
             </Button>
