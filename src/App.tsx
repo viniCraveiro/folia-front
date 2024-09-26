@@ -5,7 +5,7 @@ import TopBar from "./layout/topbar/TopBar";
 import Acompanhamento from "./pages/Acompanhamento";
 import Boleto from "./pages/Boleto";
 import HomePage from "./pages/HomePage";
-import Login from "./pages/Login";
+import Login from "./pages/login/Login";
 import NotaFiscal from "./pages/NotaFiscal";
 
 const App = () => {
