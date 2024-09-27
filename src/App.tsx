@@ -7,6 +7,8 @@ import Boleto from "./pages/Boleto";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/login/Login";
 import NotaFiscal from "./pages/NotaFiscal";
+import PrivateRoute from "./PrivateRoute";
+import PageNotFound from "./pages/PageNotFound";
 
 const App = () => {
   return (
@@ -20,16 +22,17 @@ const App = () => {
 
 const AppContent = () => {
   const location = useLocation();
-  const hideTopBar = location.pathname === "/login";
+  const hideTopBar = location.pathname === "/login" || location.pathname === "/page-not-found";
   return (
     <>
       {!hideTopBar && <TopBar />}
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/inicio" element={<HomePage />} />
-        <Route path="/boleto" element={<Boleto />} />
-        <Route path="/nota-fiscal" element={<NotaFiscal />} />
-        <Route path="/acompanhamento" element={<Acompanhamento />} />
+        <Route path="/inicio" element={<PrivateRoute Component = {HomePage} />} />
+        <Route path="/boleto" element={<PrivateRoute Component = {Boleto} />} />
+        <Route path="/nota-fiscal" element={<PrivateRoute Component = {NotaFiscal} />} />
+        <Route path="/acompanhamento" element={<PrivateRoute Component = {Acompanhamento} />} />
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
     </>
   );
