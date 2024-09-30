@@ -1,6 +1,6 @@
 import { InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import { PieChart } from "@mui/x-charts/PieChart";
 import { useState } from "react";
-import { PieChart } from '@mui/x-charts/PieChart';
 
 enum timeRangeEnum {
   mes = "mes",
@@ -27,6 +27,15 @@ const graficoTypeLabels: Record<graficoTypeEnum, string> = {
 };
 
 const HomePage = () => {
+  const data = [
+    { id: 0, value: 10 },
+    { id: 1, value: 15 },
+    { id: 2, value: 20 },
+    { id: 3, value: 20 , label: "1" },
+  ];
+
+
+  const [totalValue, setTotalValue] = useState<number>(data.reduce((sum, entry) => sum + entry.value, 0));
   const [timeRange, setTimeRange] = useState<string>(timeRangeEnum.mes);
   const [graficoType, setGraficoType] = useState<string>(graficoTypeEnum.bar);
 
@@ -39,7 +48,7 @@ const HomePage = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 p-4">
+    <div className="flex flex-col md:flex-row gap-3 p-6">
       <div className="md:w-1/3 w-full">
         <InputLabel id="time-range"> </InputLabel>
         <Select
@@ -58,18 +67,26 @@ const HomePage = () => {
           ))}
         </Select>
         <PieChart
+        className="mt-8"
+          margin={{ top: 10, bottom: 10, left: 10, right: 10 }}
           series={[
             {
-              data: [
-                { id: 0, value: 10 },
-                { id: 1, value: 15 },
-                { id: 2, value: 20 },
-                { id: 3, value: 20 },
-              ],
+              data: data,
+              innerRadius: 80,
+              paddingAngle: 2,
+              highlightScope: { fade: "global", highlight: "item" },
+              faded: { additionalRadius: -10, color: "gray" },
             },
           ]}
+          slotProps={{
+            legend: {
+              direction: 'column',
+              position: { vertical: 'middle', horizontal: 'middle' },
+              padding: 0,
+            },
+          }}
           width={400}
-          height={200} 
+          height={200}
         />
       </div>
       <div className="md:w-1/3 w-full">
