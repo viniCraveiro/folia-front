@@ -12,8 +12,11 @@ import logo from "../../assets/logo/logo.svg";
 import LoginService from "../../services/login/LoginService";
 import { ILogin, LoginToken } from "./ILoginData";
 import "./LoginStyle.css";
+import AuthService from "../../services/AuthServices";
 
 const service = new LoginService();
+
+const authService = AuthService.getInstance();
 
 export default function Login() {
   const navigate = useNavigate();
@@ -22,9 +25,6 @@ export default function Login() {
     identificacao: "",
     senha: "",
   });
-
-  const [token, setToken] = useState<LoginToken | null>(null);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -41,10 +41,9 @@ export default function Login() {
     service
       .loginUser(loginForm)
       .then((response: LoginToken) => {
-        console.log("Service response:", response);
-        setToken(response);
         if (response.valid) {
-          navigate("/");
+          authService.setToken(response);
+          navigate("/inicio");
         } else {
           console.error("Usuario Não Valido!");
         }

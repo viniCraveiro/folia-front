@@ -4,7 +4,7 @@ import theme from "./layout/Theme";
 import TopBar from "./layout/topbar/TopBar";
 import Acompanhamento from "./pages/Acompanhamento";
 import Boleto from "./pages/Boleto";
-import HomePage from "./pages/HomePage";
+import HomePage from "./pages/home/HomePage";
 import Login from "./pages/login/Login";
 import NotaFiscal from "./pages/NotaFiscal";
 import PrivateRoute from "./PrivateRoute";
