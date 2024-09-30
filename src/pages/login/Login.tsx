@@ -1,4 +1,3 @@
-import { FormControl } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
@@ -11,10 +10,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo/logo.svg";
 import LoginService from "../../services/login/LoginService";
-import { ILogin, UsuarioResponse } from "./ILogin";
+import { ILogin, LoginToken } from "./ILoginData";
 import "./LoginStyle.css";
+import AuthService from "../../services/AuthServices";
 
 const service = new LoginService();
+
+const authService = AuthService.getInstance();
 
 export default function Login() {
   const navigate = useNavigate();
@@ -23,9 +25,6 @@ export default function Login() {
     identificacao: "",
     senha: "",
   });
-
-  const [token, setToken] = useState<UsuarioResponse | null>(null);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -41,11 +40,10 @@ export default function Login() {
 
     service
       .loginUser(loginForm)
-      .then((response: UsuarioResponse) => {
-        console.log("Service response:", response);
-        setToken(response);
+      .then((response: LoginToken) => {
         if (response.valid) {
-          navigate("/");
+          authService.setToken(response);
+          navigate("/inicio");
         } else {
           console.error("Usuario Não Valido!");
         }
@@ -97,29 +95,29 @@ export default function Login() {
                 noValidate
                 sx={{ mt: 1 }}
               >
-                  <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="identificacao"
-                    label="Identificação"
-                    name="identificacao"
-                    value={loginForm.identificacao}
-                    onChange={handleChange}
-                    autoFocus
-                  />
-                  <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="senha"
-                    label="Senha"
-                    type="password"
-                    value={loginForm.senha}
-                    onChange={handleChange}
-                    id="senha"
-                    autoComplete="current-password"
-                  />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="identificacao"
+                  label="Identificação"
+                  name="identificacao"
+                  value={loginForm.identificacao}
+                  onChange={handleChange}
+                  autoFocus
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="senha"
+                  label="Senha"
+                  type="password"
+                  value={loginForm.senha}
+                  onChange={handleChange}
+                  id="senha"
+                  autoComplete="current-password"
+                />
 
                 <FormControlLabel
                   control={<Checkbox value="remember" color="primary" />}

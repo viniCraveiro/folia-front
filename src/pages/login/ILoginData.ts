@@ -3,7 +3,7 @@ export interface ILogin {
     senha: string,
 }
 
-export interface UsuarioResponse {
+export interface LoginToken {
     uuid: string;
     nome: string;
     valid: boolean;
