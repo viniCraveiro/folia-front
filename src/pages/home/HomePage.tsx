@@ -31,11 +31,11 @@ const HomePage = () => {
     { id: 0, value: 10 },
     { id: 1, value: 15 },
     { id: 2, value: 20 },
-    { id: 3, value: 20 , label: "1" },
+    { id: 3, value: 20 },
   ];
 
+  const totalValue = data.reduce((sum, entry) => sum + entry.value, 0);
 
-  const [totalValue, setTotalValue] = useState<number>(data.reduce((sum, entry) => sum + entry.value, 0));
   const [timeRange, setTimeRange] = useState<string>(timeRangeEnum.mes);
   const [graficoType, setGraficoType] = useState<string>(graficoTypeEnum.bar);
 
