@@ -1,6 +1,8 @@
-import { InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
-import { PieChart } from "@mui/x-charts/PieChart";
+import { Chip, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
 import { useState } from "react";
+import { PieChart } from '@mui/x-charts/PieChart';
+import { useDrawingArea } from '@mui/x-charts/hooks';
+import { styled } from '@mui/material/styles';
 
 enum timeRangeEnum {
   mes = "mes",
@@ -27,14 +29,38 @@ const graficoTypeLabels: Record<graficoTypeEnum, string> = {
 };
 
 const HomePage = () => {
-  const data = [
-    { id: 0, value: 10 },
-    { id: 1, value: 15 },
-    { id: 2, value: 20 },
-    { id: 3, value: 20 },
+
+  const data = [20, 15, 20, 20];
+  const label = ['Pagos:', 'Próximos do Vencimento:', 'Em Aberto:', 'Vencidos:']
+
+  const dataGraph = [
+    { id: 0, value: data[0], label: label[0] },
+    { id: 1, value: data[1], label: label[1] },
+    { id: 2, value: data[2], label: label[2] },
+    { id: 3, value: data[3], label: label[3] },
   ];
 
-  const totalValue = data.reduce((sum, entry) => sum + entry.value, 0);
+  const StyledText = styled('text')(({ theme }) => ({
+    fill: theme.palette.text.primary,
+    textAnchor: 'middle',
+    dominantBaseline: 'central',
+  }));
+
+  function PieCenterLabel({ children }: { children: React.ReactNode }) {
+    const { width, height, left, top } = useDrawingArea();
+    return (
+      <>
+        <StyledText className="font-bold text-4xl" x={left + width / 2} y={12 - top + height / 2}>
+          {children}
+        </StyledText>
+        <StyledText className="font-light" x={left + width / 2} y={18 + top + height / 2}>
+          Boletos
+        </StyledText>
+      </>
+    );
+  }
+
+  const totalValue = dataGraph.reduce((sum, entry) => sum + entry.value, 0);
 
   const [timeRange, setTimeRange] = useState<string>(timeRangeEnum.mes);
   const [graficoType, setGraficoType] = useState<string>(graficoTypeEnum.bar);
@@ -67,27 +93,35 @@ const HomePage = () => {
           ))}
         </Select>
         <PieChart
-        className="mt-8"
+          colors={['#34C759', '#F9AB35', '#356CF9', '#F93535']}
+          className="mt-1"
           margin={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          slotProps={{ legend: { hidden: true } }}
           series={[
             {
-              data: data,
-              innerRadius: 80,
+              data: dataGraph,
+              innerRadius: 70,
               paddingAngle: 2,
+              cornerRadius: 2,
               highlightScope: { fade: "global", highlight: "item" },
               faded: { additionalRadius: -10, color: "gray" },
             },
           ]}
-          slotProps={{
-            legend: {
-              direction: 'column',
-              position: { vertical: 'middle', horizontal: 'middle' },
-              padding: 0,
-            },
-          }}
           width={400}
           height={200}
-        />
+        >
+          <PieCenterLabel>
+            {totalValue}
+          </PieCenterLabel>
+        </PieChart>
+        <div className="flex-row">
+          {Object.values(label).map((value) => (
+            <Typography variant="body1" component="h6">
+              {value}
+            </Typography>
+          ))}
+
+        </div>
       </div>
       <div className="md:w-1/3 w-full">
         <InputLabel id="grafico-type"> </InputLabel>
