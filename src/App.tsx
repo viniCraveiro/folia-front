@@ -28,11 +28,12 @@ const AppContent = () => {
       {!hideTopBar && <TopBar />}
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/inicio" element={<PrivateRoute Component = {HomePage} />} />
-        <Route path="/boleto" element={<PrivateRoute Component = {Boleto} />} />
-        <Route path="/nota-fiscal" element={<PrivateRoute Component = {NotaFiscal} />} />
-        <Route path="/acompanhamento" element={<PrivateRoute Component = {Acompanhamento} />} />
-        <Route path="*" element={<PageNotFound />} />
+        <Route path="" element={<PrivateRoute Component={HomePage} />} />
+        <Route path="/inicio" element={<PrivateRoute Component={HomePage} />} />
+        <Route path="/boleto" element={<PrivateRoute Component={Boleto} />} />
+        <Route path="/nota-fiscal" element={<PrivateRoute Component={NotaFiscal} />} />
+        <Route path="/acompanhamento" element={<PrivateRoute Component={Acompanhamento} />} />
+        <Route path="/*" element={<PageNotFound />} />
       </Routes>
     </>
   );

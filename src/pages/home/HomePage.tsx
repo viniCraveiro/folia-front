@@ -1,8 +1,12 @@
-import { Chip, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
-import { useState } from "react";
+import { InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
 import { PieChart } from '@mui/x-charts/PieChart';
 import { useDrawingArea } from '@mui/x-charts/hooks';
-import { styled } from '@mui/material/styles';
+import { useState } from "react";
+// import  styled from '@mui/material/styles';
+import { styled as muiStyled } from '@mui/material/styles';
+
+// import styled from '@emotion/styled'; 
+
 
 enum timeRangeEnum {
   mes = "mes",
@@ -31,7 +35,7 @@ const graficoTypeLabels: Record<graficoTypeEnum, string> = {
 const HomePage = () => {
 
   const data = [20, 15, 20, 20];
-  const label = ['Pagos:', 'Próximos do Vencimento:', 'Em Aberto:', 'Vencidos:']
+  const label = ['Pagos:', 'Próximos do Vencimento:', 'Em Aberto:', 'Vencidos:'];
 
   const dataGraph = [
     { id: 0, value: data[0], label: label[0] },
@@ -40,13 +44,13 @@ const HomePage = () => {
     { id: 3, value: data[3], label: label[3] },
   ];
 
-  const StyledText = styled('text')(({ theme }) => ({
+  const StyledText = muiStyled('text')(({ theme }) => ({
     fill: theme.palette.text.primary,
     textAnchor: 'middle',
     dominantBaseline: 'central',
   }));
 
-  function PieCenterLabel({ children }: { children: React.ReactNode }) {
+  function PieCenterLabel({ children }: { children: React.ReactNode; }) {
     const { width, height, left, top } = useDrawingArea();
     return (
       <>

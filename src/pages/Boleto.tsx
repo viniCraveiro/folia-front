@@ -1,7 +1,29 @@
+import { Chip } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 const columns: GridColDef[] = [
-    { field: 'status', headerName: 'Status', width: 90 },
+    {
+        field: 'status',
+        headerName: 'Status',
+        width: 150,
+        renderCell: (params) => {
+            let color:  'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
+            switch (params.value) {
+                case 'Pendente':
+                    color = 'warning';
+                    break;
+                case 'Pago':
+                    color = 'success';
+                    break;
+                case 'Atrasado':
+                    color = 'error';
+                    break;
+                default:
+                    color = 'default';
+            }
+            return <Chip label={params.value} color={color} />;
+        },
+    },
     { field: 'descricao', headerName: 'Descrição', width: 300 },
     { field: 'numero', headerName: 'Número', width: 100 },
     { field: 'banco', headerName: 'Banco', width: 100 },
@@ -79,7 +101,7 @@ const Boleto = () => {
                 columns={columns}
                 checkboxSelection
                 sx={{ border: 0, maxHeight: '60vh', minHeight: '60vh' }}
-            />
+            ></DataGrid>
         </>
     );
 };
