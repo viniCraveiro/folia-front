@@ -9,6 +9,7 @@ import Login from "./pages/login/Login";
 import NotaFiscal from "./pages/NotaFiscal";
 import PrivateRoute from "./PrivateRoute";
 import PageNotFound from "./pages/PageNotFound";
+import Cadastro from "./pages/cadastro/Cadastro";
 
 const App = () => {
   return (
@@ -33,6 +34,7 @@ const AppContent = () => {
         <Route path="/boleto" element={<PrivateRoute Component={Boleto} />} />
         <Route path="/nota-fiscal" element={<PrivateRoute Component={NotaFiscal} />} />
         <Route path="/acompanhamento" element={<PrivateRoute Component={Acompanhamento} />} />
+        <Route path="/cadastro" element={<PrivateRoute Component={Cadastro} />} />
         <Route path="/*" element={<PageNotFound />} />
       </Routes>
     </>
