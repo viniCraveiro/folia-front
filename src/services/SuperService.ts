@@ -1,4 +1,5 @@
 import axios from "axios";
+import AuthService from "./AuthServices";
 
 const axiosClient = axios.create({
 });
@@ -8,9 +9,11 @@ axiosClient.defaults.baseURL = "http://localhost:8080/api/" //URL PARA COMINUCAC
 axiosClient.defaults.headers.common['Content-Type'] = 'application/json';
 axiosClient.defaults.headers.common['Accept'] = 'application/json';
 
+const authService = AuthService.getInstance();
+
 axiosClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("authToken"); // Token de Login salvo no "authToken"
+    const token = authService.getToken(); // Token de Login salvo no "authToken"
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
