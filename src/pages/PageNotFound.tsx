@@ -14,7 +14,12 @@ const PageNotFound = () => {
 
   return (
     <>
-      <p>Erros! Page not found.</p>
+      <img
+        src="/src/assets/not-found.svg"
+        className="h-8 cursor-pointer"
+        onClick={() => navigate('/')}
+        style={{ width: "100%", height: "90vh" }}
+      />
     </>
   );
 };

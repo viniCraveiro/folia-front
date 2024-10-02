@@ -42,13 +42,13 @@ const TopBar = () => {
                             Boleto
                         </Typography>
                     </div>
-                    <div className="flex items-center space-x-2 cursor-pointer border-r border-gray-300 pr-4" onClick={() => navigate('/nota-fiscal')}>
+                    <div className="flex items-center space-x-2 cursor-pointer border-r border-gray-300 pr-4" onClick={() => "navigate('/nota-fiscal')"}>
                         <AssignmentIcon className="" />
                         <Typography variant="h6" className="">
                             Nota Fiscal
                         </Typography>
                     </div>
-                    <div className="flex items-center space-x-2 cursor-pointer border-r border-gray-300 pr-4" onClick={() => navigate('/acompanhamento')}>
+                    <div className="flex items-center space-x-2 cursor-pointer border-r border-gray-300 pr-4 green" onClick={() => "navigate('/acompanhamento')"}>
                         <AssignmentIcon className="" />
                         <Typography variant="h6" className="">
                             Acompanhamento
