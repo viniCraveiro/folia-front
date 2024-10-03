@@ -1,4 +1,8 @@
-import { Chip } from '@mui/material';
+import DownloadIcon from '@mui/icons-material/Download';
+import EditIcon from '@mui/icons-material/Edit';
+import PrintIcon from '@mui/icons-material/Print';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Chip, IconButton } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 const columns: GridColDef[] = [
@@ -7,7 +11,7 @@ const columns: GridColDef[] = [
         headerName: 'Status',
         width: 150,
         renderCell: (params) => {
-            let color:  'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
+            let color: 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
             switch (params.value) {
                 case 'Pendente':
                     color = 'warning';
@@ -30,7 +34,48 @@ const columns: GridColDef[] = [
     { field: 'parcela', headerName: 'Parcela', width: 75 },
     { field: 'vencimento', headerName: 'Vencimento', width: 120 },
     { field: 'valor', headerName: 'Valor', width: 120, type: 'number' },
-    { field: 'acoes', headerName: 'Ações', width: 100 },
+    {
+        field: 'acoes',
+        headerName: 'Ações',
+        width: 150,
+        disableReorder: true,
+        filterable: true,
+        disableColumnMenu: true,
+        sortable: false,
+        headerAlign: 'center',
+        renderCell: (params) => (
+            <>
+                <IconButton
+                    onClick={() => console.log('Editar', params.row.id)}
+                    title="Alterar Status"
+                    size="small"
+                >
+                    <EditIcon fontSize="small" />
+                </IconButton>
+                <IconButton
+                    onClick={() => console.log('Visualizar', params.row.id)}
+                    title="Visualizar"
+                    size="small"
+                >
+                    <VisibilityIcon fontSize="small" />
+                </IconButton>
+                <IconButton
+                    onClick={() => console.log('Download', params.row.id)}
+                    title="Download"
+                    size="small"
+                >
+                    <DownloadIcon fontSize="small" />
+                </IconButton>
+                <IconButton
+                    onClick={() => console.log('Imprimir', params.row.id)}
+                    title="Imprimir"
+                    size="small"
+                >
+                    <PrintIcon fontSize="small" />
+                </IconButton>
+            </>
+        ),
+    },
 ];
 
 const rows = [
@@ -43,7 +88,6 @@ const rows = [
         parcela: 1,
         vencimento: '2024-10-01',
         valor: 150.00,
-        acoes: 'Editar',
     },
     {
         id: 2,
@@ -54,7 +98,6 @@ const rows = [
         parcela: 2,
         vencimento: '2024-09-15',
         valor: 250.00,
-        acoes: 'Ver',
     },
     {
         id: 3,
@@ -65,7 +108,6 @@ const rows = [
         parcela: 1,
         vencimento: '2024-08-20',
         valor: 75.00,
-        acoes: 'Remover',
     },
     {
         id: 4,
@@ -76,7 +118,6 @@ const rows = [
         parcela: 3,
         vencimento: '2024-09-30',
         valor: 100.00,
-        acoes: 'Editar',
     },
     {
         id: 5,
@@ -87,7 +128,6 @@ const rows = [
         parcela: 1,
         vencimento: '2024-09-10',
         valor: 300.00,
-        acoes: 'Ver',
     },
 ];
 

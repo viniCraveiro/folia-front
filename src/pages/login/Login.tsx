@@ -174,7 +174,7 @@ export default function Login() {
           </Grid>
         </Grid>
       </div>
-      <div></div>
+      <div className="img-background-login"></div>
     </div>
   );
 }

@@ -1,3 +1,10 @@
-.background{
+.background {
     background-color: #D9D9D9;
+}
+
+.img-background-login {
+    background-image: url("/src/assets/logo/logo.svg");
+    background-repeat: repeat;
+    background-position: center;
+    background-size: auto;
 }
