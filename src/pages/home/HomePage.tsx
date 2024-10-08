@@ -2,10 +2,13 @@ import {
   Avatar,
   Box,
   InputLabel,
+  LinearProgress,
+  linearProgressClasses,
   MenuItem,
   Paper,
   Select,
   SelectChangeEvent,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -18,8 +21,7 @@ import { PieChart } from "@mui/x-charts/PieChart";
 import { useDrawingArea } from "@mui/x-charts/hooks";
 import { useState } from "react";
 // import  styled from '@mui/material/styles';
-import { styled as muiStyled } from "@mui/material/styles";
-import { BarChart } from "@mui/x-charts/BarChart/BarChart";
+import { styled as muiStyled, styled } from "@mui/material/styles";
 import { Gauge, gaugeClasses } from "@mui/x-charts/Gauge";
 import { Link } from "react-router-dom";
 
@@ -100,6 +102,17 @@ const HomePage = () => {
       </>
     );
   }
+  const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
+    height: 32,
+    borderRadius: 12,
+    [`&.${linearProgressClasses.colorPrimary}`]: {
+      backgroundColor: theme.palette.grey[400],
+    },
+    [`& .${linearProgressClasses.bar}`]: {
+      borderRadius: 12,
+      backgroundColor: "#00FF38",
+    },
+  }));
 
   const totalValue = dataGraph.reduce((sum, entry) => sum + entry.value, 0);
 
@@ -238,9 +251,9 @@ const HomePage = () => {
           </Typography>
           <Link href="#"> {"Ver Todos >"} </Link>
         </div>
-        <Box className="rounded-md w-full h-16 bg-slate-500">
+        <Box className="rounded-md w-full h-16">
           <Box className="columns-3 flex">
-            <Box className=" bg-gray-200">
+            <Box>
               <Avatar
                 className="ml-2 h-16 w-16 mr-2 flex-none"
                 alt="Remy Sharp"
@@ -256,10 +269,11 @@ const HomePage = () => {
               </Typography>
             </Box>
 
-            <Box className="bg-gray-200 flex">
-              
+            <Box className="flex h-16 w-20 items-center">
+              <Stack spacing={4} sx={{ flexGrow: 4 }}>
+                <BorderLinearProgress variant="determinate" value={50} />
+              </Stack>
             </Box>
-            //https://mui.com/material-ui/react-progress/#progress
           </Box>
         </Box>
       </div>
