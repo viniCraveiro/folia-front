@@ -8,6 +8,7 @@ import {
   Paper,
   Select,
   SelectChangeEvent,
+  Skeleton,
   Stack,
   Table,
   TableBody,
@@ -26,6 +27,8 @@ import { Gauge, gaugeClasses } from "@mui/x-charts/Gauge";
 import { Link } from "react-router-dom";
 
 // import styled from '@emotion/styled';
+
+let loading: boolean = false;
 
 enum timeRangeEnum {
   mes = "mes",
@@ -52,7 +55,7 @@ const graficoTypeLabels: Record<graficoTypeEnum, string> = {
 };
 
 const HomePage = () => {
-  const data = [20, 15, 20, 20];
+  const data = [20, 15, 20, 40];
   const label = [
     "Pagos:",
     "Próximos do Vencimento:",
@@ -69,11 +72,13 @@ const HomePage = () => {
   ];
 
   const clientesData = [
-    { id: 0, name: "Pessoa 1", boletos: 14, boletosPagos: 2 },
-    { id: 1, name: "Pessoa 2", boletos: 11, boletosPagos: 12 },
-    { id: 2, name: "Pessoa 3", boletos: 6, boletosPagos: 22 },
-    { id: 3, name: "Pessoa 4", boletos: 42, boletosPagos: 32 },
+    { id: 0, name: "Pessoa 1", boletosTotal: 14, boletosPagos: 6 },
+    { id: 1, name: "Pessoa 2", boletosTotal: 11, boletosPagos: 4 },
+    { id: 2, name: "Pessoa 3", boletosTotal: 22, boletosPagos: 20 },
+    { id: 3, name: "Pessoa 4", boletosTotal: 14, boletosPagos: 8 },
   ];
+
+  const normalise = (valueInitial: number, valueMax: number) => ((valueInitial) * 100) / (valueMax);
 
   const StyledText = muiStyled("text")(({ theme }) => ({
     fill: theme.palette.text.primary,
@@ -104,12 +109,12 @@ const HomePage = () => {
   }
   const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
     height: 32,
-    borderRadius: 12,
+    borderRadius: 14,
     [`&.${linearProgressClasses.colorPrimary}`]: {
       backgroundColor: theme.palette.grey[400],
     },
     [`& .${linearProgressClasses.bar}`]: {
-      borderRadius: 12,
+      borderRadius: 14,
       backgroundColor: "#00FF38",
     },
   }));
@@ -127,7 +132,7 @@ const HomePage = () => {
     setGraficoType(event.target.value as graficoTypeEnum);
   };
 
-  return (
+  return !loading ? (
     <div className="flex flex-col md:flex-row gap-4 p-8">
       <div className="md:w-1/3 w-full">
         <InputLabel id="time-range"> </InputLabel>
@@ -251,31 +256,51 @@ const HomePage = () => {
           </Typography>
           <Link href="#"> {"Ver Todos >"} </Link>
         </div>
-        <Box className="rounded-md w-full h-16">
-          <Box className="columns-3 flex">
-            <Box>
-              <Avatar
-                className="ml-2 h-16 w-16 mr-2 flex-none"
-                alt="Remy Sharp"
-                src="/static/images/avatar/1.jpg"
-              />
-            </Box>
-            <Box className="bg-gray-200 h-16 flex-1">
-              <Typography variant="h6" className="">
-                Remy Sharp
-              </Typography>
-              <Typography variant="body2" className="">
-                Remy Sharp
-              </Typography>
-            </Box>
+        {Object.values(clientesData).map((cliente) => (
+          <Box className="rounded-md w-full h-16 mt-4">
+            <Box className="columns-3 flex">
+              <Box>
+                <Avatar
+                  className="ml-2 h-16 w-16 mr-2 flex-none"
+                  alt={cliente.name}
+                  src="/static/images/avatar/1.jpg"
+                />
+              </Box>
+              <Box className="h-16 flex-1">
+                <Typography variant="h6" className="">
+                  {cliente.name}
+                </Typography>
+                <Typography variant="body2" className="text-gray-400">
+                  {`${cliente.boletosPagos} de ${cliente.boletosTotal} boletos pagos.`}
+                </Typography>
+              </Box>
 
-            <Box className="flex h-16 w-20 items-center">
-              <Stack spacing={4} sx={{ flexGrow: 4 }}>
-                <BorderLinearProgress variant="determinate" value={50} />
-              </Stack>
+              <Box className="flex h-16 w-16 items-center">
+                <Stack spacing={4} sx={{ flexGrow: 4 }}>
+                  <BorderLinearProgress variant="determinate" value={normalise(cliente.boletosPagos, cliente.boletosTotal)} />
+                </Stack>
+              </Box>
             </Box>
           </Box>
-        </Box>
+        ))}
+
+      </div>
+    </div>
+  ) : (
+    <div className="flex flex-col md:flex-row gap-4 p-8">
+      <div className="md:w-1/3 w-full">
+        <Skeleton variant="text" width={400} height={40} className="mt-4" />
+        <Skeleton variant="circular" width={200} height={200} />
+        <Skeleton variant="text" width={400} height={30} className="" />
+        <Skeleton variant="text" width={400} height={25} className="" />
+        <Skeleton variant="text" width={400} height={20} className="" />
+        <Skeleton variant="text" width={400} height={15} className="" />
+      </div>
+      <div className="md:w-1/3 w-full">
+        <Skeleton variant="rectangular" width={210} height={118} className="mt-4" />
+      </div>
+      <div className="md:w-1/3 w-full">
+        <Skeleton variant="rectangular" width={210} height={118} className="mt-4" />
       </div>
     </div>
   );
