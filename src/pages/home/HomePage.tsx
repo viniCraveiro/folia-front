@@ -1,13 +1,29 @@
-import { Box, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
-import { PieChart } from '@mui/x-charts/PieChart';
-import { useDrawingArea } from '@mui/x-charts/hooks';
+import {
+  Avatar,
+  Box,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  SelectChangeEvent,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
+import { PieChart } from "@mui/x-charts/PieChart";
+import { useDrawingArea } from "@mui/x-charts/hooks";
 import { useState } from "react";
 // import  styled from '@mui/material/styles';
-import { styled as muiStyled } from '@mui/material/styles';
-import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
+import { styled as muiStyled } from "@mui/material/styles";
+import { BarChart } from "@mui/x-charts/BarChart/BarChart";
+import { Gauge, gaugeClasses } from "@mui/x-charts/Gauge";
+import { Link } from "react-router-dom";
 
-// import styled from '@emotion/styled'; 
-
+// import styled from '@emotion/styled';
 
 enum timeRangeEnum {
   mes = "mes",
@@ -34,10 +50,15 @@ const graficoTypeLabels: Record<graficoTypeEnum, string> = {
 };
 
 const HomePage = () => {
-
   const data = [20, 15, 20, 20];
-  const label = ['Pagos:', 'Próximos do Vencimento:', 'Em Aberto:', 'Vencidos:'];
-  const colorsGraph = ['#34C759', '#F9AB35', '#356CF9', '#F93535'];
+  const label = [
+    "Pagos:",
+    "Próximos do Vencimento:",
+    "Em Aberto:",
+    "Vencidos:",
+  ];
+  const colorsGraph = ["#34C759", "#F9AB35", "#356CF9", "#F93535"];
+
   const dataGraph = [
     { id: 0, color: colorsGraph[0], value: data[0], label: label[0] },
     { id: 1, color: colorsGraph[1], value: data[1], label: label[1] },
@@ -45,20 +66,35 @@ const HomePage = () => {
     { id: 3, color: colorsGraph[3], value: data[3], label: label[3] },
   ];
 
-  const StyledText = muiStyled('text')(({ theme }) => ({
+  const clientesData = [
+    { id: 0, name: "Pessoa 1", boletos: 14, boletosPagos: 2 },
+    { id: 1, name: "Pessoa 2", boletos: 11, boletosPagos: 12 },
+    { id: 2, name: "Pessoa 3", boletos: 6, boletosPagos: 22 },
+    { id: 3, name: "Pessoa 4", boletos: 42, boletosPagos: 32 },
+  ];
+
+  const StyledText = muiStyled("text")(({ theme }) => ({
     fill: theme.palette.text.primary,
-    textAnchor: 'middle',
-    dominantBaseline: 'central',
+    textAnchor: "middle",
+    dominantBaseline: "central",
   }));
 
-  function PieCenterLabel({ children }: { children: React.ReactNode; }) {
+  function PieCenterLabel({ children }: { children: React.ReactNode }) {
     const { width, height, left, top } = useDrawingArea();
     return (
       <>
-        <StyledText className="font-bold text-4xl" x={left + width / 2} y={12 - top + height / 2}>
+        <StyledText
+          className="font-bold text-4xl"
+          x={left + width / 2}
+          y={12 - top + height / 2}
+        >
           {children}
         </StyledText>
-        <StyledText className="font-light" x={left + width / 2} y={18 + top + height / 2}>
+        <StyledText
+          className="font-light"
+          x={left + width / 2}
+          y={18 + top + height / 2}
+        >
           Boletos
         </StyledText>
       </>
@@ -79,7 +115,7 @@ const HomePage = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-3 p-6">
+    <div className="flex flex-col md:flex-row gap-4 p-8">
       <div className="md:w-1/3 w-full">
         <InputLabel id="time-range"> </InputLabel>
         <Select
@@ -115,35 +151,33 @@ const HomePage = () => {
           width={400}
           height={200}
         >
-          <PieCenterLabel>
-            {totalValue}
-          </PieCenterLabel>
+          <PieCenterLabel>{totalValue}</PieCenterLabel>
         </PieChart>
         <TableContainer component={Paper} elevation={0}>
           <Table size="small" aria-label="Boletos table">
-            <TableHead>
-            </TableHead>
+            <TableHead></TableHead>
             <TableBody>
               {Object.values(dataGraph).map((data, index) => (
-                <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableRow
+                  key={index}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
                   <TableCell align="left" component="th" scope="row">
                     <Box
                       style={{ backgroundColor: data.color }}
                       className="rounded-sm w-4 h-4 flex items-center justify-center"
-                    >
-                    </Box>
+                    ></Box>
                   </TableCell>
-                  <TableCell align="left">{data.label}  {((data.value * 100) / totalValue).toFixed(2)}%</TableCell>
+                  <TableCell align="left">
+                    {data.label} {((data.value * 100) / totalValue).toFixed(2)}%
+                  </TableCell>
                   <TableCell align="right">Total de {data.value}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
-        <div className="flex-row">
-
-
-        </div>
+        <div className="flex-row"></div>
       </div>
       <div className="md:w-1/3 w-full">
         <InputLabel id="grafico-type"> </InputLabel>
@@ -179,24 +213,55 @@ const HomePage = () => {
                 sx={{
                   [`& .${gaugeClasses.valueText}`]: {
                     fontSize: 20,
-                    transform: 'translate(10px, -10px)',
+                    transform: "translate(10px, -10px)",
                   },
                   [`& .${gaugeClasses.valueArc}`]: {
                     fill: data.color,
                   },
                 }}
               />
-              <Typography variant="body1" className="ml-2 text-wrap pl-12 mr-12">
-                Aumento de {((data.value * 100 / totalValue)/5).toFixed(2)}
-                % do último mês
+              <Typography
+                variant="body1"
+                className="ml-2 text-wrap pl-12 mr-12"
+              >
+                Aumento de {((data.value * 100) / totalValue / 5).toFixed(2)}%
+                do último mês
               </Typography>
             </div>
           ))}
         </div>
-
       </div>
       <div className="md:w-1/3 w-full">
-        <div className="bg-gray-100 p-4 rounded-lg">Terceira Coluna</div>
+        <div className="flex flex-row mt-2 justify-between items-center">
+          <Typography variant="body1" className="">
+            Clientes
+          </Typography>
+          <Link href="#"> {"Ver Todos >"} </Link>
+        </div>
+        <Box className="rounded-md w-full h-16 bg-slate-500">
+          <Box className="columns-3 flex">
+            <Box className=" bg-gray-200">
+              <Avatar
+                className="ml-2 h-16 w-16 mr-2 flex-none"
+                alt="Remy Sharp"
+                src="/static/images/avatar/1.jpg"
+              />
+            </Box>
+            <Box className="bg-gray-200 h-16 flex-1">
+              <Typography variant="h6" className="">
+                Remy Sharp
+              </Typography>
+              <Typography variant="body2" className="">
+                Remy Sharp
+              </Typography>
+            </Box>
+
+            <Box className="bg-gray-200 flex">
+              
+            </Box>
+            //https://mui.com/material-ui/react-progress/#progress
+          </Box>
+        </Box>
       </div>
     </div>
   );
