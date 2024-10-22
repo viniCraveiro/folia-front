@@ -187,7 +187,7 @@ const HomePage = () => {
                 }}
               />
               <Typography variant="body1" className="ml-2 text-wrap pl-12 mr-12">
-                Aumento de {((data.value * 100 / totalValue)/5).toFixed(2)}
+                Aumento de {((data.value * 100 / totalValue) / 5).toFixed(2)}
                 % do último mês
               </Typography>
             </div>
