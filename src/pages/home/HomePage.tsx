@@ -19,16 +19,18 @@ import {
 } from "@mui/material";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { useDrawingArea } from "@mui/x-charts/hooks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // import  styled from '@mui/material/styles';
 import { styled as muiStyled, styled } from "@mui/material/styles";
 import { Gauge, gaugeClasses } from "@mui/x-charts/Gauge";
 import { Link } from "react-router-dom";
 import SkeletonDefault from "../../layout/SkeletoComponent";
+import { IBoletosData } from "./IBoletosData";
+import DashboardServices from "../../services/home/DashboardServices";
 
 // import styled from '@emotion/styled';
 
-let loading: boolean = false;
+const dashboardServices = new DashboardServices();
 
 enum timeRangeEnum {
   mes = "mes",
@@ -55,7 +57,34 @@ const graficoTypeLabels: Record<graficoTypeEnum, string> = {
 };
 
 const HomePage = () => {
-  const data = [20, 15, 20, 40];
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<IBoletosData>({
+    quantidadeBoletos: 0,
+    quantidadeBoletosAberto: 0,
+    quantidadeBoletosVencido: 0,
+    quantidadeBoletosProximosVencimento: 0
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = dashboardServices.getBoletosDataSet()
+        .then((response) => {
+          if(response){
+            console.log(response);
+            setData(response);
+            setLoading(false);
+          }
+        }); 
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  
   const label = [
     "Pagos:",
     "Próximos do Vencimento:",
@@ -65,10 +94,10 @@ const HomePage = () => {
   const colorsGraph = ["#34C759", "#F9AB35", "#356CF9", "#F93535"];
 
   const dataGraph = [
-    { id: 0, color: colorsGraph[0], value: data[0], label: label[0] },
-    { id: 1, color: colorsGraph[1], value: data[1], label: label[1] },
-    { id: 2, color: colorsGraph[2], value: data[2], label: label[2] },
-    { id: 3, color: colorsGraph[3], value: data[3], label: label[3] },
+    { id: 0, color: colorsGraph[0], value: data.quantidadeBoletos - data.quantidadeBoletosAberto, label: label[0] },
+    { id: 1, color: colorsGraph[1], value: data.quantidadeBoletosProximosVencimento, label: label[1] },
+    { id: 2, color: colorsGraph[2], value: data.quantidadeBoletosAberto, label: label[2] },
+    { id: 3, color: colorsGraph[3], value: data.quantidadeBoletosVencido, label: label[3] },
   ];
 
   const clientesData = [
@@ -133,7 +162,7 @@ const HomePage = () => {
     setGraficoType(event.target.value as graficoTypeEnum);
   };
 
-  return !loading ? ( //Implementar request dos dados BACK
+  return !loading ? ( 
     <div className="p-8">
       <div className="flex flex-col md:flex-row gap-4">
         <div className="md:w-1/3 w-full">
@@ -294,20 +323,6 @@ const HomePage = () => {
           ))}
         </div>
       </div>
-      <Box component={Paper} elevation={2}>
-        {Object.values(clientesData).map((cliente, index) => (
-          <Box key={index} className="rounded-md w-full mt-6">
-            <Box className="flex w-full items-center">
-              <Stack spacing={4} sx={{ flexGrow: 58 }}>
-                <BorderLinearProgress
-                  variant="determinate"
-                  value={normalise(cliente.boletosPagos, cliente.boletosTotal)}
-                />
-              </Stack>
-            </Box>
-          </Box>
-        ))}
-      </Box>
     </div>
   ) : (
     <SkeletonDefault></SkeletonDefault>
