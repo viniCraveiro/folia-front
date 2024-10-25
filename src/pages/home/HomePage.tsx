@@ -25,8 +25,8 @@ import { styled as muiStyled, styled } from "@mui/material/styles";
 import { Gauge, gaugeClasses } from "@mui/x-charts/Gauge";
 import { Link } from "react-router-dom";
 import SkeletonDefault from "../../layout/SkeletoComponent";
-import { IBoletosData } from "./IBoletosData";
 import DashboardServices from "../../services/home/DashboardServices";
+import { DashboardDataSet } from "./DashboardDataSet";
 
 // import styled from '@emotion/styled';
 
@@ -58,47 +58,27 @@ const graficoTypeLabels: Record<graficoTypeEnum, string> = {
 
 const HomePage = () => {
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<IBoletosData>({
-    quantidadeBoletos: 0,
-    quantidadeBoletosAberto: 0,
-    quantidadeBoletosVencido: 0,
-    quantidadeBoletosProximosVencimento: 0
-  });
+  const [dashboardDataSet, setDashboardDataSet] = useState<DashboardDataSet>(
+    new DashboardDataSet()
+  );
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = dashboardServices.getBoletosDataSet()
-        .then((response) => {
-          if(response){
+        dashboardServices.getBoletosDataSet().then((response) => {
+          if (response) {
             console.log(response);
-            setData(response);
+            dashboardDataSet.data = response;
             setLoading(false);
           }
-        }); 
-
+        });
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
   }, []);
-  
-  const label = [
-    "Pagos:",
-    "Próximos do Vencimento:",
-    "Em Aberto:",
-    "Vencidos:",
-  ];
-  const colorsGraph = ["#34C759", "#F9AB35", "#356CF9", "#F93535"];
-
-  const dataGraph = [
-    { id: 0, color: colorsGraph[0], value: data.quantidadeBoletos - data.quantidadeBoletosAberto, label: label[0] },
-    { id: 1, color: colorsGraph[1], value: data.quantidadeBoletosProximosVencimento, label: label[1] },
-    { id: 2, color: colorsGraph[2], value: data.quantidadeBoletosAberto, label: label[2] },
-    { id: 3, color: colorsGraph[3], value: data.quantidadeBoletosVencido, label: label[3] },
-  ];
 
   const clientesData = [
     { id: 0, name: "Pessoa 1", boletosTotal: 14, boletosPagos: 6 },
@@ -149,7 +129,7 @@ const HomePage = () => {
     },
   }));
 
-  const totalValue = dataGraph.reduce((sum, entry) => sum + entry.value, 0);
+  const totalValue = dashboardDataSet.dataSet.reduce((sum, entry) => sum + entry.value, 0);
 
   const [timeRange, setTimeRange] = useState<string>(timeRangeEnum.mes);
   const [graficoType, setGraficoType] = useState<string>(graficoTypeEnum.bar);
@@ -162,7 +142,7 @@ const HomePage = () => {
     setGraficoType(event.target.value as graficoTypeEnum);
   };
 
-  return !loading ? ( 
+  return !loading ? (
     <div className="p-8">
       <div className="flex flex-col md:flex-row gap-4">
         <div className="md:w-1/3 w-full">
@@ -183,13 +163,12 @@ const HomePage = () => {
             ))}
           </Select>
           <PieChart
-            colors={colorsGraph}
             className="mt-6 mb-4"
             margin={{ top: 10, bottom: 10, left: 10, right: 10 }}
             slotProps={{ legend: { hidden: true } }}
             series={[
               {
-                data: dataGraph,
+                data: dashboardDataSet.dataSet,
                 innerRadius: 70,
                 paddingAngle: 2,
                 cornerRadius: 2,
@@ -206,7 +185,7 @@ const HomePage = () => {
             <Table size="small" aria-label="Boletos table">
               <TableHead></TableHead>
               <TableBody>
-                {Object.values(dataGraph).map((data, index) => (
+                {Object.values(dashboardDataSet.dataSet).map((data, index) => (
                   <TableRow
                     key={index}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -247,7 +226,7 @@ const HomePage = () => {
             ))}
           </Select>
           <div className="flex flex-col mt-6">
-            {Object.values(dataGraph).map((data) => (
+            {Object.values(dashboardDataSet.dataSet).map((data) => (
               <div key={data.id} className="flex items-center">
                 <Gauge
                   className="flex-none mb-2"

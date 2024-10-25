@@ -1,8 +1,9 @@
 import { Skeleton } from "@mui/material";
-import React from "react"
+import React from "react";
 
 const SkeletonDefault: React.FC = () => {
-    return (
+  return (
+    <>
       <div className="flex flex-col md:flex-row gap-4 p-8">
         <div className="md:w-1/3 w-full">
           <Skeleton variant="text" className="w-full h-8 mt-4" />
@@ -41,6 +42,10 @@ const SkeletonDefault: React.FC = () => {
           </div>
         </div>
       </div>
-    );
-}
+      <div className="flex md:flex-row gap-4 p-8">
+        <Skeleton variant="rectangular" className="w-full h-96 mt-4" />
+      </div>
+    </>
+  );
+};
 export default SkeletonDefault;
