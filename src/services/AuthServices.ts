@@ -1,6 +1,7 @@
 
 import { IEmpresaData } from "../pages/login/IEmpresaData";
 import { LoginToken } from "../pages/login/ILoginData";
+import { UserRole } from "../pages/login/UserRole";
 import LocalStorageService from "./LocalStorageService";
 
 class AuthService { // Singleton
@@ -25,12 +26,20 @@ class AuthService { // Singleton
         }
     }
 
-    public setEmpresa(data: IEmpresaData): void {
-            LocalStorageService.setItem<IEmpresaData>(this.EMPRESA_KEY, data);
-    }
-
     public getToken(): LoginToken | null {
         return LocalStorageService.getItem<LoginToken>(this.LOGIN_KEY);
+    }
+
+    public getRole(): UserRole | null {
+        return this.getToken()?.tipoUsuario as UserRole | null;
+    }
+
+    public setEmpresa(data: IEmpresaData): void {
+        LocalStorageService.setItem<IEmpresaData>(this.EMPRESA_KEY, data);
+    }
+
+    public getEmpresa(): IEmpresaData | null {
+        return LocalStorageService.getItem<IEmpresaData>(this.EMPRESA_KEY);
     }
 
     private setExpiration(): void {
@@ -39,7 +48,7 @@ class AuthService { // Singleton
 
     private isTokenExpired(): boolean {
         const expirationTime = LocalStorageService.getItem<number>(this.EXPIRATION_KEY);
-        if(Date.now() > expirationTime!){
+        if (Date.now() > expirationTime!) {
             this.clearToken();
             return true;
         }
@@ -48,6 +57,7 @@ class AuthService { // Singleton
 
     public clearToken(): void {
         LocalStorageService.removeItem(this.LOGIN_KEY);
+        LocalStorageService.removeItem(this.EMPRESA_KEY);
         LocalStorageService.removeItem(this.EXPIRATION_KEY);
     }
 
