@@ -1,11 +1,13 @@
 
+import { IEmpresaData } from "../pages/login/IEmpresaData";
 import { LoginToken } from "../pages/login/ILoginData";
 import LocalStorageService from "./LocalStorageService";
 
 class AuthService { // Singleton
     private static instance: AuthService;
-    LOGIN_KEY = 'loginToken';
-    EXPIRATION_KEY = 'expirationToken';
+    LOGIN_KEY = 'loginKey';
+    EMPRESA_KEY = 'empresaKey';
+    EXPIRATION_KEY = 'expirationKey';
 
     private constructor() { }
 
@@ -21,6 +23,10 @@ class AuthService { // Singleton
             this.setExpiration();
             LocalStorageService.setItem<LoginToken>(this.LOGIN_KEY, token);
         }
+    }
+
+    public setEmpresa(data: IEmpresaData): void {
+            LocalStorageService.setItem<IEmpresaData>(this.EMPRESA_KEY, data);
     }
 
     public getToken(): LoginToken | null {

@@ -6,9 +6,13 @@ import ReceiptIcon from '@mui/icons-material/Receipt';
 import { AppBar, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { IEmpresaData } from "../../pages/login/IEmpresaData";
 import './TopBar.css';
+import LocalStorageService from '../../services/LocalStorageService';
 
 const TopBar = () => {
+    const empresaNome : IEmpresaData = LocalStorageService.getItem<IEmpresaData>("empresaKey")!;
+
     const [anchorEl, setAnchorEl] = useState(null);
     const navigate = useNavigate();
 
@@ -55,7 +59,7 @@ const TopBar = () => {
                         </Typography>
                     </div>
                     <Typography variant="h6" className="pl-4 ">
-                        Unicesumar LTDA
+                        {empresaNome.nome}
                     </Typography>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -86,7 +90,7 @@ const TopBar = () => {
                         onClose={handleClose}
                     >
                         <MenuItem onClick={handleClose}>Manutenção do Usuário</MenuItem>
-                        <MenuItem onClick={()=>{handleClose(); navigate('/login')}}>Sair</MenuItem>
+                        <MenuItem onClick={() => { handleClose(); navigate('/login') }}>Sair</MenuItem>
                     </Menu>
                 </div>
             </Toolbar>

@@ -14,6 +14,7 @@ import AuthService from "../../services/AuthServices";
 import LoginService from "../../services/login/LoginService";
 import { ILogin, LoginToken } from "./ILoginData";
 import "./LoginStyle.css";
+import { IEmpresaData } from "./IEmpresaData";
 
 const service = new LoginService();
 
@@ -54,10 +55,14 @@ export default function Login() {
 
     service
       .loginUser(loginForm)
-      .then((response: LoginToken) => {
-        if (response.valid) {
-          authService.setToken(response);
-          navigate("/inicio");
+      .then((responseLogin: LoginToken) => {
+        if (responseLogin.valid) {
+          service.getEmpresaVinculada(responseLogin.uuid)
+          .then((responseEmpresa: IEmpresaData) => {
+            authService.setToken(responseLogin);
+            authService.setEmpresa(responseEmpresa);
+            navigate("/inicio");
+          })
         } else {
           setAlertState(true);
           console.error("Usuario Não Valido!");
