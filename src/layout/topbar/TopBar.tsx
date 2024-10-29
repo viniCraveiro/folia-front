@@ -91,7 +91,7 @@ const TopBar = () => {
             {auth.getRole() === UserRole.ADMIN && (
               <div
                 className="flex items-center space-x-2 cursor-pointer border-r border-gray-300 pr-4 green"
-                onClick={() => navigate("/gestao")}
+                onClick={() => navigate("/listagemusuario")}
               >
                 <BadgeIcon className="" />
                 <Typography variant="h6" className="">

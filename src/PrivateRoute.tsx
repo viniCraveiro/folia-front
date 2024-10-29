@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
 import AuthService from "./services/AuthServices";
+import { UserRole } from "./pages/login/UserRole";
 
 const PrivateRoute = ({ Component }) => {
   const auth = AuthService.getInstance();
@@ -9,7 +10,7 @@ const PrivateRoute = ({ Component }) => {
   //   uuid: "d6e7f8a9-b0c1-2c3d-4321-8a8b9c0d1e2f",
   //   nome: "Anonimo",
   //   valid: true,
-  //   tipoUsuario: "ADMIN"
+  //   tipoUsuario: UserRole.ADMIN
   // });
   // return <Component />;
   // //--- 

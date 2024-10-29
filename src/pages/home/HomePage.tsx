@@ -67,7 +67,6 @@ const HomePage = () => {
       try {
         dashboardServices.getBoletosDataSet().then((response) => {
           if (response) {
-            console.log(response);
             dashboardDataSet.data = response;
             setLoading(false);
           }
