@@ -82,7 +82,7 @@ const TopBar = () => {
             </Typography>
           </div>
           <Typography variant="h6" className="pl-4 ">
-            {empresaNome!.nome}
+            {empresaNome ? empresaNome.nome : ""}
           </Typography>
         </div>
         <div className="flex order- items-center space-x-4"></div>

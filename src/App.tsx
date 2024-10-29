@@ -25,20 +25,26 @@ const App = () => {
 
 const AppContent = () => {
   const location = useLocation();
-  const hideTopBar = location.pathname === "/login" || location.pathname === "/page-not-found";
+  const hiddenTopBarRoutes = ["/login", "/page-not-found"];
+  const hideTopBar = hiddenTopBarRoutes.includes(location.pathname);
+
   return (
     <>
       {!hideTopBar && <TopBar />}
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="" element={<PrivateRoute Component={HomePage} />} />
-        <Route path="/inicio" element={<PrivateRoute Component={HomePage} />} />
-        <Route path="/boleto" element={<PrivateRoute Component={Boleto} />} />
-        <Route path="/nota-fiscal" element={<PrivateRoute Component={NotaFiscal} />} />
-        <Route path="/acompanhamento" element={<PrivateRoute Component={Acompanhamento} />} />
-        <Route path="/cadastro" element={<PrivateRoute Component={Cadastro} />} />
-        <Route path="/listagemusuario" element={<PrivateRoute Component={ListagemUsuario} />} />
-        <Route path="/cadastrousuario" element={<PrivateRoute Component={CadastroUsuario} />} />
+
+        <Route element={<PrivateRoute />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/inicio" element={<HomePage />} />
+          <Route path="/boleto" element={<Boleto />} />
+          <Route path="/nota-fiscal" element={<NotaFiscal />} />
+          <Route path="/acompanhamento" element={<Acompanhamento />} />
+          <Route path="/cadastro" element={<Cadastro />} />
+          <Route path="/listagemusuario" element={<ListagemUsuario />} />
+          <Route path="/cadastrousuario" element={<CadastroUsuario />} />
+        </Route>
+
         <Route path="/*" element={<PageNotFound />} />
       </Routes>
     </>
