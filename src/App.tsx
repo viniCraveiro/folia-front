@@ -10,6 +10,8 @@ import NotaFiscal from "./pages/NotaFiscal";
 import PrivateRoute from "./PrivateRoute";
 import PageNotFound from "./pages/PageNotFound";
 import Cadastro from "./pages/cadastro/Cadastro";
+import ListagemUsuario from "./pages/gestao/ListagemUsuario";
+import CadastroUsuario from "./pages/gestao/CadastroUsuario";
 
 const App = () => {
   return (
@@ -35,6 +37,8 @@ const AppContent = () => {
         <Route path="/nota-fiscal" element={<PrivateRoute Component={NotaFiscal} />} />
         <Route path="/acompanhamento" element={<PrivateRoute Component={Acompanhamento} />} />
         <Route path="/cadastro" element={<PrivateRoute Component={Cadastro} />} />
+        <Route path="/listagemusuario" element={<PrivateRoute Component={ListagemUsuario} />} />
+        <Route path="/cadastrousuario" element={<PrivateRoute Component={CadastroUsuario} />} />
         <Route path="/*" element={<PageNotFound />} />
       </Routes>
     </>
