@@ -17,49 +17,44 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { PieChart } from "@mui/x-charts/PieChart";
-import { useDrawingArea } from "@mui/x-charts/hooks";
-import { useEffect, useState } from "react";
-// import  styled from '@mui/material/styles';
 import { styled as muiStyled, styled } from "@mui/material/styles";
 import { Gauge, gaugeClasses } from "@mui/x-charts/Gauge";
+import { PieChart } from "@mui/x-charts/PieChart";
+import { useDrawingArea } from "@mui/x-charts/hooks";
+import { DatePicker } from "@mui/x-date-pickers";
+import dayjs, { Dayjs } from "dayjs";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import SkeletonDefault from "../../layout/SkeletoComponent";
 import DashboardServices from "../../services/home/DashboardServices";
-import { DashboardDataSet } from "./DashboardDataSet";
-
-// import styled from '@emotion/styled';
+import { getCurrentYearMonth } from "../components/DateUtils";
+import {
+  DashboardDataSet,
+  GraficoTypeEnum,
+  TimeRangeEnum,
+} from "./DashboardCollections";
 
 const dashboardServices = new DashboardServices();
 
-enum timeRangeEnum {
-  mes = "mes",
-  semana = "semana",
-  ano = "ano",
-}
-
-enum graficoTypeEnum {
-  bar = "bar",
-  line = "line",
-  pie = "pie",
-}
-
-const timeRangeLabels: Record<timeRangeEnum, string> = {
-  [timeRangeEnum.mes]: "Nos últimos 30 Dias",
-  [timeRangeEnum.semana]: "Na última Semana",
-  [timeRangeEnum.ano]: "No último Ano",
+const timeRangeLabels: Record<TimeRangeEnum, string> = {
+  [TimeRangeEnum.mes]: "Nos últimos 30 Dias",
+  [TimeRangeEnum.semana]: "Na última Semana",
+  [TimeRangeEnum.ano]: "No último Ano",
 };
 
-const graficoTypeLabels: Record<graficoTypeEnum, string> = {
-  [graficoTypeEnum.bar]: "Comparativo em barras",
-  [graficoTypeEnum.line]: "Comparativo em linhas",
-  [graficoTypeEnum.pie]: "Comparativo em pizza",
+const graficoTypeLabels: Record<GraficoTypeEnum, string> = {
+  [GraficoTypeEnum.bar]: "Comparativo em barras",
+  [GraficoTypeEnum.line]: "Comparativo em linhas",
+  [GraficoTypeEnum.pie]: "Comparativo em pizza",
 };
 
 const HomePage = () => {
   const [loading, setLoading] = useState(true);
-  const [dashboardDataSet, setDashboardDataSet] = useState<DashboardDataSet>(
-    new DashboardDataSet()
+  const [dashboardDataSet] = useState<DashboardDataSet>(new DashboardDataSet());
+  const [timeRange, setTimeRange] = useState<string>(TimeRangeEnum.mes);
+  const [graficoType, setGraficoType] = useState<string>(GraficoTypeEnum.bar);
+  const [dateBalanco, setDateBalanco] = useState<Dayjs | null>(
+    dayjs(getCurrentYearMonth())
   );
 
   useEffect(() => {
@@ -95,7 +90,7 @@ const HomePage = () => {
     dominantBaseline: "central",
   }));
 
-  function PieCenterLabel({ children }: { children: React.ReactNode }) {
+  const PieCenterLabel = ({ children }: { children: React.ReactNode }) => {
     const { width, height, left, top } = useDrawingArea();
     return (
       <>
@@ -115,7 +110,8 @@ const HomePage = () => {
         </StyledText>
       </>
     );
-  }
+  };
+
   const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
     height: 32,
     borderRadius: 14,
@@ -128,17 +124,17 @@ const HomePage = () => {
     },
   }));
 
-  const totalValue = dashboardDataSet.dataSet.reduce((sum, entry) => sum + entry.value, 0);
-
-  const [timeRange, setTimeRange] = useState<string>(timeRangeEnum.mes);
-  const [graficoType, setGraficoType] = useState<string>(graficoTypeEnum.bar);
+  const totalValue = dashboardDataSet.dataSet.reduce(
+    (sum, entry) => sum + entry.value,
+    0
+  );
 
   const handleTimeRange = (event: SelectChangeEvent<string>) => {
-    setTimeRange(event.target.value as timeRangeEnum);
+    setTimeRange(event.target.value as TimeRangeEnum);
   };
 
   const handleGraficoType = (event: SelectChangeEvent<string>) => {
-    setGraficoType(event.target.value as graficoTypeEnum);
+    setGraficoType(event.target.value as GraficoTypeEnum);
   };
 
   return !loading ? (
@@ -155,7 +151,7 @@ const HomePage = () => {
             variant="standard"
             sx={{ minWidth: 200 }}
           >
-            {Object.values(timeRangeEnum).map((value) => (
+            {Object.values(TimeRangeEnum).map((value) => (
               <MenuItem key={value} value={value}>
                 {timeRangeLabels[value]}
               </MenuItem>
@@ -218,7 +214,7 @@ const HomePage = () => {
             variant="standard"
             sx={{ minWidth: 200 }}
           >
-            {Object.values(graficoTypeEnum).map((value) => (
+            {Object.values(GraficoTypeEnum).map((value) => (
               <MenuItem key={value} value={value}>
                 {graficoTypeLabels[value]}
               </MenuItem>
@@ -300,6 +296,44 @@ const HomePage = () => {
             </Box>
           ))}
         </div>
+      </div>
+      <div className="gap-4">
+        <Box component={Paper} elevation={6} className="p-2">
+          <div className="flex flex-row justify-between items-center">
+            <Typography variant="h6" className="items-center">
+              Balanço
+            </Typography>
+            <DatePicker
+              className="custom-datepicker"
+              label={"De"}
+              value={dateBalanco}
+              views={["month", "year"]}
+              onChange={(newDate) => setDateBalanco(newDate)}
+              sx={{
+                width: '100%',
+                '& .MuiInputBase-root': {
+                  backgroundColor: '',
+                },
+              }}
+            />
+          </div>
+          <InputLabel id="time-range"> </InputLabel>
+          {Object.values(dashboardDataSet.dataSet).map((cliente, index) => (
+            <Box key={index} className="rounded-md w-full mt-6">
+              <Box className="flex w-full items-center">
+                <Stack spacing={4} sx={{ flexGrow: 58 }}>
+                  <BorderLinearProgress
+                    variant="determinate"
+                    // value={normalise(
+                    //   cliente.boletosPagos,
+                    //   cliente.boletosTotal
+                    // )}
+                  />
+                </Stack>
+              </Box>
+            </Box>
+          ))}
+        </Box>
       </div>
     </div>
   ) : (

@@ -35,6 +35,10 @@ const TopBar = () => {
     setAnchorEl(null);
   };
 
+  const handleLogout = () => {
+    auth.clearToken();
+  }
+
   return (
     <AppBar position="static" className="bg-white shadow-md">
       <Toolbar className="flex justify-between items-center">
@@ -132,6 +136,7 @@ const TopBar = () => {
             <MenuItem
               onClick={() => {
                 handleClose();
+                handleLogout();
                 navigate("/login");
               }}
             >

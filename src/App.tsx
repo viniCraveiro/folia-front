@@ -4,20 +4,24 @@ import theme from "./layout/Theme";
 import TopBar from "./layout/topbar/TopBar";
 import Acompanhamento from "./pages/Acompanhamento";
 import Boleto from "./pages/Boleto/Boleto";
+import Cadastro from "./pages/cadastro/Cadastro";
+import AppProviders from "./pages/components/AppProviders";
+import CadastroUsuario from "./pages/gestao/CadastroUsuario";
+import ListagemUsuario from "./pages/gestao/ListagemUsuario";
 import HomePage from "./pages/home/HomePage";
 import Login from "./pages/login/Login";
+import { UserRole } from "./pages/login/UserRole";
 import NotaFiscal from "./pages/NotaFiscal";
-import PrivateRoute from "./PrivateRoute";
 import PageNotFound from "./pages/PageNotFound";
-import Cadastro from "./pages/cadastro/Cadastro";
-import ListagemUsuario from "./pages/gestao/ListagemUsuario";
-import CadastroUsuario from "./pages/gestao/CadastroUsuario";
+import PrivateRoute from "./PrivateRoute";
 
 const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
-        <AppContent />
+        <AppProviders>
+          <AppContent />
+        </AppProviders>
       </BrowserRouter>
     </ThemeProvider>
   );
@@ -41,6 +45,9 @@ const AppContent = () => {
           <Route path="/nota-fiscal" element={<NotaFiscal />} />
           <Route path="/acompanhamento" element={<Acompanhamento />} />
           <Route path="/cadastro" element={<Cadastro />} />
+        </Route>
+
+        <Route element={<PrivateRoute role={UserRole.ADMIN} />}>
           <Route path="/listagemusuario" element={<ListagemUsuario />} />
           <Route path="/cadastrousuario" element={<CadastroUsuario />} />
         </Route>
