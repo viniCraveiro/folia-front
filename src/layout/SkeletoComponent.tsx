@@ -1,7 +1,6 @@
 import { Skeleton } from "@mui/material";
-import React from "react";
 
-const SkeletonDefault: React.FC = () => {
+const SkeletonDefault = () => {
   return (
     <>
       <div className="flex flex-col md:flex-row gap-4 p-8">
