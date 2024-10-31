@@ -2,8 +2,6 @@ import {
   Avatar,
   Box,
   InputLabel,
-  LinearProgress,
-  linearProgressClasses,
   MenuItem,
   Paper,
   Select,
@@ -17,7 +15,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { styled as muiStyled, styled } from "@mui/material/styles";
+import { styled as muiStyled } from "@mui/material/styles";
 import { Gauge, gaugeClasses } from "@mui/x-charts/Gauge";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { useDrawingArea } from "@mui/x-charts/hooks";
@@ -29,6 +27,7 @@ import SkeletonDefault from "../../layout/SkeletoComponent";
 import DashboardServices from "../../services/home/DashboardServices";
 import { getCurrentYearMonth } from "../components/DateUtils";
 import {
+  BorderLinearProgress,
   DashboardDataSet,
   GraficoTypeEnum,
   TimeRangeEnum,
@@ -112,23 +111,6 @@ const HomePage = () => {
     );
   };
 
-  const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-    height: 32,
-    borderRadius: 14,
-    [`&.${linearProgressClasses.colorPrimary}`]: {
-      backgroundColor: theme.palette.grey[400],
-    },
-    [`& .${linearProgressClasses.bar}`]: {
-      borderRadius: 14,
-      backgroundColor: "#00FF38",
-    },
-  }));
-
-  const totalValue = dashboardDataSet.dataSet.reduce(
-    (sum, entry) => sum + entry.value,
-    0
-  );
-
   const handleTimeRange = (event: SelectChangeEvent<string>) => {
     setTimeRange(event.target.value as TimeRangeEnum);
   };
@@ -174,7 +156,7 @@ const HomePage = () => {
             width={400}
             height={200}
           >
-            <PieCenterLabel>{totalValue}</PieCenterLabel>
+            <PieCenterLabel>{dashboardDataSet.data.quantidadeBoletos}</PieCenterLabel>
           </PieChart>
           <TableContainer component={Paper} elevation={0}>
             <Table size="small" aria-label="Boletos table">
@@ -193,7 +175,7 @@ const HomePage = () => {
                     </TableCell>
                     <TableCell align="left">
                       {data.label}{" "}
-                      {((data.value * 100) / totalValue).toFixed(2)}%
+                      {((data.value * 100) / dashboardDataSet.data.quantidadeBoletos).toFixed(2)}%
                     </TableCell>
                     <TableCell align="right">Total de {data.value}</TableCell>
                   </TableRow>
@@ -229,7 +211,7 @@ const HomePage = () => {
                   width={120}
                   height={84}
                   value={data.value}
-                  valueMax={totalValue}
+                  valueMax={dashboardDataSet.data.quantidadeBoletos}
                   startAngle={90}
                   endAngle={-5}
                   innerRadius="78%"
@@ -248,7 +230,7 @@ const HomePage = () => {
                   variant="body1"
                   className="ml-2 text-wrap pl-12 mr-12"
                 >
-                  Aumento de {((data.value * 100) / totalValue / 5).toFixed(2)}%
+                  Aumento de {((data.value * 100) / dashboardDataSet.data.quantidadeBoletos / 5).toFixed(2)}%
                   do último mês
                 </Typography>
               </div>
@@ -284,6 +266,7 @@ const HomePage = () => {
                 <Box className="flex h-16 w-16 items-center">
                   <Stack spacing={4} sx={{ flexGrow: 4 }}>
                     <BorderLinearProgress
+                      barheight = {32}
                       variant="determinate"
                       value={normalise(
                         cliente.boletosPagos,
@@ -299,37 +282,43 @@ const HomePage = () => {
       </div>
       <div className="gap-4">
         <Box component={Paper} elevation={6} className="p-2">
-          <div className="flex flex-row justify-between items-center">
+          <div className="flex flex-row justify-between items-center mb-4">
             <Typography variant="h6" className="items-center">
               Balanço
             </Typography>
             <DatePicker
-              className="custom-datepicker"
+              className="leading-normal"
               label={"De"}
               value={dateBalanco}
               views={["month", "year"]}
               onChange={(newDate) => setDateBalanco(newDate)}
-              sx={{
-                width: '100%',
-                '& .MuiInputBase-root': {
-                  backgroundColor: '',
-                },
-              }}
             />
           </div>
           <InputLabel id="time-range"> </InputLabel>
-          {Object.values(dashboardDataSet.dataSet).map((cliente, index) => (
-            <Box key={index} className="rounded-md w-full mt-6">
-              <Box className="flex w-full items-center">
-                <Stack spacing={4} sx={{ flexGrow: 58 }}>
-                  <BorderLinearProgress
-                    variant="determinate"
-                    // value={normalise(
-                    //   cliente.boletosPagos,
-                    //   cliente.boletosTotal
-                    // )}
-                  />
-                </Stack>
+          {Object.values(dashboardDataSet.balancodataSet).map((balanco, index) => (
+            <Box key={index}>
+              <Box className="rounded-md w-full mb-6">
+                <Box className="flex w-full items-center">
+                  <Stack spacing={4} sx={{ flexGrow: 1 }}>
+                    <BorderLinearProgress
+                      variant="determinate"
+                      barheight = {6}
+                      barcolor={balanco.color}
+                      value={normalise(
+                        balanco.value,
+                        dashboardDataSet.data.quantidadeBoletos
+                      )}
+                    />
+                  </Stack>
+                </Box>
+                <div className="flex flex-row justify-between items-center">
+                  <Typography variant="subtitle1" className="items-center">
+                    {balanco.label}
+                  </Typography>
+                  <Typography variant="subtitle1" className="items-center font-semibold">
+                    {balanco.value}
+                  </Typography>
+                </div>
               </Box>
             </Box>
           ))}

@@ -52,6 +52,15 @@ table {
   border-spacing: 0;
 }
 
+.MuiPickersMonth-monthButton {
+  line-height: 1 !important;
+  /* Any other custom styles you want to apply */
+}
+
+.MuiPickersYear-yearButton {
+  line-height: 1 !important;
+}
+
 
 @tailwind base;
 @tailwind components;
