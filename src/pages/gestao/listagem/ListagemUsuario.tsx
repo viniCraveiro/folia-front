@@ -1,8 +1,13 @@
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import EditIcon from "@mui/icons-material/Edit";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import SearchIcon from "@mui/icons-material/Search";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
   Box,
+  Button,
   IconButton,
+  InputAdornment,
   Paper,
   Stack,
   Table,
@@ -26,7 +31,7 @@ const columns: GridColDef[] = [
   { field: "abertos", headerName: "Boletos pagos", width: 30 },
   { field: "total", headerName: "Total de Boletos", width: 30 },
   { field: "balanco", headerName: "Resumo de Boletos", width: 300 },
-  { field: "acoes", headerName: "", cellClassName: "justify-end", width: 10 },
+  { field: "acoes", headerName: "", cellClassName: "justify-end", width: 50 },
 ];
 
 const ListagemUsuario = () => {
@@ -34,14 +39,55 @@ const ListagemUsuario = () => {
 
   return (
     <Box className="p-8">
-        <Box className="mb-4 gap-1 flex flex-row  justify-between items-center">
+      <Box className="mb-4 gap-2 grid grid-cols-2 justify-between items-center">
+        <Box>
           <TextField
             fullWidth
-            id="filtro"
+            id="search"
             label="Buscar por nome ou idendificação"
-            name="filtro"
+            name="filsearchtro"
+            variant="standard"
+            size="small"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton className="mb-4">
+                    <SearchIcon />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
         </Box>
+        <Box className="grid grid-cols-2 gap-2">
+          <Box>
+            <Button
+              className="items-center"
+              variant="contained"
+              startIcon={<FilterAltIcon />}
+              sx={{ maxWidth: 100 }}
+            />
+          </Box>
+          <Box>
+            <Box className="gap-4 flex flex-row items-center">
+              <Button
+                className="w-1/2"
+                variant="contained"
+                startIcon={<AddCircleIcon />}
+              >
+                <Typography variant="body2">Criar usuário</Typography>
+              </Button>
+              <Button
+                className="w-1/2"
+                variant="contained"
+                startIcon={<SearchIcon />}
+              >
+                <Typography variant="body2">Ações</Typography>
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
       <TableContainer
         component={Paper}
         sx={{
@@ -120,7 +166,7 @@ const ListagemUsuario = () => {
                     </Box>
                   </Stack>
                 </TableCell>
-                <TableCell sx={{ textAlign: "end"}}>
+                <TableCell sx={{ textAlign: "end" }}>
                   <IconButton size="small" sx={{ width: 35 }}>
                     <VisibilityIcon />
                   </IconButton>
