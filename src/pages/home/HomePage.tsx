@@ -27,11 +27,11 @@ import SkeletonDefault from "../../layout/SkeletoComponent";
 import DashboardServices from "../../services/home/DashboardServices";
 import { getCurrentYearMonth } from "../components/DateUtils";
 import {
-  BorderLinearProgress,
   DashboardDataSet,
   GraficoTypeEnum,
   TimeRangeEnum,
 } from "./DashboardCollections";
+import { normalise, ProgressBar } from "../components/ProgressBar";
 
 const dashboardServices = new DashboardServices();
 
@@ -80,8 +80,7 @@ const HomePage = () => {
     { id: 3, name: "Pessoa 4", boletosTotal: 14, boletosPagos: 8 },
   ];
 
-  const normalise = (valueInitial: number, valueMax: number) =>
-    (valueInitial * 100) / valueMax;
+
 
   const StyledText = muiStyled("text")(({ theme }) => ({
     fill: theme.palette.text.primary,
@@ -156,7 +155,9 @@ const HomePage = () => {
             width={400}
             height={200}
           >
-            <PieCenterLabel>{dashboardDataSet.data.quantidadeBoletos}</PieCenterLabel>
+            <PieCenterLabel>
+              {dashboardDataSet.data.quantidadeBoletos}
+            </PieCenterLabel>
           </PieChart>
           <TableContainer component={Paper} elevation={0}>
             <Table size="small" aria-label="Boletos table">
@@ -175,7 +176,11 @@ const HomePage = () => {
                     </TableCell>
                     <TableCell align="left">
                       {data.label}{" "}
-                      {((data.value * 100) / dashboardDataSet.data.quantidadeBoletos).toFixed(2)}%
+                      {(
+                        (data.value * 100) /
+                        dashboardDataSet.data.quantidadeBoletos
+                      ).toFixed(2)}
+                      %
                     </TableCell>
                     <TableCell align="right">Total de {data.value}</TableCell>
                   </TableRow>
@@ -230,8 +235,13 @@ const HomePage = () => {
                   variant="body1"
                   className="ml-2 text-wrap pl-12 mr-12"
                 >
-                  Aumento de {((data.value * 100) / dashboardDataSet.data.quantidadeBoletos / 5).toFixed(2)}%
-                  do último mês
+                  Aumento de{" "}
+                  {(
+                    (data.value * 100) /
+                    dashboardDataSet.data.quantidadeBoletos /
+                    5
+                  ).toFixed(2)}
+                  % do último mês
                 </Typography>
               </div>
             ))}
@@ -265,8 +275,8 @@ const HomePage = () => {
 
                 <Box className="flex h-16 w-16 items-center">
                   <Stack spacing={4} sx={{ flexGrow: 4 }}>
-                    <BorderLinearProgress
-                      barheight = {32}
+                    <ProgressBar
+                      barheight={32}
                       variant="determinate"
                       value={normalise(
                         cliente.boletosPagos,
@@ -295,33 +305,38 @@ const HomePage = () => {
             />
           </div>
           <InputLabel id="time-range"> </InputLabel>
-          {Object.values(dashboardDataSet.balancodataSet).map((balanco, index) => (
-            <Box key={index}>
-              <Box className="rounded-md w-full mb-6">
-                <Box className="flex w-full items-center">
-                  <Stack spacing={4} sx={{ flexGrow: 1 }}>
-                    <BorderLinearProgress
-                      variant="determinate"
-                      barheight = {6}
-                      barcolor={balanco.color}
-                      value={normalise(
-                        balanco.value,
-                        dashboardDataSet.data.quantidadeBoletos
-                      )}
-                    />
-                  </Stack>
+          {Object.values(dashboardDataSet.balancodataSet).map(
+            (balanco, index) => (
+              <Box key={index}>
+                <Box className="rounded-md w-full mb-6">
+                  <Box className="flex w-full items-center">
+                    <Stack spacing={4} sx={{ flexGrow: 1 }}>
+                      <ProgressBar
+                        variant="determinate"
+                        barheight={6}
+                        barcolor={balanco.color}
+                        value={normalise(
+                          balanco.value,
+                          dashboardDataSet.data.quantidadeBoletos
+                        )}
+                      />
+                    </Stack>
+                  </Box>
+                  <div className="flex flex-row justify-between items-center">
+                    <Typography variant="subtitle1" className="items-center">
+                      {balanco.label}
+                    </Typography>
+                    <Typography
+                      variant="subtitle1"
+                      className="items-center font-semibold"
+                    >
+                      {balanco.value}
+                    </Typography>
+                  </div>
                 </Box>
-                <div className="flex flex-row justify-between items-center">
-                  <Typography variant="subtitle1" className="items-center">
-                    {balanco.label}
-                  </Typography>
-                  <Typography variant="subtitle1" className="items-center font-semibold">
-                    {balanco.value}
-                  </Typography>
-                </div>
               </Box>
-            </Box>
-          ))}
+            )
+          )}
         </Box>
       </div>
     </div>

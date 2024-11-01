@@ -1,5 +1,3 @@
-import { LinearProgress, linearProgressClasses } from "@mui/material";
-import { styled } from "@mui/material/styles";
 
 interface IBoletoStatus {
     cor: string;
@@ -39,24 +37,6 @@ export interface IBoletosData {
     quantidadeBoletosProximosVencimento: number;
 }
 
-interface BorderLinearProgressProps {
-    barcolor?: string;
-    barheight?: number;
-}
-
-
-export const BorderLinearProgress = styled(LinearProgress)<BorderLinearProgressProps> (({ theme, barcolor, barheight }) => ({
-    height: barheight ?? 10,
-    borderRadius: 20,
-    [`&.${linearProgressClasses.colorPrimary}`]: {
-        backgroundColor: theme.palette.grey[400],
-    },
-    [`& .${linearProgressClasses.bar}`]: {
-        borderRadius: 14,
-        backgroundColor: barcolor ?? "#00FF38"
-    },
-}));
-
 export class DashboardDataSet {
     public data: IBoletosData;
 
@@ -83,7 +63,7 @@ export class DashboardDataSet {
         const dataGraph = [
             { id: 0, color: BalancoStatusConfig["total"].cor, value: this.data.quantidadeBoletos, label: BalancoStatusConfig["total"].status },
             { id: 1, color: BalancoStatusConfig["pagos"].cor, value: this.data.quantidadeBoletos - this.data.quantidadeBoletosAberto, label: BalancoStatusConfig["pagos"].status },
-            { id: 2, color: BalancoStatusConfig["cancelados"].cor, value: 2 , label: BalancoStatusConfig["cancelados"].status },
+            { id: 2, color: BalancoStatusConfig["cancelados"].cor, value: 2, label: BalancoStatusConfig["cancelados"].status },
             { id: 3, color: BalancoStatusConfig["vencidos"].cor, value: this.data.quantidadeBoletosVencido, label: BalancoStatusConfig["vencidos"].status }
         ];
         return dataGraph;
