@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@emotion/react";
+import CssBaseline from "@mui/material/CssBaseline/CssBaseline";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import theme from "./layout/Theme";
 import TopBar from "./layout/topbar/TopBar";
@@ -20,6 +21,7 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <AppProviders>
+          <CssBaseline />
           <AppContent />
         </AppProviders>
       </BrowserRouter>

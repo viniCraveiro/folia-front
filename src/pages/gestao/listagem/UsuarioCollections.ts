@@ -52,7 +52,7 @@ const getRandomName = (): string => {
 };
 
 const generateUsuarioList = (): IUsuarioList[] => {
-    return Array.from({ length: 10 }, (_, index) => {
+    return Array.from({ length: 20 }, (_, index) => {
         const boletosTotal = getRandomInt(1, 50);
         const boletosPagos = getRandomInt(0, boletosTotal);
 
