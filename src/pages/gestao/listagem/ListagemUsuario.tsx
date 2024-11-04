@@ -25,6 +25,7 @@ import { useState } from "react";
 import theme from "../../../layout/Theme";
 import { getCurrentYearMonth } from "../../components/DateUtils";
 import { normalise, ProgressBar } from "../../components/ProgressBar";
+import { FiltroAvancado } from "./FiltroAvancado";
 import { getBarColor, UsuarioList } from "./UsuarioCollections";
 
 const columns: GridColDef[] = [
@@ -41,6 +42,10 @@ const ListagemUsuario = () => {
   const [dateBalanco, setDateBalanco] = useState<Dayjs | null>(
     dayjs(getCurrentYearMonth())
   );
+  const [isFilterOpen, setFilterOpen] = useState(false);
+
+  const handleOpenFilter = () => setFilterOpen(true);
+  const handleCloseFiter = () => setFilterOpen(false);
 
   return (
     <Box className="p-8">
@@ -67,7 +72,13 @@ const ListagemUsuario = () => {
         </Box>
         <Box className="grid grid-cols-2 gap-2">
           <Box>
-            <IconButton size="small" sx={{ width: 35 }}>
+            <IconButton
+              size="small"
+              sx={{ width: 35 }}
+              onClick={() => {
+                handleOpenFilter();
+              }}
+            >
               <FilterAltIcon
                 sx={{
                   alignContent: "center",
@@ -79,11 +90,19 @@ const ListagemUsuario = () => {
                 }}
               />
             </IconButton>
+            <div>
+              <FiltroAvancado
+                open={isFilterOpen}
+                onClose={handleCloseFiter}
+                title="Custom Modal Title"
+                description="Custom modal description here."
+              />
+            </div>
           </Box>
           <Box>
             <Box className="gap-2 flex flex-row-reverse items-center">
               <Button
-                className="w-1/3"
+                className="w-2/5"
                 variant="contained"
                 startIcon={<SearchIcon />}
                 sx={{
@@ -94,7 +113,7 @@ const ListagemUsuario = () => {
                 <Typography variant="body2">Ações</Typography>
               </Button>
               <Button
-                className="w-1/3"
+                className="w-2/5"
                 variant="contained"
                 startIcon={<AddCircleIcon />}
                 sx={{
@@ -129,7 +148,6 @@ const ListagemUsuario = () => {
           maxWidth: "100%",
         }}
         className="rounded-b-lg -mt-1"
-         
       >
         <Table size="small">
           <TableHead>
@@ -205,11 +223,15 @@ const ListagemUsuario = () => {
 };
 
 const TableHeader = () => (
-  <TableContainer sx={{ border: "2px solid", borderColor: "primary.main" , borderBottom: "none"}} className="rounded-t-lg">
-    <Table
-      stickyHeader
-      size="small"
-    >
+  <TableContainer
+    sx={{
+      border: "2px solid",
+      borderColor: "primary.main",
+      borderBottom: "none",
+    }}
+    className="rounded-t-lg"
+  >
+    <Table stickyHeader size="small">
       <TableHead>
         <TableRow>
           {columns.map((column) => (
