@@ -58,7 +58,7 @@ export default function Login() {
                 type: "success",
                 hideDuration: 2000
               })
-              navigate("/inicio");
+              navigate("/");
             });
         } else {
           showAlert({

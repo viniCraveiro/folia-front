@@ -9,12 +9,13 @@ import Cadastro from "./pages/cadastro/Cadastro";
 import AppProviders from "./pages/components/AppProviders";
 import CadastroUsuario from "./pages/gestao/CadastroUsuario";
 import ListagemUsuario from "./pages/gestao/listagem/ListagemUsuario";
-import HomePage from "./pages/home/HomePage";
 import Login from "./pages/login/Login";
 import { UserRole } from "./pages/login/UserRole";
 import NotaFiscal from "./pages/NotaFiscal";
 import PageNotFound from "./pages/PageNotFound";
 import PrivateRoute from "./PrivateRoute";
+import HomePageAdmin from "./pages/home/HomePageAdmin";
+import HomePage from "./pages/home/HomePage";
 
 const App = () => {
   return (
@@ -39,9 +40,8 @@ const AppContent = () => {
       {!hideTopBar && <TopBar />}
       <Routes>
         <Route path="/login" element={<Login />} />
-
+        
         <Route element={<PrivateRoute />}>
-          <Route path="/" element={<HomePage />} />
           <Route path="/inicio" element={<HomePage />} />
           <Route path="/boleto" element={<Boleto />} />
           <Route path="/nota-fiscal" element={<NotaFiscal />} />
@@ -49,10 +49,16 @@ const AppContent = () => {
           <Route path="/cadastro" element={<Cadastro />} />
         </Route>
 
+        <Route element={<PrivateRoute role={UserRole.EMPRESA} redirectPath="/inicio"/>}>
+          <Route path="/" element={<HomePageAdmin />} />
+          <Route path="/inicioadmin" element={<HomePageAdmin />} />
+        </Route>
+
         <Route element={<PrivateRoute role={UserRole.ADMIN} />}>
           <Route path="/listagemusuario" element={<ListagemUsuario />} />
           <Route path="/cadastrousuario" element={<CadastroUsuario />} />
         </Route>
+
 
         <Route path="/*" element={<PageNotFound />} />
       </Routes>

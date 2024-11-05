@@ -20,12 +20,10 @@ import {
   Typography,
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import dayjs, { Dayjs } from "dayjs";
 import { useState } from "react";
 import theme from "../../../layout/Theme";
-import { getCurrentYearMonth } from "../../components/DateUtils";
 import { normalise, ProgressBar } from "../../components/ProgressBar";
-import { FiltroAvancado } from "./FiltroAvancado";
+import { FiltroAvancadoUsuario } from "./FiltroAvancadoUsuario";
 import { getBarColor, UsuarioList } from "./UsuarioCollections";
 
 const columns: GridColDef[] = [
@@ -39,9 +37,6 @@ const columns: GridColDef[] = [
 
 const ListagemUsuario = () => {
   const [listUsuario] = useState<UsuarioList>(new UsuarioList());
-  const [dateBalanco, setDateBalanco] = useState<Dayjs | null>(
-    dayjs(getCurrentYearMonth())
-  );
   const [isFilterOpen, setFilterOpen] = useState(false);
 
   const handleOpenFilter = () => setFilterOpen(true);
@@ -91,7 +86,7 @@ const ListagemUsuario = () => {
               />
             </IconButton>
             <div>
-              <FiltroAvancado
+              <FiltroAvancadoUsuario
                 open={isFilterOpen}
                 onClose={handleCloseFiter}
                 title="Custom Modal Title"
