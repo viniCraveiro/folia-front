@@ -59,7 +59,7 @@ const TopBar = () => {
   );
 
   const menuItems = [
-    { icon: HomeIcon, label: "Início", path: "/inicio" },
+    { icon: HomeIcon, label: "Início", path: "/" },
     { icon: ReceiptIcon, label: "Boleto", path: "/boleto" },
     { icon: RequestPageIcon, label: "Nota Fiscal", path: "/nota-fiscal" },
     { icon: AssignmentIcon, label: "Acompanhamento", path: "/acompanhamento" },

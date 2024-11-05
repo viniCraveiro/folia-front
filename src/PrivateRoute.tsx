@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import AuthService from "./services/AuthServices";
-import { UserRole } from "./pages/login/UserRole";
+import { isRoleHigher, UserRole } from "./pages/login/UserRole";
 
 const PrivateRoute = (props: { role?: UserRole; redirectPath?: string}) => {
   const auth = AuthService.getInstance();
@@ -15,7 +15,8 @@ const PrivateRoute = (props: { role?: UserRole; redirectPath?: string}) => {
   // return <Outlet />;
   // //--- 
 
-  const permision = auth.isAuthenticated() && (!props.role || auth.getRole() === props.role)
+
+  const permision = auth.isAuthenticated() && (!props.role ||  isRoleHigher(auth.getRole() ?? UserRole.DEFAULT,props.role) )
     return permision ? <Outlet /> : <Navigate to={props.redirectPath ?? '/login'}  />;
 };
 export default PrivateRoute;
