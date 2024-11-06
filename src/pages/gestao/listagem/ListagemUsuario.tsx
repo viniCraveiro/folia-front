@@ -21,8 +21,8 @@ import {
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import { useState } from "react";
-import theme from "../../../layout/Theme";
 import { normalise, ProgressBar } from "../../components/ProgressBar";
+import TableHeader from "../../components/TableHeader";
 import { FiltroAvancadoUsuario } from "./FiltroAvancadoUsuario";
 import { getBarColor, UsuarioList } from "./UsuarioCollections";
 
@@ -31,7 +31,7 @@ const columns: GridColDef[] = [
   { field: "nome", headerName: "Nome", width: 400 },
   { field: "abertos", headerName: "Boletos pagos", width: 150 },
   { field: "total", headerName: "Total de Boletos", width: 150 },
-  { field: "balanco", headerName: "Resumo de Boletos", width: 400 },
+  { field: "balanco", headerName: "Resumo de Boletos", width: 300 },
   { field: "acoes", headerName: "", cellClassName: "justify-end", width: 100 },
 ];
 
@@ -124,136 +124,117 @@ const ListagemUsuario = () => {
       </Box>
 
       <Box
-        component={Paper}
         sx={{
-          borderColor: "primary.main",
-          maxWidth: "100%",
-        }}
-      >
-        <TableHeader />
-      </Box>
-
-      <TableContainer
-        component={Paper}
-        sx={{
-          minHeight: "76vh",
-          maxHeight: "76vh",
           border: "2px solid",
           borderColor: "primary.main",
-          maxWidth: "100%",
+          borderRadius: 1
         }}
-        className="rounded-b-lg -mt-1"
       >
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => {
-                return (
-                  <TableCell
-                    key={column.field}
-                    style={{ width: column.width }}
-                    className="p-0"
-                  ></TableCell>
-                );
-              })}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {listUsuario.list.map((row) => (
-              <TableRow
-                key={row.idendificacao}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell>{row.idendificacao}</TableCell>
-                <TableCell>{row.nome}</TableCell>
-                <TableCell>{row.boletosPagos}</TableCell>
-                <TableCell>{row.boletosTotal}</TableCell>
-                <TableCell>
-                  <Stack spacing={0} sx={{ flexGrow: 10 }}>
-                    <Box className="flex flex-row justify-between items-center">
-                      <Typography
-                        variant="body2"
-                        sx={{ color: "text.secondary" }}
-                      >
-                        Boletos Pagos
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <Box sx={{ width: "100%", mr: 1 }}>
-                        <ProgressBar
-                          barcolor={getBarColor(
-                            normalise(row.boletosPagos, row.boletosTotal)
-                          )}
-                          barheight={8}
-                          variant="determinate"
-                          value={normalise(row.boletosPagos, row.boletosTotal)}
-                        />
-                      </Box>
-                      <Box sx={{ minWidth: 35 }}>
+        <Box
+          component={Paper}
+          sx={{
+            maxWidth: "100%",
+          }}
+        >
+          <TableHeader columns={columns} />
+        </Box>
+
+        <TableContainer
+          component={Paper}
+          sx={{
+            minHeight: "76vh",
+            maxHeight: "76vh",
+            maxWidth: "100%",
+          }}
+          className="mt-1"
+        >
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => {
+                  return (
+                    <TableCell
+                      key={column.field}
+                      width={column.width}
+                      className="p-0"
+                    ></TableCell>
+                  );
+                })}
+              </TableRow>
+            </TableHead>
+            <TableBody
+              sx={{
+                "&:last-child td, &:last-child th": { border: 0 },
+              }}
+            >
+              {listUsuario.list.map((row) => (
+                <TableRow key={row.idendificacao}>
+                  <TableCell>{row.idendificacao}</TableCell>
+                  <TableCell>{row.nome}</TableCell>
+                  <TableCell>{row.boletosPagos}</TableCell>
+                  <TableCell>{row.boletosTotal}</TableCell>
+                  <TableCell>
+                    <Stack spacing={0} sx={{ flexGrow: 2 }}>
+                      <Box className="flex flex-row justify-between items-center">
                         <Typography
                           variant="body2"
-                          sx={{ color: "text.secondary" }}
-                        >{`${Math.round(
-                          normalise(row.boletosPagos, row.boletosTotal)
-                        )}%`}</Typography>
+                          sx={{
+                            color: "text.secondary",
+                            p: 0,
+                            m: 0,
+                            mb: -1.05,
+                          }}
+                        >
+                          Boletos Pagos
+                        </Typography>
                       </Box>
-                    </Box>
-                  </Stack>
-                </TableCell>
-                <TableCell sx={{ textAlign: "end" }}>
-                  <IconButton size="small" sx={{ width: 35 }}>
-                    <VisibilityIcon />
-                  </IconButton>
-                  <IconButton size="small" sx={{ width: 35 }}>
-                    <EditIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <Box sx={{ width: "100%", mr: 1 }}>
+                          <ProgressBar
+                            barcolor={getBarColor(
+                              normalise(row.boletosPagos, row.boletosTotal)
+                            )}
+                            barheight={4}
+                            variant="determinate"
+                            value={normalise(
+                              row.boletosPagos,
+                              row.boletosTotal
+                            )}
+                          />
+                        </Box>
+                        <Box sx={{ minWidth: 35 }}>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "text.secondary" }}
+                          >{`${Math.round(
+                            normalise(row.boletosPagos, row.boletosTotal)
+                          )}%`}</Typography>
+                        </Box>
+                      </Box>
+                    </Stack>
+                  </TableCell>
+                  <TableCell sx={{ textAlign: "end" }}>
+                    <IconButton
+                      size="small"
+                      sx={{ width: 20, height: 20, p: 0, m: 0, mr: 1.5 }}
+                    >
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      sx={{ width: 20, height: 20, p: 0, m: 0, mr: 1.5 }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
     </Box>
   );
 };
-
-const TableHeader = () => (
-  <TableContainer
-    sx={{
-      border: "2px solid",
-      borderColor: "primary.main",
-      borderBottom: "none",
-    }}
-    className="rounded-t-lg"
-  >
-    <Table stickyHeader size="small">
-      <TableHead>
-        <TableRow>
-          {columns.map((column) => (
-            <TableCell
-              key={column.field}
-              style={{ width: column.width }}
-              className={column.cellClassName as string}
-              sx={{
-                backgroundColor: theme.palette.grey[300],
-                fontWeight: "bold",
-              }}
-            >
-              {column.headerName}
-            </TableCell>
-          ))}
-          <TableCell
-            className="px-1"
-            style={{ width: 22 }}
-            sx={{
-              backgroundColor: theme.palette.grey[300],
-              fontWeight: "bold",
-            }}
-          ></TableCell>
-        </TableRow>
-      </TableHead>
-    </Table>
-  </TableContainer>
-);
 
 export default ListagemUsuario;
