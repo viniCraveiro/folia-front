@@ -5,7 +5,6 @@ const theme = createTheme({
     primary: {
       main: "#FF9A9A",
       dark: "#FFB5B5",
-
     },
     secondary: {
       main: "#f50057",
@@ -30,13 +29,13 @@ const theme = createTheme({
           borderRadius: "20px",
           border: "7px solid transparent",
           backgroundClip: "content-box",
-          transition: "background-color 0.3s ease", // Smooth transition
+          transition: "background-color 0.3s ease", 
         },
         "*::-webkit-scrollbar-thumb:hover": {
           backgroundColor: "#FF9A9A",
         },
         "*::-webkit-scrollbar-thumb:active": {
-          backgroundColor: "#FF7B7B", // Optional: Active color
+          backgroundColor: "#FF7B7B", 
         },
       },
     },
