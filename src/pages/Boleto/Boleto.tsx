@@ -5,34 +5,36 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import SearchIcon from "@mui/icons-material/Search";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
-    Box,
-    Button,
-    Chip,
-    IconButton,
-    InputAdornment,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TextField,
-    Typography,
+  Box,
+  Button,
+  Chip,
+  IconButton,
+  InputAdornment,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import BoletoServices from "../../services/boletos/BoletosServices";
+import { PaginatedBoletoResponse } from "../components/PaginatedList";
 import TableHeader from "../components/TableHeader";
 import { FiltroAvancadoUsuario } from "../gestao/listagem/FiltroAvancadoUsuario";
-import { boletos } from "./BoletosDataProvider";
+import { IBoletoList } from "./BoletoCollection";
 import { StatusBoleto } from "./StatusBoleto";
+
+const boletosServices = new BoletoServices();
 
 const columns: GridColDef[] = [
   { field: "status", headerName: "Status", width: 120 },
-  { field: "descricao", headerName: "Descrição", width: 200 },
-  { field: "numero", headerName: "Número", width: 120 },
   { field: "banco", headerName: "Banco", width: 120 },
-  { field: "parcela", headerName: "Parcela", width: 75 },
+  { field: "parcela", headerName: "Parcelas", width: 75 },
   { field: "vencimento", headerName: "Vencimento", width: 120 },
   { field: "valor", headerName: "Valor", width: 120, type: "number" },
   { field: "acoes", headerName: "", cellClassName: "justify-end", width: 120 },
@@ -52,10 +54,29 @@ const handleStyleChips = (status: StatusBoleto) => {
 };
 
 const Boleto = () => {
+  const [list,setList] = useState<PaginatedBoletoResponse<IBoletoList>>(new PaginatedBoletoResponse);
   const [isFilterOpen, setFilterOpen] = useState(false);
-
   const handleOpenFilter = () => setFilterOpen(true);
   const handleCloseFiter = () => setFilterOpen(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        boletosServices.getBoletosList().then((response) => {
+          if (response) {
+            console.log("response",response);
+            setList(response);
+            console.log("list",list);
+          }
+        });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
 
   return (
     <Box className="p-8">
@@ -170,20 +191,17 @@ const Boleto = () => {
                 "&:last-child td, &:last-child th": { border: 0 },
               }}
             >
-              {boletos.map((row) => (
-                <TableRow key={row.id}>
+              {list.content.map((row) => (
+                <TableRow key={row.uuid}>
                   <TableCell>
                     <Chip
-                    
                       label={row.status}
                       color={handleStyleChips(row.status)}
                     />
                   </TableCell>
-                  <TableCell>{row.descricao}</TableCell>
-                  <TableCell>{row.numero}</TableCell>
                   <TableCell>{row.banco}</TableCell>
                   <TableCell>{row.parcela}</TableCell>
-                  <TableCell>{row.vencimento}</TableCell>
+                  <TableCell>{row.vencimento.toString()}</TableCell>
                   <TableCell>R$ {row.valor}</TableCell>
                   <TableCell sx={{ textAlign: "end" }}>
                     <IconButton

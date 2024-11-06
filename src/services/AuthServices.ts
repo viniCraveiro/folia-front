@@ -30,6 +30,10 @@ class AuthService { // Singleton
         return LocalStorageService.getItem<LoginToken>(this.LOGIN_KEY);
     }
 
+    public getUserUuid(): string | undefined {
+        return this.getToken()?.uuid;
+    }
+
     public getRole(): UserRole | null {
         return this.getToken()?.tipoUsuario as UserRole | null;
     }
