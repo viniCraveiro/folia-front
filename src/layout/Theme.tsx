@@ -1,4 +1,5 @@
 import { createTheme } from "@mui/material";
+import { display, padding, positions } from "@mui/system";
 
 const theme = createTheme({
   palette: {
@@ -19,6 +20,7 @@ const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         "*::-webkit-scrollbar": {
+          backgroundColor: "transparent",
           width: "20px",
         },
         "*::-webkit-scrollbar-track": {

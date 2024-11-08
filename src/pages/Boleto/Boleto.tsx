@@ -21,7 +21,7 @@ import {
   Typography,
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import BoletoServices from "../../services/boletos/BoletosServices";
 import { PaginatedBoletoResponse } from "../components/PaginatedList";
 import TableHeader from "../components/TableHeader";
@@ -32,9 +32,9 @@ import { StatusBoleto } from "./StatusBoleto";
 const boletosServices = new BoletoServices();
 
 const columns: GridColDef[] = [
-  { field: "status", headerName: "Status", width: 120 },
+  { field: "status", headerName: "Status", width: 120 }, // Tenho que ajustar isso aqui
   { field: "banco", headerName: "Banco", width: 120 },
-  { field: "parcela", headerName: "Parcelas", width: 75 },
+  { field: "parcela", headerName: "Parcelas", width: 120 },
   { field: "vencimento", headerName: "Vencimento", width: 120 },
   { field: "valor", headerName: "Valor", width: 120, type: "number" },
   { field: "acoes", headerName: "", cellClassName: "justify-end", width: 120 },
@@ -54,8 +54,12 @@ const handleStyleChips = (status: StatusBoleto) => {
 };
 
 const Boleto = () => {
-  const [list,setList] = useState<PaginatedBoletoResponse<IBoletoList>>(new PaginatedBoletoResponse);
+  const [list, setList] = useState<PaginatedBoletoResponse<IBoletoList>>(
+    new PaginatedBoletoResponse()
+  );
   const [isFilterOpen, setFilterOpen] = useState(false);
+  const tableRef = useRef<HTMLDivElement>(null);
+
   const handleOpenFilter = () => setFilterOpen(true);
   const handleCloseFiter = () => setFilterOpen(false);
 
@@ -64,9 +68,9 @@ const Boleto = () => {
       try {
         boletosServices.getBoletosList().then((response) => {
           if (response) {
-            console.log("response",response);
+            console.log("response", response);
             setList(response);
-            console.log("list",list);
+            console.log("list", list);
           }
         });
       } catch (error) {
@@ -76,7 +80,6 @@ const Boleto = () => {
 
     fetchData();
   }, []);
-
 
   return (
     <Box className="p-8">
@@ -154,16 +157,12 @@ const Boleto = () => {
           borderRadius: 1,
         }}
       >
-        <Box
-          component={Paper}
-          sx={{
-            maxWidth: "100%",
-          }}
-        >
-          <TableHeader columns={columns} />
+        <Box component={Paper} sx={{ minWidth: "100%" }}>
+          <TableHeader columns={columns} tableRef={tableRef} />
         </Box>
 
         <TableContainer
+          ref={tableRef}
           component={Paper}
           sx={{
             minHeight: "76vh",
@@ -179,8 +178,12 @@ const Boleto = () => {
                   return (
                     <TableCell
                       key={column.field}
-                      style={{ width: column.width }}
-                      className="p-0"
+                      sx={{
+                        border: 0,
+                        fontWeight: "bold",
+                        width: column.width,
+                        padding: 0
+                      }}
                     ></TableCell>
                   );
                 })}
@@ -188,7 +191,7 @@ const Boleto = () => {
             </TableHead>
             <TableBody
               sx={{
-                "&:last-child td, &:last-child th": { border: 0 },
+                "&:last-child td, &:last-child th": { border: 0},
               }}
             >
               {list.content.map((row) => (
