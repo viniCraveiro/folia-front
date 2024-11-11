@@ -15,7 +15,6 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
   TextField,
   Typography,
@@ -24,10 +23,10 @@ import { GridColDef } from "@mui/x-data-grid";
 import { useEffect, useRef, useState } from "react";
 import BoletoServices from "../../services/boletos/BoletosServices";
 import { PaginatedBoletoResponse } from "../components/PaginatedList";
-import TableHeader from "../components/TableHeader";
 import { FiltroAvancadoUsuario } from "../gestao/listagem/FiltroAvancadoUsuario";
 import { IBoletoList } from "./BoletoCollection";
 import { StatusBoleto } from "./StatusBoleto";
+import TableHeader from "../components/TableHeader";
 
 const boletosServices = new BoletoServices();
 
@@ -157,10 +156,6 @@ const Boleto = () => {
           borderRadius: 1,
         }}
       >
-        <Box component={Paper} sx={{ minWidth: "100%" }}>
-          <TableHeader columns={columns} tableRef={tableRef} />
-        </Box>
-
         <TableContainer
           ref={tableRef}
           component={Paper}
@@ -171,27 +166,11 @@ const Boleto = () => {
           }}
           className="rounded-b-lg mt-1"
         >
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                {columns.map((column) => {
-                  return (
-                    <TableCell
-                      key={column.field}
-                      sx={{
-                        border: 0,
-                        fontWeight: "bold",
-                        width: column.width,
-                        padding: 0
-                      }}
-                    ></TableCell>
-                  );
-                })}
-              </TableRow>
-            </TableHead>
+          <Table stickyHeader size="small">
+            <TableHeader columns={columns} />
             <TableBody
               sx={{
-                "&:last-child td, &:last-child th": { border: 0},
+                "&:last-child td, &:last-child th": { border: 0 },
               }}
             >
               {list.content.map((row) => (

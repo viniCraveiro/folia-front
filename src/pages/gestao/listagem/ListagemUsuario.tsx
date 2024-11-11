@@ -14,7 +14,6 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
   TextField,
   Typography,
@@ -131,38 +130,16 @@ const ListagemUsuario = () => {
           borderRadius: 1,
         }}
       >
-        <Box component={Paper} sx={{ maxWidth: "100%" }}>
-          <TableHeader columns={columns} tableRef={tableRef} />
-        </Box>
-
         <TableContainer
-          ref={tableRef}
           component={Paper}
           sx={{
             minHeight: "76vh",
             maxHeight: "76vh",
             maxWidth: "100%",
           }}
-          className="mt-1"
         >
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                {columns.map((column) => {
-                  return (
-                    <TableCell
-                      key={column.field}
-                      sx={{
-                        border: 0,
-                        fontWeight: "bold",
-                        width: column.width,
-                        padding: 0
-                      }}
-                    ></TableCell>
-                  );
-                })}
-              </TableRow>
-            </TableHead>
+          <Table stickyHeader size="small">
+            <TableHeader columns={columns} />
             <TableBody
               sx={{
                 "&:last-child td, &:last-child th": { border: 0 },
