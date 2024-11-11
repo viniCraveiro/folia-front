@@ -23,11 +23,15 @@
     "@vitejs/plugin-vue": "^5.1.2",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.7",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
+    "folia-front": "file:",
     "postcss": "^8.4.41",
     "react": "^18.3.1",
+    "react-datepicker": "^7.5.0",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.1",
+    "recharts": "^2.13.3",
     "styled-components": "^6.1.13"
   },
   "devDependencies": {
