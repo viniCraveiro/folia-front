@@ -14,13 +14,12 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
   TextField,
   Typography,
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { normalise, ProgressBar } from "../../components/ProgressBar";
 import TableHeader from "../../components/TableHeader";
 import { FiltroAvancadoUsuario } from "./FiltroAvancadoUsuario";
@@ -38,6 +37,7 @@ const columns: GridColDef[] = [
 const ListagemUsuario = () => {
   const [listUsuario] = useState<UsuarioList>(new UsuarioList());
   const [isFilterOpen, setFilterOpen] = useState(false);
+  const tableRef = useRef<HTMLDivElement>(null);
 
   const handleOpenFilter = () => setFilterOpen(true);
   const handleCloseFiter = () => setFilterOpen(false);
@@ -127,18 +127,9 @@ const ListagemUsuario = () => {
         sx={{
           border: "2px solid",
           borderColor: "primary.main",
-          borderRadius: 1
+          borderRadius: 1,
         }}
       >
-        <Box
-          component={Paper}
-          sx={{
-            maxWidth: "100%",
-          }}
-        >
-          <TableHeader columns={columns} />
-        </Box>
-
         <TableContainer
           component={Paper}
           sx={{
@@ -146,22 +137,9 @@ const ListagemUsuario = () => {
             maxHeight: "76vh",
             maxWidth: "100%",
           }}
-          className="mt-1"
         >
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                {columns.map((column) => {
-                  return (
-                    <TableCell
-                      key={column.field}
-                      width={column.width}
-                      className="p-0"
-                    ></TableCell>
-                  );
-                })}
-              </TableRow>
-            </TableHead>
+          <Table stickyHeader size="small">
+            <TableHeader columns={columns} />
             <TableBody
               sx={{
                 "&:last-child td, &:last-child th": { border: 0 },
