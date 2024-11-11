@@ -25,6 +25,7 @@ import theme from "../../../layout/Theme";
 import { normalise, ProgressBar } from "../../components/ProgressBar";
 import { FiltroAvancadoUsuario } from "./FiltroAvancadoUsuario";
 import { getBarColor, UsuarioList } from "./UsuarioCollections";
+import { useNavigate } from "react-router-dom";
 
 const columns: GridColDef[] = [
   { field: "idendificacao", headerName: "Idendificação", width: 180 },
@@ -38,6 +39,7 @@ const columns: GridColDef[] = [
 const ListagemUsuario = () => {
   const [listUsuario] = useState<UsuarioList>(new UsuarioList());
   const [isFilterOpen, setFilterOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleOpenFilter = () => setFilterOpen(true);
   const handleCloseFiter = () => setFilterOpen(false);
@@ -115,6 +117,7 @@ const ListagemUsuario = () => {
                   borderRadius: 4,
                   p: 1,
                 }}
+                onClick={()=>navigate('/cadastrousuario')}
               >
                 <Typography variant="body2">Criar usuário</Typography>
               </Button>
