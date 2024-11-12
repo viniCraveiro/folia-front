@@ -21,14 +21,13 @@ import {
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import { useEffect, useRef, useState } from "react";
-import BoletoServices from "../../services/boletos/BoletosServices";
-import { PaginatedBoletoResponse } from "../components/PaginatedList";
 import { FiltroAvancadoUsuario } from "../gestao/listagem/FiltroAvancadoUsuario";
-import { IBoletoList } from "./BoletoCollection";
+import { BoletoList, IFiltroBoleto } from "./BoletoCollection";
 import { StatusBoleto } from "./StatusBoleto";
 import TableHeader from "../components/TableHeader";
+import UsuarioBoletoService from "../../services/usuarioBoleto/UsuarioBoletoService";
 
-const boletosServices = new BoletoServices();
+const usuarioBoletoService = new UsuarioBoletoService();
 
 const columns: GridColDef[] = [
   { field: "status", headerName: "Status", width: 120 }, // Tenho que ajustar isso aqui
@@ -53,9 +52,8 @@ const handleStyleChips = (status: StatusBoleto) => {
 };
 
 const Boleto = () => {
-  const [list, setList] = useState<PaginatedBoletoResponse<IBoletoList>>(
-    new PaginatedBoletoResponse()
-  );
+  const [list, setList] = useState<BoletoList[]>([]);
+  const [filtroBoleto, setFiltroBoleto] = useState<IFiltroBoleto>({});
   const [isFilterOpen, setFilterOpen] = useState(false);
   const tableRef = useRef<HTMLDivElement>(null);
 
@@ -65,11 +63,11 @@ const Boleto = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        boletosServices.getBoletosList().then((response) => {
+        usuarioBoletoService.filtrarBoletos(filtroBoleto).then((response) => {
           if (response) {
-            console.log("response", response);
+            console.log(response)
             setList(response);
-            console.log("list", list);
+            console.log(list)
           }
         });
       } catch (error) {
@@ -173,8 +171,8 @@ const Boleto = () => {
                 "&:last-child td, &:last-child th": { border: 0 },
               }}
             >
-              {list.content.map((row) => (
-                <TableRow key={row.uuid}>
+              {list.map((row, index) => (
+                <TableRow key={row.nome+index}>
                   <TableCell>
                     <Chip
                       label={row.status}
@@ -183,7 +181,7 @@ const Boleto = () => {
                   </TableCell>
                   <TableCell>{row.banco}</TableCell>
                   <TableCell>{row.parcela}</TableCell>
-                  <TableCell>{row.vencimento.toString()}</TableCell>
+                  <TableCell>{row.nome.toString()}</TableCell>
                   <TableCell>R$ {row.valor}</TableCell>
                   <TableCell sx={{ textAlign: "end" }}>
                     <IconButton

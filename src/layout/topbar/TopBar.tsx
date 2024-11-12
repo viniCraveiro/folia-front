@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserRole } from "../../pages/login/UserRole";
+import { UserRole } from "../../models/UserRole";
 import AuthService from "../../services/AuthServices";
 import "./TopBar.css";
 

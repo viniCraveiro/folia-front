@@ -1,7 +1,7 @@
 
 import { IEmpresaData } from "../pages/login/IEmpresaData";
 import { LoginToken } from "../pages/login/ILoginData";
-import { UserRole } from "../pages/login/UserRole";
+import { UserRole } from "../models/UserRole";
 import LocalStorageService from "./LocalStorageService";
 
 class AuthService { // Singleton
@@ -30,8 +30,8 @@ class AuthService { // Singleton
         return LocalStorageService.getItem<LoginToken>(this.LOGIN_KEY);
     }
 
-    public getUserUuid(): string | undefined {
-        return this.getToken()?.uuid;
+    public getUserUuid(): string | null {
+        return this.getToken()?.uuid ?? null;
     }
 
     public getRole(): UserRole | null {

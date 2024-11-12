@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import AuthService from "./services/AuthServices";
-import { isRoleHigher, UserRole } from "./pages/login/UserRole";
+import { isRoleHigher, UserRole } from "./models/UserRole";
 
 const PrivateRoute = (props: { role?: UserRole; redirectPath?: string}) => {
   const auth = AuthService.getInstance();
@@ -12,7 +12,6 @@ const PrivateRoute = (props: { role?: UserRole; redirectPath?: string}) => {
   //   valid: true,
   //   tipoUsuario: UserRole.ADMIN
   // });
-  // return <Outlet />;
   // //--- 
 
 

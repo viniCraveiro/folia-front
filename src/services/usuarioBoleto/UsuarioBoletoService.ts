@@ -1,18 +1,17 @@
+import { BoletoList, IFiltroBoleto } from "../../pages/Boleto/BoletoCollection";
 import { IEmpresaData } from "../../pages/login/IEmpresaData";
-import { ILogin, LoginToken } from "../../pages/login/ILoginData";
 import axiosClient from "../SuperService";
 
-class LoginService {
+class UsuarioBoletoService {
 
-    DEFAULT_URL = "usuario/";
+    DEFAULT_URL = "usuarioBoleto";
 
     constructor() { }
 
-    loginUser(credential: ILogin): Promise<LoginToken> {
-        return axiosClient.post(`${this.DEFAULT_URL}validarLogin`, credential)
+    filtrarBoletos(filtro: IFiltroBoleto): Promise<BoletoList[]> {
+        return axiosClient.post(`${this.DEFAULT_URL}/filtrar`, filtro)
             .then((response) => {
-                console.log(response)
-                return response.data as LoginToken;
+                return response.data;
             });
     }
 
@@ -24,4 +23,4 @@ class LoginService {
     }
 }
 
-export default LoginService;
+export default UsuarioBoletoService;
