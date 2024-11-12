@@ -1,4 +1,4 @@
-import { BoletoList, IFiltroBoleto } from "../../pages/Boleto/BoletoCollection";
+import { BoletoList, IFiltroBoletoUsuario } from "../../pages/Boleto/BoletoCollection";
 import { IEmpresaData } from "../../pages/login/IEmpresaData";
 import axiosClient from "../SuperService";
 
@@ -8,7 +8,7 @@ class UsuarioBoletoService {
 
     constructor() { }
 
-    filtrarBoletos(filtro: IFiltroBoleto): Promise<BoletoList[]> {
+    filtrarBoletos(filtro: IFiltroBoletoUsuario): Promise<BoletoList[]> {
         return axiosClient.post(`${this.DEFAULT_URL}/filtrar`, filtro)
             .then((response) => {
                 return response.data;

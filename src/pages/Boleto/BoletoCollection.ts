@@ -2,9 +2,9 @@ import { StatusBoleto } from "./StatusBoleto";
 import { Dayjs } from "dayjs";
 
 
-export interface IFiltroBoleto {
+export interface IFiltroBoletoUsuario {
     identificacao?: string;
-    nome?: string;
+    banco?: string;
     dataInicialEmissao?: Dayjs;
     dataFinalEmissao?: Dayjs;
     dataInicialVencimento?: Dayjs;
@@ -43,5 +43,3 @@ export class BoletoList {
         this.status = status;
     }
 }
-
-

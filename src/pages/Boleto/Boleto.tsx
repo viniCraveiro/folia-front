@@ -20,42 +20,30 @@ import {
   Typography,
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import { useEffect, useRef, useState } from "react";
-import { FiltroAvancadoUsuario } from "../gestao/listagem/FiltroAvancadoUsuario";
-import { BoletoList, IFiltroBoleto } from "./BoletoCollection";
-import { StatusBoleto } from "./StatusBoleto";
-import TableHeader from "../components/TableHeader";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import UsuarioBoletoService from "../../services/usuarioBoleto/UsuarioBoletoService";
+import TableHeader from "../components/TableHeader";
+import { FiltroAvancadoBoletosUsuario } from "../gestao/listagem/FiltroAvancadoUsuario";
+import { BoletoList, IFiltroBoletoUsuario } from "./BoletoCollection";
+import { handleStyleChips, StatusBoleto } from "./StatusBoleto";
 
 const usuarioBoletoService = new UsuarioBoletoService();
 
 const columns: GridColDef[] = [
-  { field: "status", headerName: "Status", width: 120 }, // Tenho que ajustar isso aqui
-  { field: "banco", headerName: "Banco", width: 120 },
-  { field: "parcela", headerName: "Parcelas", width: 120 },
-  { field: "vencimento", headerName: "Vencimento", width: 120 },
-  { field: "valor", headerName: "Valor", width: 120, type: "number" },
-  { field: "acoes", headerName: "", cellClassName: "justify-end", width: 120 },
+  { field: "status", headerName: "Status", width: 100 },
+  { field: "banco", headerName: "Banco", width: 200 },
+  { field: "parcela", headerName: "Parcela", width: 100 },
+  { field: "dataEmissao", headerName: "Data de emissão", width: 140 },
+  { field: "dataVencimento", headerName: "Data de vencimento", width: 140 },
+  { field: "valor", headerName: "Valor", width: 80, type: "number" },
+  { field: "acoes", headerName: "", cellClassName: "justify-end", width: 130 },
 ];
-
-const handleStyleChips = (status: StatusBoleto) => {
-  switch (status) {
-    case StatusBoleto.ABERTO:
-      return "default";
-    case StatusBoleto.PAGO:
-      return "success";
-    case StatusBoleto.VENCIDO:
-      return "error";
-    default:
-      return "default";
-  }
-};
 
 const Boleto = () => {
   const [list, setList] = useState<BoletoList[]>([]);
-  const [filtroBoleto, setFiltroBoleto] = useState<IFiltroBoleto>({});
+  const [filtroBoleto, setFiltroBoleto] = useState<IFiltroBoletoUsuario>({});
   const [isFilterOpen, setFilterOpen] = useState(false);
-  const tableRef = useRef<HTMLDivElement>(null);
 
   const handleOpenFilter = () => setFilterOpen(true);
   const handleCloseFiter = () => setFilterOpen(false);
@@ -65,9 +53,9 @@ const Boleto = () => {
       try {
         usuarioBoletoService.filtrarBoletos(filtroBoleto).then((response) => {
           if (response) {
-            console.log(response)
+            console.log(response);
             setList(response);
-            console.log(list)
+            console.log(list);
           }
         });
       } catch (error) {
@@ -122,7 +110,7 @@ const Boleto = () => {
               />
             </IconButton>
             <div>
-              <FiltroAvancadoUsuario
+              <FiltroAvancadoBoletosUsuario
                 open={isFilterOpen}
                 onClose={handleCloseFiter}
                 title="Custom Modal Title"
@@ -155,7 +143,6 @@ const Boleto = () => {
         }}
       >
         <TableContainer
-          ref={tableRef}
           component={Paper}
           sx={{
             minHeight: "76vh",
@@ -172,16 +159,25 @@ const Boleto = () => {
               }}
             >
               {list.map((row, index) => (
-                <TableRow key={row.nome+index}>
+                <TableRow key={row.nome + index}>
                   <TableCell>
                     <Chip
                       label={row.status}
                       color={handleStyleChips(row.status)}
+                      sx={{
+                        maxWidth: 90,
+                        minWidth: 90,
+                      }}
                     />
                   </TableCell>
                   <TableCell>{row.banco}</TableCell>
                   <TableCell>{row.parcela}</TableCell>
-                  <TableCell>{row.nome.toString()}</TableCell>
+                  <TableCell>
+                    {dayjs(row.dataEmissao).format("DD/MM/YYYY").toString()}
+                  </TableCell>
+                  <TableCell>
+                    {dayjs(row.dataVencimento).format("DD/MM/YYYY").toString()}
+                  </TableCell>
                   <TableCell>R$ {row.valor}</TableCell>
                   <TableCell sx={{ textAlign: "end" }}>
                     <IconButton

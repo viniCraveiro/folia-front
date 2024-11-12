@@ -23,7 +23,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import SkeletonDefault from "../../layout/SkeletoComponent";
+import SkeletonDefault from "../components/SkeletoComponent";
 import DashboardServices from "../../services/home/DashboardServices";
 import { getCurrentYearMonth } from "../components/DateUtils";
 import {
@@ -79,8 +79,6 @@ const HomePageAdmin = () => {
     { id: 2, name: "Pessoa 3", boletosTotal: 22, boletosPagos: 20 },
     { id: 3, name: "Pessoa 4", boletosTotal: 14, boletosPagos: 8 },
   ];
-
-
 
   const StyledText = muiStyled("text")(({ theme }) => ({
     fill: theme.palette.text.primary,

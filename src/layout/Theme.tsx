@@ -1,5 +1,4 @@
 import { createTheme } from "@mui/material";
-import { display, padding, positions } from "@mui/system";
 
 const theme = createTheme({
   palette: {
@@ -9,6 +8,18 @@ const theme = createTheme({
     },
     secondary: {
       main: "#f50057",
+    },
+    success: {
+      main: "#4caf50",
+    },
+    warning: {
+      main: "#ff9800",
+    },
+    error: {
+      main: "#f44336",
+    },
+    info: {
+      main: "#2196f3",
     },
   },
   typography: {
