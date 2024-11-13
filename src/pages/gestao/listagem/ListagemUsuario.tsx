@@ -86,14 +86,7 @@ const ListagemUsuario = () => {
                 }}
               />
             </IconButton>
-            <div>
-              <FiltroAvancadoBoletosUsuario
-                open={isFilterOpen}
-                onClose={handleCloseFiter}
-                title="Custom Modal Title"
-                description="Custom modal description here."
-              />
-            </div>
+            
           </Box>
           <Box>
             <Box className="gap-2 flex flex-row-reverse items-center">

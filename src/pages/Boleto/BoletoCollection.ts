@@ -3,7 +3,7 @@ import { Dayjs } from "dayjs";
 
 
 export interface IFiltroBoletoUsuario {
-    identificacao?: string;
+    uuid?: string;
     banco?: string;
     dataInicialEmissao?: Dayjs;
     dataFinalEmissao?: Dayjs;

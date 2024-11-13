@@ -11,7 +11,7 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField/TextField";
 import { DatePicker } from "@mui/x-date-pickers";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { useState } from "react";
 import theme from "../../../layout/Theme";
 import { IFiltroBoletoUsuario } from "../../Boleto/BoletoCollection";
@@ -30,9 +30,22 @@ const style = {
   p: 4,
 };
 
-export const FiltroAvancadoBoletosUsuario = ({ open, onClose, onSubmit }) => {
-  const [filtro, setFiltro] = useState<IFiltroBoletoUsuario>({status: StatusBoleto.ABERTO});
+interface FiltroAvancadoBoletosUsuarioProps {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (filtro: IFiltroBoletoUsuario) => void;
+  filtroProps: IFiltroBoletoUsuario;
+  uuidUser: string
+}
 
+export const FiltroAvancadoBoletosUsuario = ({open,onClose,onSubmit,filtroProps,uuidUser}: FiltroAvancadoBoletosUsuarioProps) => {
+  const [filtro, setFiltro] = useState<IFiltroBoletoUsuario>({
+    ...filtroProps,
+    dataInicialEmissao: filtroProps.dataInicialEmissao ? dayjs(filtroProps.dataInicialEmissao) : undefined,
+    dataFinalEmissao: filtroProps.dataFinalEmissao ? dayjs(filtroProps.dataFinalEmissao) : undefined,
+    dataInicialVencimento: filtroProps.dataInicialVencimento ? dayjs(filtroProps.dataInicialVencimento) : undefined,
+    dataFinalVencimento: filtroProps.dataFinalVencimento ? dayjs(filtroProps.dataFinalVencimento) : undefined,
+  });
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -42,16 +55,17 @@ export const FiltroAvancadoBoletosUsuario = ({ open, onClose, onSubmit }) => {
     }));
   };
 
-  const handleDateChange = (key, value) => {
+  const handleDateChange = (key: string, value: Dayjs | null) => {
     setFiltro((prevState) => ({
       ...prevState,
-      [key]: value ? dayjs(value).format("MMMM/YYYY") : "",
+      [key]: value, 
     }));
-    console.log(filtro);
   };
+  
 
   const handleSubmit = () => {
-    console.log(filtro)
+    filtro.uuid = uuidUser;
+    setFiltro(filtro);
     onSubmit(filtro);
     onClose();
   };
@@ -71,7 +85,7 @@ export const FiltroAvancadoBoletosUsuario = ({ open, onClose, onSubmit }) => {
                 fullWidth
                 id="search"
                 label="Buscar por banco"
-                name="filsearchbanco"
+                name="banco"
                 variant="standard"
                 size="small"
                 color="primary"
@@ -97,6 +111,7 @@ export const FiltroAvancadoBoletosUsuario = ({ open, onClose, onSubmit }) => {
                 onChange={(value) =>
                   handleDateChange("dataInicialEmissao", value)
                 }
+                value={filtro.dataInicialEmissao}
                 sx={{
                   width: 1 / 2,
                 }}
@@ -107,6 +122,7 @@ export const FiltroAvancadoBoletosUsuario = ({ open, onClose, onSubmit }) => {
                 label={"Emissão até"}
                 views={["day", "month", "year"]}
                 onChange={(value) => handleDateChange("dataFinal", value)}
+                value={filtro.dataFinalEmissao}
                 sx={{
                   width: 1 / 2,
                 }}
@@ -129,6 +145,7 @@ export const FiltroAvancadoBoletosUsuario = ({ open, onClose, onSubmit }) => {
                 onChange={(value) =>
                   handleDateChange("dataInicialVencimento", value)
                 }
+                value={filtro.dataInicialVencimento}
                 sx={{
                   width: 1 / 2,
                 }}
@@ -141,12 +158,13 @@ export const FiltroAvancadoBoletosUsuario = ({ open, onClose, onSubmit }) => {
                 onChange={(value) =>
                   handleDateChange("dataFinalVencimento", value)
                 }
+                value={filtro.dataFinalVencimento}
                 sx={{
                   width: 1 / 2,
                 }}
               />
             </Box>
-            <InputLabel id="status" sx={{ mt: 1}}> Status</InputLabel>
+            <InputLabel id="status" sx={{ mt: 1 }}> Status</InputLabel>
             <Select
               name="status"
               labelId="status"

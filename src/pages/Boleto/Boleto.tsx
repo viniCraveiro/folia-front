@@ -27,6 +27,8 @@ import TableHeader from "../components/TableHeader";
 import { FiltroAvancadoBoletosUsuario } from "../gestao/listagem/FiltroAvancadoUsuario";
 import { BoletoList, IFiltroBoletoUsuario } from "./BoletoCollection";
 import { handleStyleChips, StatusBoleto } from "./StatusBoleto";
+import { useAlert } from "../components/AlertProvider";
+import AuthService from "../../services/AuthServices";
 
 const usuarioBoletoService = new UsuarioBoletoService();
 
@@ -42,20 +44,52 @@ const columns: GridColDef[] = [
 
 const Boleto = () => {
   const [list, setList] = useState<BoletoList[]>([]);
-  const [filtroBoleto, setFiltroBoleto] = useState<IFiltroBoletoUsuario>({});
+  const [filtroBoleto, setFiltroBoleto] = useState<IFiltroBoletoUsuario>(
+    {
+      status: StatusBoleto.ABERTO,
+    });
+
   const [isFilterOpen, setFilterOpen] = useState(false);
 
   const handleOpenFilter = () => setFilterOpen(true);
   const handleCloseFiter = () => setFilterOpen(false);
+  const { showAlert } = useAlert();
+  const userUuid = AuthService.getInstance().getUserUuid();
+
+  const filter = (filtro: IFiltroBoletoUsuario) => {
+    try {
+      usuarioBoletoService.filtrarBoletos(filtro).then((response) => {
+        if (response) {
+          if (response.length === 0) {
+            showAlert({
+              message: "Verifique seus filtros",
+              title: "Nenhum resultado encontrado.",
+              type: "info",
+              hideDuration: 2000
+            })
+            return;
+          }
+          setList(response);
+          return;
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      showAlert({
+        message: "Erro ao realizar a busca " + error,
+        title: "Erro!",
+        type: "error",
+        hideDuration: 2000
+      })
+    }
+  }
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         usuarioBoletoService.filtrarBoletos(filtroBoleto).then((response) => {
           if (response) {
-            console.log(response);
             setList(response);
-            console.log(list);
           }
         });
       } catch (error) {
@@ -115,6 +149,9 @@ const Boleto = () => {
                 onClose={handleCloseFiter}
                 title="Custom Modal Title"
                 description="Custom modal description here."
+                filtroProps={filtroBoleto}
+                onSubmit={filter}
+                identificacaoProps={userUuid}
               />
             </div>
           </Box>
