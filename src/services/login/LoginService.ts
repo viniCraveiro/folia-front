@@ -1,6 +1,6 @@
 import { IEmpresaData } from "../../pages/login/IEmpresaData";
 import { ILogin, LoginToken } from "../../pages/login/ILoginData";
-import axiosClient from "../SuperService";
+import http from "../SuperService";
 
 class LoginService {
 
@@ -9,7 +9,7 @@ class LoginService {
     constructor() { }
 
     loginUser(credential: ILogin): Promise<LoginToken> {
-        return axiosClient.post(`${this.DEFAULT_URL}validarLogin`, credential)
+        return http.post(`${this.DEFAULT_URL}validarLogin`, credential)
             .then((response) => {
                 console.log(response)
                 return response.data as LoginToken;
@@ -17,7 +17,7 @@ class LoginService {
     }
 
     getEmpresaVinculada(usuarioUUID: String): Promise<IEmpresaData> {
-        return axiosClient.post(`${this.DEFAULT_URL}empresas/${usuarioUUID}`)
+        return http.post(`${this.DEFAULT_URL}empresas/${usuarioUUID}`)
             .then((response) => {
                 return response.data as IEmpresaData;
             });

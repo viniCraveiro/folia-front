@@ -3,15 +3,14 @@ import { Dayjs } from "dayjs";
 
 
 export interface IFiltroBoletoUsuario {
-    uuid?: string;
-    banco?: string;
-    dataInicialEmissao?: Dayjs;
-    dataFinalEmissao?: Dayjs;
-    dataInicialVencimento?: Dayjs;
-    dataFinalVencimento?: Dayjs;
-    status?: StatusBoleto;
+    userUuid: string | null;
+    banco: string | null;
+    dataInicialEmissao: Dayjs | null;
+    dataFinalEmissao: Dayjs | null;
+    dataInicialVencimento: Dayjs | null;
+    dataFinalVencimento: Dayjs | null;
+    status: StatusBoleto | null;
 }
-
 
 export class BoletoList {
     nome: string;

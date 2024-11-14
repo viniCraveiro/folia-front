@@ -22,15 +22,15 @@ import {
 import { GridColDef } from "@mui/x-data-grid";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import UsuarioBoletoService from "../../services/usuarioBoleto/UsuarioBoletoService";
-import TableHeader from "../components/TableHeader";
-import { FiltroAvancadoBoletosUsuario } from "../gestao/listagem/FiltroAvancadoUsuario";
-import { BoletoList, IFiltroBoletoUsuario } from "./BoletoCollection";
-import { handleStyleChips, StatusBoleto } from "./StatusBoleto";
-import { useAlert } from "../components/AlertProvider";
 import AuthService from "../../services/AuthServices";
+import BoletoService from "../../services/boletos/BoletoService";
+import { useAlert } from "../components/AlertProvider";
+import TableHeader from "../components/TableHeader";
+import { BoletoList, IFiltroBoletoUsuario } from "./BoletoCollection";
+import { FiltroBoletosUsuario } from "./FiltroBoletosUsuario";
+import { handleStyleChips } from "./StatusBoleto";
 
-const usuarioBoletoService = new UsuarioBoletoService();
+const boletoService = new BoletoService();
 
 const columns: GridColDef[] = [
   { field: "status", headerName: "Status", width: 100 },
@@ -42,52 +42,55 @@ const columns: GridColDef[] = [
   { field: "acoes", headerName: "", cellClassName: "justify-end", width: 130 },
 ];
 
+
+
 const Boleto = () => {
+  const userUuid = AuthService.getInstance().getUserUuid();
+  const defaultFilter = {
+    userUuid: userUuid,
+    banco: null,
+    dataInicialEmissao: null,
+    dataFinalEmissao: null,
+    dataInicialVencimento: null,
+    dataFinalVencimento: null,
+    status: null,
+  }
   const [list, setList] = useState<BoletoList[]>([]);
-  const [filtroBoleto, setFiltroBoleto] = useState<IFiltroBoletoUsuario>(
-    {
-      status: StatusBoleto.ABERTO,
-    });
+  const [filtroBoleto, setFiltroBoleto] = useState<IFiltroBoletoUsuario>(defaultFilter);
 
   const [isFilterOpen, setFilterOpen] = useState(false);
 
   const handleOpenFilter = () => setFilterOpen(true);
   const handleCloseFiter = () => setFilterOpen(false);
   const { showAlert } = useAlert();
-  const userUuid = AuthService.getInstance().getUserUuid();
 
   const filter = (filtro: IFiltroBoletoUsuario) => {
-    try {
-      usuarioBoletoService.filtrarBoletos(filtro).then((response) => {
-        if (response) {
-          if (response.length === 0) {
-            showAlert({
-              message: "Verifique seus filtros",
-              title: "Nenhum resultado encontrado.",
-              type: "info",
-              hideDuration: 2000
-            })
-            return;
-          }
-          setList(response);
+    boletoService.filtrarBoletos(filtro, showAlert).then((response) => {
+      if (response) {
+        if (response.length === 0) {
+          showAlert({
+            message: "Verifique seus filtros",
+            title: "Nenhum resultado encontrado.",
+            type: "info",
+            hideDuration: 2000,
+          });
           return;
         }
-      });
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      showAlert({
-        message: "Erro ao realizar a busca " + error,
-        title: "Erro!",
-        type: "error",
-        hideDuration: 2000
-      })
-    }
-  }
+        setList(response);
+      }
+    });
+  };
+
+  const resetFilter = () => {
+    setFiltroBoleto(defaultFilter);
+    filter(filtroBoleto);
+    handleCloseFiter();
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        usuarioBoletoService.filtrarBoletos(filtroBoleto).then((response) => {
+        boletoService.filtrarBoletos(filtroBoleto , showAlert).then((response) => {
           if (response) {
             setList(response);
           }
@@ -144,14 +147,13 @@ const Boleto = () => {
               />
             </IconButton>
             <div>
-              <FiltroAvancadoBoletosUsuario
+              <FiltroBoletosUsuario
                 open={isFilterOpen}
+                onReset={resetFilter}
                 onClose={handleCloseFiter}
-                title="Custom Modal Title"
-                description="Custom modal description here."
                 filtroProps={filtroBoleto}
                 onSubmit={filter}
-                identificacaoProps={userUuid}
+                uuidUser={userUuid}
               />
             </div>
           </Box>
