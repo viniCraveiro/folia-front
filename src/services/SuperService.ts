@@ -1,19 +1,20 @@
 import axios from "axios";
 import AuthService from "./AuthServices";
 
-const axiosClient = axios.create({
+const http = axios.create({
 });
 
-axiosClient.defaults.baseURL = "http://localhost:8080/api/" //URL PARA COMINUCACAO COM O A API
+http.defaults.baseURL = "http://localhost:8080/api/" //URL PARA COMINUCACAO COM O A API
 
-axiosClient.defaults.headers.common['Content-Type'] = 'application/json';
-axiosClient.defaults.headers.common['Accept'] = 'application/json';
+http.defaults.headers.common['Content-Type'] = 'application/json';
+http.defaults.headers.common['Accept'] = 'application/json';
 
 const authService = AuthService.getInstance();
 
-axiosClient.interceptors.request.use(
+// Request Interceptor to add Authorization Token
+http.interceptors.request.use(
   (config) => {
-    const token = authService.getToken(); // Token de Login salvo no "authToken"
+    const token = authService.getToken(); 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -24,19 +25,14 @@ axiosClient.interceptors.request.use(
   }
 );
 
-axiosClient.interceptors.response.use( // Tratamento de Erros Padrão
-  (response) => {
-    return response;
-  },
+// Response Interceptor for error handling
+http.interceptors.response.use( 
+  (response) =>  response,
   (error) => {
-    console.error("API Error:", error.response?.data || error.message);
-
-    if (error.response?.status === 401) {
-      // window.location.href = "/login"; //Melhorar Tratamento futuro
-    }
-
-    return Promise.reject(error);
+    console.error(error)
+    const errorResponse = error.response?.data;
+    return Promise.reject(errorResponse ?? error);
   }
 );
 
-export default axiosClient;
+export default http;

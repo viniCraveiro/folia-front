@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserRole } from "../../pages/login/UserRole";
+import { UserRole } from "../../models/UserRole";
 import AuthService from "../../services/AuthServices";
 import "./TopBar.css";
 
@@ -58,13 +58,6 @@ const TopBar = () => {
     </div>
   );
 
-  const menuItems = [
-    { icon: HomeIcon, label: "Início", path: "/" },
-    { icon: ReceiptIcon, label: "Boleto", path: "/boleto" },
-    { icon: RequestPageIcon, label: "Nota Fiscal", path: "/nota-fiscal" },
-    { icon: AssignmentIcon, label: "Acompanhamento", path: "/acompanhamento" },
-  ];
-
   return (
     <AppBar position="static" className="bg-white shadow-md">
       <Toolbar className="flex justify-between items-center">
@@ -75,14 +68,22 @@ const TopBar = () => {
             className="h-8 cursor-pointer"
             onClick={() => navigate("/")}
           />
-          {menuItems.map(({ icon, label, path }) => (
+
+          <MenuLink
+            key={'Início'}
+            icon={HomeIcon}
+            label={'Início'}
+            onClick={() => navigate('/')}
+          />
+
+          {auth.getRole() === UserRole.USER && (
             <MenuLink
-              key={label}
-              icon={icon}
-              label={label}
-              onClick={() => navigate(path)}
+              key={'Boleto'}
+              icon={ReceiptIcon}
+              label={'Boleto'}
+              onClick={() => navigate('/boleto')}
             />
-          ))}
+          )}
           <div>
             {auth.getRole() === UserRole.ADMIN && (
               <div className="w-28">
@@ -125,6 +126,14 @@ const TopBar = () => {
                     }}
                   >
                     Usuários
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      handleCloseGestao();
+                      navigate("/listagemboletos");
+                    }}
+                  >
+                    boletos
                   </MenuItem>
                 </Menu>
               </div>

@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
 import { AlertColor, AlertTitle } from "@mui/material";
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
+import { createContext, ReactNode, useContext, useState } from "react";
 
 export interface IAlertProps {
   message: string;

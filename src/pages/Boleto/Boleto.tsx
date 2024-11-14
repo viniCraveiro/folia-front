@@ -20,56 +20,79 @@ import {
   Typography,
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import { useEffect, useRef, useState } from "react";
-import BoletoServices from "../../services/boletos/BoletosServices";
-import { PaginatedBoletoResponse } from "../components/PaginatedList";
-import { FiltroAvancadoUsuario } from "../gestao/listagem/FiltroAvancadoUsuario";
-import { IBoletoList } from "./BoletoCollection";
-import { StatusBoleto } from "./StatusBoleto";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
+import AuthService from "../../services/AuthServices";
+import BoletoService from "../../services/boletos/BoletoService";
+import { useAlert } from "../components/AlertProvider";
 import TableHeader from "../components/TableHeader";
+import { BoletoList, IFiltroBoletoUsuario } from "./BoletoCollection";
+import { FiltroBoletosUsuario } from "./FiltroBoletosUsuario";
+import { handleStyleChips } from "./StatusBoleto";
 
-const boletosServices = new BoletoServices();
+const boletoService = new BoletoService();
 
 const columns: GridColDef[] = [
-  { field: "status", headerName: "Status", width: 120 }, // Tenho que ajustar isso aqui
-  { field: "banco", headerName: "Banco", width: 120 },
-  { field: "parcela", headerName: "Parcelas", width: 120 },
-  { field: "vencimento", headerName: "Vencimento", width: 120 },
-  { field: "valor", headerName: "Valor", width: 120, type: "number" },
-  { field: "acoes", headerName: "", cellClassName: "justify-end", width: 120 },
+  { field: "status", headerName: "Status", width: 100 },
+  { field: "banco", headerName: "Banco", width: 200 },
+  { field: "parcela", headerName: "Parcela", width: 100 },
+  { field: "dataEmissao", headerName: "Data de emissão", width: 140 },
+  { field: "dataVencimento", headerName: "Data de vencimento", width: 140 },
+  { field: "valor", headerName: "Valor", width: 80, type: "number" },
+  { field: "acoes", headerName: "", cellClassName: "justify-end", width: 130 },
 ];
 
-const handleStyleChips = (status: StatusBoleto) => {
-  switch (status) {
-    case StatusBoleto.ABERTO:
-      return "default";
-    case StatusBoleto.PAGO:
-      return "success";
-    case StatusBoleto.VENCIDO:
-      return "error";
-    default:
-      return "default";
-  }
-};
+
 
 const Boleto = () => {
-  const [list, setList] = useState<PaginatedBoletoResponse<IBoletoList>>(
-    new PaginatedBoletoResponse()
-  );
+  const userUuid = AuthService.getInstance().getUserUuid();
+  const defaultFilter = {
+    userUuid: userUuid,
+    banco: null,
+    dataInicialEmissao: null,
+    dataFinalEmissao: null,
+    dataInicialVencimento: null,
+    dataFinalVencimento: null,
+    status: null,
+  }
+  const [list, setList] = useState<BoletoList[]>([]);
+  const [filtroBoleto, setFiltroBoleto] = useState<IFiltroBoletoUsuario>(defaultFilter);
+
   const [isFilterOpen, setFilterOpen] = useState(false);
-  const tableRef = useRef<HTMLDivElement>(null);
 
   const handleOpenFilter = () => setFilterOpen(true);
   const handleCloseFiter = () => setFilterOpen(false);
+  const { showAlert } = useAlert();
+
+  const filter = (filtro: IFiltroBoletoUsuario) => {
+    boletoService.filtrarBoletos(filtro, showAlert).then((response) => {
+      if (response) {
+        if (response.length === 0) {
+          showAlert({
+            message: "Verifique seus filtros",
+            title: "Nenhum resultado encontrado.",
+            type: "info",
+            hideDuration: 2000,
+          });
+          return;
+        }
+        setList(response);
+      }
+    });
+  };
+
+  const resetFilter = () => {
+    setFiltroBoleto(defaultFilter);
+    filter(filtroBoleto);
+    handleCloseFiter();
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        boletosServices.getBoletosList().then((response) => {
+        boletoService.filtrarBoletos(filtroBoleto , showAlert).then((response) => {
           if (response) {
-            console.log("response", response);
             setList(response);
-            console.log("list", list);
           }
         });
       } catch (error) {
@@ -124,11 +147,13 @@ const Boleto = () => {
               />
             </IconButton>
             <div>
-              <FiltroAvancadoUsuario
+              <FiltroBoletosUsuario
                 open={isFilterOpen}
+                onReset={resetFilter}
                 onClose={handleCloseFiter}
-                title="Custom Modal Title"
-                description="Custom modal description here."
+                filtroProps={filtroBoleto}
+                onSubmit={filter}
+                uuidUser={userUuid}
               />
             </div>
           </Box>
@@ -157,7 +182,6 @@ const Boleto = () => {
         }}
       >
         <TableContainer
-          ref={tableRef}
           component={Paper}
           sx={{
             minHeight: "76vh",
@@ -173,17 +197,26 @@ const Boleto = () => {
                 "&:last-child td, &:last-child th": { border: 0 },
               }}
             >
-              {list.content.map((row) => (
-                <TableRow key={row.uuid}>
+              {list.map((row, index) => (
+                <TableRow key={row.nome + index}>
                   <TableCell>
                     <Chip
                       label={row.status}
                       color={handleStyleChips(row.status)}
+                      sx={{
+                        maxWidth: 90,
+                        minWidth: 90,
+                      }}
                     />
                   </TableCell>
                   <TableCell>{row.banco}</TableCell>
                   <TableCell>{row.parcela}</TableCell>
-                  <TableCell>{row.vencimento.toString()}</TableCell>
+                  <TableCell>
+                    {dayjs(row.dataEmissao).format("DD/MM/YYYY").toString()}
+                  </TableCell>
+                  <TableCell>
+                    {dayjs(row.dataVencimento).format("DD/MM/YYYY").toString()}
+                  </TableCell>
                   <TableCell>R$ {row.valor}</TableCell>
                   <TableCell sx={{ textAlign: "end" }}>
                     <IconButton

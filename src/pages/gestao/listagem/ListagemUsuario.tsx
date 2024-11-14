@@ -22,8 +22,9 @@ import { GridColDef } from "@mui/x-data-grid";
 import { useRef, useState } from "react";
 import { normalise, ProgressBar } from "../../components/ProgressBar";
 import TableHeader from "../../components/TableHeader";
-import { FiltroAvancadoUsuario } from "./FiltroAvancadoUsuario";
+import { FiltroBoletosUsuario } from "../../Boleto/FiltroBoletosUsuario";
 import { getBarColor, UsuarioList } from "./UsuarioCollections";
+
 
 const columns: GridColDef[] = [
   { field: "idendificacao", headerName: "Idendificação", width: 180 },
@@ -85,14 +86,7 @@ const ListagemUsuario = () => {
                 }}
               />
             </IconButton>
-            <div>
-              <FiltroAvancadoUsuario
-                open={isFilterOpen}
-                onClose={handleCloseFiter}
-                title="Custom Modal Title"
-                description="Custom modal description here."
-              />
-            </div>
+            
           </Box>
           <Box>
             <Box className="gap-2 flex flex-row-reverse items-center">

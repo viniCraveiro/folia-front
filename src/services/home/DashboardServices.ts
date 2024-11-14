@@ -1,6 +1,6 @@
 import { IEmpresaData } from "../../pages/login/IEmpresaData";
 import LocalStorageService from "../LocalStorageService";
-import axiosClient from "../SuperService";
+import http from "../SuperService";
 
 class DashboardServices {
 
@@ -8,7 +8,7 @@ class DashboardServices {
 
     getBoletosDataSet(): Promise<any> {
         const empresaUUID = LocalStorageService.getItem<IEmpresaData>("empresaKey")?.uuid;
-        return axiosClient.get(`boleto/dadosBoletos/${empresaUUID}`)
+        return http.get(`boleto/dadosBoletos/${empresaUUID}`)
             .then((response) => {
                 return response.data;
             });
