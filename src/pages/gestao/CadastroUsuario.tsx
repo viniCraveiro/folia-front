@@ -3,15 +3,18 @@ import { TipoUsuario } from './TipoUsuario';
 import { Grid, TextField, Button, Box, Select, MenuItem, InputLabel, FormControl, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-interface CadastroUsuarioForm {
-  identificacao: string;
-  nome: string;
-  email: string;
-  usuario: string;
-  senha: string;
-  confirmarSenha: string; 
-  tipoUsuario: TipoUsuario;
-}
+
+  export interface CadastroUsuarioForm {
+    identificacao: string;
+    nome: string;
+    email: string;
+    usuario: string;
+    senha: string;
+    confirmarSenha: string; 
+    tipoUsuario: TipoUsuario;
+  }
+
+
 
 export default function CadastroUsuario() {
   const navigate = useNavigate();
@@ -162,7 +165,7 @@ export default function CadastroUsuario() {
       </Grid>
       {/* Caixa para os botões */}
 <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-  <Box sx={{ display: 'flex', gap: 10 }}>
+  <Box sx={{ display: 'flex', gap: 85 }}>
     <Button
       variant="outlined"
       color="secondary"
