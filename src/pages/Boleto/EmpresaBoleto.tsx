@@ -44,7 +44,7 @@ const columns: GridColDef[] = [
 
 
 
-const Boleto = () => {
+const EmpresaBoleto = () => {
   const userUuid = AuthService.getInstance().getUserUuid();
   const defaultFilter = {
     userUuid: userUuid,
@@ -254,4 +254,4 @@ const Boleto = () => {
   );
 };
 
-export default Boleto;
+export default EmpresaBoleto;

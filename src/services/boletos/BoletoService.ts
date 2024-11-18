@@ -14,7 +14,6 @@ class BoletoService {
             .then((response) => {
                 return response.data;
             }).catch((error) => {
-                console.log(error)
                 showAlert({
                     message: error?.message || "Ocorreu um erro inesperado.",
                     title: error?.errorCode || "Erro",

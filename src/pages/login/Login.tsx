@@ -40,7 +40,6 @@ export default function Login() {
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    console.log("Form submitted");
     event.preventDefault();
 
     service
