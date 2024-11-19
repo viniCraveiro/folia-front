@@ -14,18 +14,17 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
   TextField,
   Typography,
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { normalise, ProgressBar } from "../../components/ProgressBar";
 import TableHeader from "../../components/TableHeader";
-import { FiltroAvancadoUsuario } from "./FiltroAvancadoUsuario";
+import { FiltroBoletosUsuario } from "../../Boleto/FiltroBoletosUsuario";
 import { getBarColor, UsuarioList } from "./UsuarioCollections";
-import { useNavigate } from "react-router-dom";
+
 
 const columns: GridColDef[] = [
   { field: "idendificacao", headerName: "Idendificação", width: 180 },
@@ -39,7 +38,7 @@ const columns: GridColDef[] = [
 const ListagemUsuario = () => {
   const [listUsuario] = useState<UsuarioList>(new UsuarioList());
   const [isFilterOpen, setFilterOpen] = useState(false);
-  const navigate = useNavigate();
+  const tableRef = useRef<HTMLDivElement>(null);
 
   const handleOpenFilter = () => setFilterOpen(true);
   const handleCloseFiter = () => setFilterOpen(false);
@@ -87,14 +86,7 @@ const ListagemUsuario = () => {
                 }}
               />
             </IconButton>
-            <div>
-              <FiltroAvancadoUsuario
-                open={isFilterOpen}
-                onClose={handleCloseFiter}
-                title="Custom Modal Title"
-                description="Custom modal description here."
-              />
-            </div>
+            
           </Box>
           <Box>
             <Box className="gap-2 flex flex-row-reverse items-center">
@@ -117,7 +109,6 @@ const ListagemUsuario = () => {
                   borderRadius: 4,
                   p: 1,
                 }}
-                onClick={()=>navigate('/cadastrousuario')}
               >
                 <Typography variant="body2">Criar usuário</Typography>
               </Button>
@@ -130,18 +121,9 @@ const ListagemUsuario = () => {
         sx={{
           border: "2px solid",
           borderColor: "primary.main",
-          borderRadius: 1
+          borderRadius: 1,
         }}
       >
-        <Box
-          component={Paper}
-          sx={{
-            maxWidth: "100%",
-          }}
-        >
-          <TableHeader columns={columns} />
-        </Box>
-
         <TableContainer
           component={Paper}
           sx={{
@@ -149,22 +131,9 @@ const ListagemUsuario = () => {
             maxHeight: "76vh",
             maxWidth: "100%",
           }}
-          className="mt-1"
         >
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                {columns.map((column) => {
-                  return (
-                    <TableCell
-                      key={column.field}
-                      width={column.width}
-                      className="p-0"
-                    ></TableCell>
-                  );
-                })}
-              </TableRow>
-            </TableHead>
+          <Table stickyHeader size="small">
+            <TableHeader columns={columns} />
             <TableBody
               sx={{
                 "&:last-child td, &:last-child th": { border: 0 },

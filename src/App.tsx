@@ -10,7 +10,7 @@ import AppProviders from "./pages/components/AppProviders";
 import CadastroUsuario from "./pages/gestao/CadastroUsuario";
 import ListagemUsuario from "./pages/gestao/listagem/ListagemUsuario";
 import Login from "./pages/login/Login";
-import { UserRole } from "./pages/login/UserRole";
+import { UserRole } from "./models/UserRole";
 import NotaFiscal from "./pages/NotaFiscal";
 import PageNotFound from "./pages/PageNotFound";
 import PrivateRoute from "./PrivateRoute";

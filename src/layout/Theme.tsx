@@ -9,6 +9,18 @@ const theme = createTheme({
     secondary: {
       main: "#f50057",
     },
+    success: {
+      main: "#4caf50",
+    },
+    warning: {
+      main: "#ff9800",
+    },
+    error: {
+      main: "#f44336",
+    },
+    info: {
+      main: "#2196f3",
+    },
   },
   typography: {
     button: {
@@ -19,6 +31,7 @@ const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         "*::-webkit-scrollbar": {
+          backgroundColor: "transparent",
           width: "20px",
         },
         "*::-webkit-scrollbar-track": {
