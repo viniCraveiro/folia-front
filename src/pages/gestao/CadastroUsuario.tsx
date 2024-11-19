@@ -4,19 +4,15 @@ import { Grid, TextField, Button, Box, Select, MenuItem, InputLabel, FormControl
 import { useNavigate } from 'react-router-dom';
 import CadastroUsuarioService from "../../services/cadastroUsuario/CadastroUsuarioService";
 
-
-
-  export interface CadastroUsuarioForm {
-    identificacao: string;
-    nome: string;
-    email: string;
-    usuario: string;
-    senha: string;
-    confirmarSenha: string; 
-    tipoUsuario: TipoUsuario;
-  }
-
-
+export interface CadastroUsuarioForm {
+  identificacao: string;
+  nome: string;
+  email: string;
+  usuario: string;
+  senha: string;
+  confirmarSenha: string; 
+  tipoUsuario: TipoUsuario;
+}
 
 export default function CadastroUsuario() {
   const navigate = useNavigate();
@@ -42,31 +38,63 @@ export default function CadastroUsuario() {
     }));
   };
 
+  const validarSenha = (senha: string): boolean => {
+    const temNumero = /\d/; // Verifica se contém números
+    const temMaiuscula = /[A-Z]/; // Verifica se contém letras maiúsculas
+    return temNumero.test(senha) && temMaiuscula.test(senha);
+  };
+
+  const validarCPF = (cpf: string): boolean => {
+    cpf = cpf.replace(/[^\d]+/g, ""); // Remove caracteres não numéricos
+    if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) {
+      return false; // Verifica se tem 11 dígitos e não é uma sequência repetida
+    }
+
+    // Validação dos dígitos verificadores
+    let soma = 0;
+    let resto;
+    for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.substring(9, 10))) return false;
+
+    soma = 0;
+    for (let i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    return resto === parseInt(cpf.substring(10, 11));
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
   
-    // Verifica se todos os campos obrigatórios estão preenchidos
     if (!form.identificacao || !form.nome || !form.email || !form.usuario || !form.senha || !form.confirmarSenha) {
       alert("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
   
-    // Verifica se as senhas coincidem
+    if (!validarCPF(form.identificacao)) {
+      alert("CPF inválido.");
+      return;
+    }
+  
     if (form.senha !== form.confirmarSenha) {
       alert("As senhas não coincidem.");
       return;
     }
   
+    if (!validarSenha(form.senha)) {
+      alert("A senha deve conter pelo menos um número e uma letra maiúscula.");
+      return;
+    }
+  
     try {
-      // Enviar o formulário ao backend usando o serviço
       const cadastroService = new CadastroUsuarioService();
       const response = await cadastroService.cadastrar(form);
       
-      console.log("Cadastro realizado com sucesso:", response);
       setSuccessMessage(response.mensagem);
       setAlertState(true);
   
-      // Redirecionar ou limpar o formulário após o sucesso
       setForm({
         identificacao: "",
         nome: "",
@@ -76,7 +104,6 @@ export default function CadastroUsuario() {
         confirmarSenha: "",
         tipoUsuario: TipoUsuario.DEFAULT,
       });
-  
     } catch (error: any) {
       console.error("Erro ao cadastrar usuário:", error);
       alert("Ocorreu um erro ao realizar o cadastro. Tente novamente.");
@@ -92,12 +119,12 @@ export default function CadastroUsuario() {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ width: '80%', mx: 'auto', p: 2, border: '1px solid #ccc', borderRadius: '08px', mt: 5, }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ width: '80%', mx: 'auto', p: 2, border: '1px solid #ccc', borderRadius: '8px', mt: 5 }}>
       <Grid container spacing={2}>
         <Grid item xs={6}>
           <TextField
             fullWidth
-            label="Identificação"
+            label="Identificação (CPF)"
             name="identificacao"
             value={form.identificacao}
             onChange={handleChange}
@@ -178,30 +205,27 @@ export default function CadastroUsuario() {
         </Grid>
       </Grid>
       {/* Caixa para os botões */}
-<Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-  <Box sx={{ display: 'flex', gap: 85 }}>
-    <Button
-      variant="outlined"
-      color="secondary"
-      onClick={handleCancel}
-      sx={{ minWidth: '175px' }}
-    >
-      Cancelar
-    </Button>
-    <Button
-      variant="contained"
-      type="submit"
-      sx={{ minWidth: '175px' }}
-    >
-      Cadastrar
-    </Button>
-  </Box>
-</Box>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+        <Box sx={{ display: 'flex', gap: 85 }}>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={handleCancel}
+            sx={{ minWidth: '175px' }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            type="submit"
+            sx={{ minWidth: '175px' }}
+          >
+            Cadastrar
+          </Button>
+        </Box>
+      </Box>
 
-
-
-      
-      {/*mensagem de sucesso */}
+      {/* Mensagem de sucesso */}
       <Snackbar open={alertState} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
           {successMessage}
