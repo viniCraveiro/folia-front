@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { TipoUsuario } from './TipoUsuario'; 
 import { Grid, TextField, Button, Box, Select, MenuItem, InputLabel, FormControl, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import CadastroUsuarioService from "../../services/cadastroUsuario/CadastroUsuarioService";
+
 
 
   export interface CadastroUsuarioForm {
@@ -40,33 +42,45 @@ export default function CadastroUsuario() {
     }));
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    
-    if (
-      !form.identificacao || 
-      !form.nome || 
-      !form.email || 
-      !form.usuario || 
-      !form.senha || 
-      !form.confirmarSenha
-    ) {
+  
+    // Verifica se todos os campos obrigatórios estão preenchidos
+    if (!form.identificacao || !form.nome || !form.email || !form.usuario || !form.senha || !form.confirmarSenha) {
       alert("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
-
-    
+  
+    // Verifica se as senhas coincidem
     if (form.senha !== form.confirmarSenha) {
       alert("As senhas não coincidem.");
       return;
     }
-    
-    console.log("Formulário enviado:", form);
-    setSuccessMessage("Cadastro realizado com sucesso!");
-    setAlertState(true);
-    
-    
+  
+    try {
+      // Enviar o formulário ao backend usando o serviço
+      const cadastroService = new CadastroUsuarioService();
+      const response = await cadastroService.cadastrar(form);
+      
+      console.log("Cadastro realizado com sucesso:", response);
+      setSuccessMessage(response.mensagem);
+      setAlertState(true);
+  
+      // Redirecionar ou limpar o formulário após o sucesso
+      setForm({
+        identificacao: "",
+        nome: "",
+        email: "",
+        usuario: "",
+        senha: "",
+        confirmarSenha: "",
+        tipoUsuario: TipoUsuario.DEFAULT,
+      });
+  
+    } catch (error: any) {
+      console.error("Erro ao cadastrar usuário:", error);
+      alert("Ocorreu um erro ao realizar o cadastro. Tente novamente.");
+    }
   };
 
   const handleCancel = () => {

@@ -1,5 +1,6 @@
 import { CadastroUsuarioForm } from "../../pages/gestao/CadastroUsuario";
-import axiosClient from "../SuperService";
+import AuthService from "../AuthServices";
+import http from "../SuperService";
 
 export interface UsuarioToken {
   token: string;
@@ -7,19 +8,18 @@ export interface UsuarioToken {
 }
 
 class CadastroUsuarioService {
-  private DEFAULT_URL = "usuarios/";
+  private DEFAULT_URL = "usuario";
+  private empresaUiid = AuthService.getInstance().getEmpresa()?.uuid;
 
-  constructor() { }
-
-  cadastrar(usuario: CadastroUsuarioForm): Promise<UsuarioToken> {
-
-    return axiosClient.post(`${this.DEFAULT_URL}`, usuario)
-      .then((response) => {
-        return response.data as UsuarioToken;  
-      });
+  async cadastrar(usuario: CadastroUsuarioForm): Promise<UsuarioToken> {
+    try {
+      const response = await http.post(`${this.DEFAULT_URL}/empresauuid:${this.empresaUiid}`, usuario);
+      return response.data as UsuarioToken;
+    } catch (error: any) {
+      console.error("Erro ao cadastrar usuário:", error);
+      throw new Error("Erro ao realizar o cadastro");
+    }
   }
-
-
 }
 
 export default CadastroUsuarioService;
