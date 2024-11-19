@@ -22,13 +22,13 @@ import {
 import { GridColDef } from "@mui/x-data-grid";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import AuthService from "../../services/AuthServices";
-import BoletoService from "../../services/boletos/BoletoService";
-import { useAlert } from "../components/AlertProvider";
-import TableHeader from "../components/TableHeader";
-import { BoletoList, IFiltroBoletoUsuario } from "./BoletoCollection";
-import { FiltroBoletosUsuario } from "./FiltroBoletosUsuario";
-import { handleStyleChips } from "./StatusBoleto";
+import AuthService from "../../../services/AuthServices";
+import BoletoService from "../../../services/boletos/BoletoUsuarioService";
+import { useAlert } from "../../components/AlertProvider";
+import TableHeader from "../../components/TableHeader";
+import { BoletoList, IFiltroBoletoUsuario } from "../BoletoCollection";
+import { FiltroBoletosUsuario } from "../FiltroBoletosUsuario";
+import { handleStyleChips } from "../StatusBoleto";
 
 const boletoService = new BoletoService();
 
@@ -44,7 +44,7 @@ const columns: GridColDef[] = [
 
 
 
-const UsuarioBoleto = () => {
+const EmpresaBoleto = () => {
   const userUuid = AuthService.getInstance().getUserUuid();
   const defaultFilter = {
     userUuid: userUuid,
@@ -254,4 +254,4 @@ const UsuarioBoleto = () => {
   );
 };
 
-export default UsuarioBoleto;
+export default EmpresaBoleto;

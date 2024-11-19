@@ -16,6 +16,10 @@ const PrivateRoute = (props: { redirectPath?: string; roleHigher?: UserRole;  ro
   
   const userRole = auth.getRole();
 
+  if(!auth.isAuthenticated()){
+    return <Navigate to={props.redirectPath ?? '/login'}  />;
+  }
+
   if(!userRole){
     return <Navigate to={props.redirectPath ?? '/login'}  />;
   }

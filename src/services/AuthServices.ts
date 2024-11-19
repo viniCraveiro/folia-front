@@ -52,6 +52,7 @@ class AuthService { // Singleton
 
     private isTokenExpired(): boolean {
         const expirationTime = LocalStorageService.getItem<number>(this.EXPIRATION_KEY);
+        console.log(expirationTime)
         if (Date.now() > expirationTime!) {
             this.clearToken();
             return true;

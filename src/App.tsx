@@ -6,8 +6,8 @@ import TopBar from "./layout/topbar/TopBar";
 import { UserRole } from "./models/UserRole";
 import Acompanhamento from "./pages/Acompanhamento";
 import BoletoRedirect from "./pages/Boleto/BoletoRedirect";
-import EmpresaBoleto from "./pages/Boleto/EmpresaBoleto";
-import UsuarioBoleto from "./pages/Boleto/UsuarioBoleto";
+import EmpresaBoleto from "./pages/Boleto/list/EmpresaBoleto";
+import UsuarioBoleto from "./pages/Boleto/list/UsuarioBoleto";
 import Cadastro from "./pages/cadastro/Cadastro";
 import AppProviders from "./pages/components/AppProviders";
 import CadastroUsuario from "./pages/gestao/CadastroUsuario";
@@ -19,6 +19,7 @@ import NotaFiscal from "./pages/NotaFiscal";
 import PageNotFound from "./pages/PageNotFound";
 import PrivateRoute from "./PrivateRoute";
 import InicioRedirect from "./pages/home/InicioRedirect";
+import BoletoDetail from "./pages/Boleto/detail/BoletoDetail";
 
 const App = () => {
   return (
@@ -49,6 +50,7 @@ const AppContent = () => {
           <Route path="/acompanhamento" element={<Acompanhamento />} />
           <Route path="/cadastro" element={<Cadastro />} />
           <Route path="/boleto" element={<BoletoRedirect />} />
+          <Route path="/boleto/detail" element={<BoletoDetail />} />
           <Route path="/" element={<InicioRedirect />} />
         </Route>
 
@@ -65,7 +67,7 @@ const AppContent = () => {
           <Route path="/boleto/empresa" element={<EmpresaBoleto />}/>
         </Route>
 
-        <Route element={<PrivateRoute roleEquals={UserRole.USER}/>}>
+        <Route element={<PrivateRoute roleHigher={UserRole.USER}/>}>
           <Route path="/inicio/usuario" element={<HomePage />} />
           <Route path="/boleto/usuario" element={<UsuarioBoleto />} />
         </Route>

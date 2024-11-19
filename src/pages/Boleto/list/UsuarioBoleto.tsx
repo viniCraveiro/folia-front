@@ -1,4 +1,3 @@
-import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
@@ -22,13 +21,13 @@ import {
 import { GridColDef } from "@mui/x-data-grid";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import AuthService from "../../services/AuthServices";
-import BoletoService from "../../services/boletos/BoletoService";
-import { useAlert } from "../components/AlertProvider";
-import TableHeader from "../components/TableHeader";
-import { BoletoList, IFiltroBoletoUsuario } from "./BoletoCollection";
-import { FiltroBoletosUsuario } from "./FiltroBoletosUsuario";
-import { handleStyleChips } from "./StatusBoleto";
+import AuthService from "../../../services/AuthServices";
+import BoletoService from "../../../services/boletos/BoletoUsuarioService";
+import { useAlert } from "../../components/AlertProvider";
+import TableHeader from "../../components/TableHeader";
+import { BoletoList, IFiltroBoletoUsuario } from "../BoletoCollection";
+import { FiltroBoletosUsuario } from "../FiltroBoletosUsuario";
+import { handleStyleChips } from "../StatusBoleto";
 
 const boletoService = new BoletoService();
 
@@ -42,9 +41,7 @@ const columns: GridColDef[] = [
   { field: "acoes", headerName: "", cellClassName: "justify-end", width: 130 },
 ];
 
-
-
-const EmpresaBoleto = () => {
+const UsuarioBoleto = () => {
   const userUuid = AuthService.getInstance().getUserUuid();
   const defaultFilter = {
     userUuid: userUuid,
@@ -54,9 +51,10 @@ const EmpresaBoleto = () => {
     dataInicialVencimento: null,
     dataFinalVencimento: null,
     status: null,
-  }
+  };
   const [list, setList] = useState<BoletoList[]>([]);
-  const [filtroBoleto, setFiltroBoleto] = useState<IFiltroBoletoUsuario>(defaultFilter);
+  const [filtroBoleto, setFiltroBoleto] =
+    useState<IFiltroBoletoUsuario>(defaultFilter);
 
   const [isFilterOpen, setFilterOpen] = useState(false);
 
@@ -90,11 +88,13 @@ const EmpresaBoleto = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        boletoService.filtrarBoletos(filtroBoleto , showAlert).then((response) => {
-          if (response) {
-            setList(response);
-          }
-        });
+        boletoService
+          .filtrarBoletos(filtroBoleto, showAlert)
+          .then((response) => {
+            if (response) {
+              setList(response);
+            }
+          });
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -237,12 +237,6 @@ const EmpresaBoleto = () => {
                     >
                       <DownloadIcon />
                     </IconButton>
-                    <IconButton
-                      size="small"
-                      sx={{ width: 20, height: 20, p: 0, m: 0, mr: 1.5 }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
@@ -254,4 +248,4 @@ const EmpresaBoleto = () => {
   );
 };
 
-export default EmpresaBoleto;
+export default UsuarioBoleto;

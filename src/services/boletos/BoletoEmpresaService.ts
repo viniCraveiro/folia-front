@@ -5,7 +5,7 @@ import http from "../SuperService";
 
 class BoletoService {
 
-    DEFAULT_URL = "usuarioBoleto";
+    DEFAULT_URL = "empresa/boleto";
 
     constructor() { }
 
