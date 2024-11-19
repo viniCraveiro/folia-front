@@ -1,3 +1,4 @@
+import { Alert, Snackbar, SnackbarCloseReason } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
@@ -11,24 +12,33 @@ import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo/logo.svg";
 import AuthService from "../../services/AuthServices";
 import LoginService from "../../services/login/LoginService";
-import { IEmpresaData } from "./IEmpresaData";
 import { ILogin, LoginToken } from "./ILoginData";
 import "./LoginStyle.css";
-import { useAlert } from "../components/AlertProvider";
+import { IEmpresaData } from "./IEmpresaData";
 
 const service = new LoginService();
-
 
 const authService = AuthService.getInstance();
 
 export default function Login() {
-  const { showAlert } = useAlert();
   const navigate = useNavigate();
 
+  const [alertState, setAlertState] = useState(false);
   const [loginForm, setLoginForm] = useState<ILogin>({
     identificacao: "",
     senha: "",
   });
+
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: SnackbarCloseReason
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setAlertState(false);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,32 +57,19 @@ export default function Login() {
       .loginUser(loginForm)
       .then((responseLogin: LoginToken) => {
         if (responseLogin.valid) {
-          service
-            .getEmpresaVinculada(responseLogin.uuid)
-            .then((responseEmpresa: IEmpresaData) => {
-              authService.setToken(responseLogin);
-              authService.setEmpresa(responseEmpresa);
-              showAlert({
-                message:"Seja bem-vindo(a) " + responseLogin.nome,
-                title: "Login realizado!",
-                type: "success",
-                hideDuration: 2000
-              })
-              navigate("/");
-            });
-        } else {
-          showAlert({
-            message:"Senha ou usuario não encontrados!",
-            type: "error"
+          service.getEmpresaVinculada(responseLogin.uuid)
+          .then((responseEmpresa: IEmpresaData) => {
+            authService.setToken(responseLogin);
+            authService.setEmpresa(responseEmpresa);
+            navigate("/inicio");
           })
+        } else {
+          setAlertState(true);
           console.error("Usuario Não Valido!");
         }
       })
       .catch((err) => {
-        showAlert({
-          message:"Senha ou usuario não encontrados!",
-          type: "error"
-        })
+        setAlertState(true);
         console.error("Erro:", err);
       });
   };
@@ -164,6 +161,21 @@ export default function Login() {
                 </Grid>
               </Box>
             </Box>
+            <Snackbar
+              open={alertState}
+              autoHideDuration={6000}
+              onClose={handleClose}
+              anchorOrigin={{ vertical: "top", horizontal: "right" }}
+            >
+              <Alert
+                onClose={handleClose}
+                severity="error"
+                variant="filled"
+                sx={{ width: "100%" }}
+              >
+                Usuario não encontrado!
+              </Alert>
+            </Snackbar>
           </Grid>
         </Grid>
       </div>
