@@ -1,20 +1,19 @@
-import { BoletoList, IFiltroBoletoUsuario } from "../../pages/Boleto/BoletoCollection";
+import { EmpresaBoletoData, IFiltroBoleto, UsuarioBoletoData } from "../../pages/Boleto/list/BoletoCollection";
+import { StatusBoleto } from "../../pages/Boleto/StatusBoleto";
 import { IAlertProps } from "../../pages/components/AlertProvider";
-import { IEmpresaData } from "../../pages/login/IEmpresaData";
 import http from "../SuperService";
 
 class BoletoService {
 
-    DEFAULT_URL = "usuarioBoleto";
+    DEFAULT_URL = "boleto";
 
     constructor() { }
 
-    filtrarBoletos(filtro: IFiltroBoletoUsuario, showAlert: (props: IAlertProps) => void): Promise<BoletoList[]> {
-        return http.post(`${this.DEFAULT_URL}/filtrar`, filtro)
+    filtrarBoletosUsuario(filtro: IFiltroBoleto, showAlert: (props: IAlertProps) => void): Promise<UsuarioBoletoData[]> {
+        return http.post(`${this.DEFAULT_URL}/usuario/filtrar`, filtro)
             .then((response) => {
                 return response.data;
             }).catch((error) => {
-                console.log(error)
                 showAlert({
                     message: error?.message || "Ocorreu um erro inesperado.",
                     title: error?.errorCode || "Erro",
@@ -24,10 +23,45 @@ class BoletoService {
             });
     }
 
-    getEmpresaVinculada(usuarioUUID: string): Promise<IEmpresaData> {
-        return http.post(`${this.DEFAULT_URL}empresas/${usuarioUUID}`)
+    filtrarBoletosEmpresa(filtro: IFiltroBoleto, showAlert: (props: IAlertProps) => void): Promise<EmpresaBoletoData[]> {
+        return http.post(`${this.DEFAULT_URL}/empresa/filtrar`, filtro)
             .then((response) => {
-                return response.data as IEmpresaData;
+                return response.data;
+            }).catch((error) => {
+                showAlert({
+                    message: error?.message || "Ocorreu um erro inesperado.",
+                    title: error?.errorCode || "Erro",
+                    type: "error",
+                    hideDuration: 4000,
+                });
+            });
+    }
+
+    atualizarStatusBoleto(uuid: string, novoStatus: StatusBoleto, showAlert: (props: IAlertProps) => void): Promise<string> {
+        return http.put(`${this.DEFAULT_URL}/${uuid}/status?novoStatus=${novoStatus}`)
+            .then((response) => {
+                return response.data;
+            }).catch((error) => {
+                showAlert({
+                    message: error?.message || "Ocorreu um erro inesperado.",
+                    title: error?.errorCode || "Erro",
+                    type: "error",
+                    hideDuration: 4000,
+                });
+            });
+    }
+
+    informacoesBoletos(uuid: string, showAlert: (props: IAlertProps) => void): Promise<string> {
+        return http.put(`${this.DEFAULT_URL}/dadosBoletos/${uuid}`)
+            .then((response) => {
+                return response.data;
+            }).catch((error) => {
+                showAlert({
+                    message: error?.message || "Ocorreu um erro inesperado.",
+                    title: error?.errorCode || "Erro",
+                    type: "error",
+                    hideDuration: 4000,
+                });
             });
     }
 }

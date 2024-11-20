@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { TipoUsuario } from './TipoUsuario'; 
+import React, { ChangeEvent, useState } from 'react';
 import { Grid, TextField, Button, Box, Select, MenuItem, InputLabel, FormControl, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import CadastroUsuarioService from "../../services/cadastroUsuario/CadastroUsuarioService";
+import { UserRole } from '../../models/UserRole';
 
 export interface CadastroUsuarioForm {
   identificacao: string;
@@ -11,7 +11,7 @@ export interface CadastroUsuarioForm {
   usuario: string;
   senha: string;
   confirmarSenha: string; 
-  tipoUsuario: TipoUsuario;
+  tipoUsuario: UserRole;
 }
 
 export default function CadastroUsuario() {
@@ -24,17 +24,17 @@ export default function CadastroUsuario() {
     usuario: "",
     senha: "",
     confirmarSenha: "", 
-    tipoUsuario: TipoUsuario.DEFAULT,
+    tipoUsuario: UserRole.DEFAULT,
   });
 
   const [alertState, setAlertState] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prevState) => ({
       ...prevState,
-      [name]: value as TipoUsuario | string,
+      [name]: value,
     }));
   };
 
@@ -102,9 +102,9 @@ export default function CadastroUsuario() {
         usuario: "",
         senha: "",
         confirmarSenha: "",
-        tipoUsuario: TipoUsuario.DEFAULT,
+        tipoUsuario: UserRole.DEFAULT,
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Erro ao cadastrar usuário:", error);
       alert("Ocorreu um erro ao realizar o cadastro. Tente novamente.");
     }
@@ -160,10 +160,15 @@ export default function CadastroUsuario() {
               id="tipoUsuario"
               name="tipoUsuario"
               value={form.tipoUsuario}
-              onChange={handleChange}
+              onChange={(e) =>
+                setForm((prevState) => ({
+                  ...prevState,
+                  tipoUsuario: e.target.value as UserRole,
+                }))
+              }
               label="Tipo de Usuário"
             >
-              {Object.values(TipoUsuario).map((tipo) => (
+              {Object.values(UserRole).map((tipo) => (
                 <MenuItem key={tipo} value={tipo}>
                   {tipo}
                 </MenuItem>

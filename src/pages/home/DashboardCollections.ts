@@ -63,7 +63,6 @@ export class DashboardDataSet {
         const dataGraph = [
             { id: 0, color: BalancoStatusConfig["total"].cor, value: this.data.quantidadeBoletos, label: BalancoStatusConfig["total"].status },
             { id: 1, color: BalancoStatusConfig["pagos"].cor, value: this.data.quantidadeBoletos - this.data.quantidadeBoletosAberto, label: BalancoStatusConfig["pagos"].status },
-            { id: 2, color: BalancoStatusConfig["cancelados"].cor, value: 2, label: BalancoStatusConfig["cancelados"].status },
             { id: 3, color: BalancoStatusConfig["vencidos"].cor, value: this.data.quantidadeBoletosVencido, label: BalancoStatusConfig["vencidos"].status }
         ];
         return dataGraph;

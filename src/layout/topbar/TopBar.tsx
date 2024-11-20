@@ -130,7 +130,7 @@ const TopBar = () => {
                   <MenuItem
                     onClick={() => {
                       handleCloseGestao();
-                      navigate("/listagemboletos");
+                      navigate("/boleto");
                     }}
                   >
                     boletos

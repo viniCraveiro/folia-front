@@ -11,7 +11,6 @@ class LoginService {
     loginUser(credential: ILogin): Promise<LoginToken> {
         return http.post(`${this.DEFAULT_URL}validarLogin`, credential)
             .then((response) => {
-                console.log(response)
                 return response.data as LoginToken;
             });
     }

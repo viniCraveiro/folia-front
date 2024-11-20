@@ -23,7 +23,6 @@ const Cadastro: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Dados enviados: ', formData);
     navigate('/login');
   };
 
