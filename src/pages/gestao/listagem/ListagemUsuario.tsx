@@ -22,7 +22,7 @@ import { GridColDef } from "@mui/x-data-grid";
 import { useRef, useState } from "react";
 import { normalise, ProgressBar } from "../../components/ProgressBar";
 import TableHeader from "../../components/TableHeader";
-import { FiltroBoletosUsuario } from "../../Boleto/FiltroBoletosUsuario";
+import { FiltroBoletosEmpresa } from "../../Boleto/FiltroBoletosEmpresa";
 import { getBarColor, UsuarioList } from "./UsuarioCollections";
 
 

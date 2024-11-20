@@ -39,7 +39,7 @@ interface FiltroAvancadoBoletosProps {
   filtroProps: IFiltroBoleto;
 }
 
-export const FiltroBoletosUsuario = ({
+export const FiltroBoletosEmpresa = ({
   open,
   onClose,
   onReset,
@@ -109,6 +109,34 @@ export const FiltroBoletosUsuario = ({
       >
         <Box sx={style}>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+          <Box>
+              <TextField
+                fullWidth
+                id="nome"
+                label="Buscar por nome"
+                name="nome"
+                variant="standard"
+                size="small"
+                color="primary"
+                value={filtro?.nome}
+                onChange={handleChange}
+                autoFocus
+              />
+            </Box>
+            <Box>
+              <TextField
+                fullWidth
+                id="identificacao"
+                label="Buscar por identificação"
+                name="identificacao"
+                variant="standard"
+                size="small"
+                color="primary"
+                value={filtro?.identificacao}
+                onChange={handleChange}
+                autoFocus
+              />
+            </Box>
             <Box>
               <TextField
                 fullWidth

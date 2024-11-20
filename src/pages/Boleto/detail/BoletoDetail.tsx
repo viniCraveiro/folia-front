@@ -1,113 +1,20 @@
-import { Box, Card, CardMedia, TextField, Typography } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
-import AuthService from "../../../services/AuthServices";
-import BoletoService from "../../../services/boletos/BoletoUsuarioService";
-import { useAlert } from "../../components/AlertProvider";
-import { BoletoList, IFiltroBoletoUsuario } from "../BoletoCollection";
-import qr from "../../../assets/placeholder/qr_code.png";
-
-const boletoService = new BoletoService();
-
-const columns: GridColDef[] = [
-  { field: "status", headerName: "Status", width: 100 },
-  { field: "banco", headerName: "Banco", width: 200 },
-  { field: "parcela", headerName: "Parcela", width: 100 },
-  { field: "dataEmissao", headerName: "Data de emissão", width: 140 },
-  { field: "dataVencimento", headerName: "Data de vencimento", width: 140 },
-  { field: "valor", headerName: "Valor", width: 80, type: "number" },
-  { field: "acoes", headerName: "", cellClassName: "justify-end", width: 130 },
-];
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import DownloadIcon from "@mui/icons-material/Download";
+import PrintIcon from "@mui/icons-material/Print";
+import {
+  Box,
+  Button,
+  Chip,
+  Grid,
+  InputAdornment,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
+import QRCodeComponent from "../../components/QRCodeComponent";
+import { handleStyleChips, StatusBoleto } from "../StatusBoleto";
 
 const BoletoDetail = () => {
-  const userUuid = AuthService.getInstance().getUserUuid();
-  const defaultFilter = {
-    userUuid: userUuid,
-    banco: null,
-    dataInicialEmissao: null,
-    dataFinalEmissao: null,
-    dataInicialVencimento: null,
-    dataFinalVencimento: null,
-    status: null,
-  };
-  const [list, setList] = useState<BoletoList[]>([]);
-  const [filtroBoleto, setFiltroBoleto] =
-    useState<IFiltroBoletoUsuario>(defaultFilter);
-
-  const [isFilterOpen, setFilterOpen] = useState(false);
-
-  const handleOpenFilter = () => setFilterOpen(true);
-  const handleCloseFiter = () => setFilterOpen(false);
-  const { showAlert } = useAlert();
-
-  const filter = (filtro: IFiltroBoletoUsuario) => {
-    boletoService.filtrarBoletos(filtro, showAlert).then((response) => {
-      if (response) {
-        if (response.length === 0) {
-          showAlert({
-            message: "Verifique seus filtros",
-            title: "Nenhum resultado encontrado.",
-            type: "info",
-            hideDuration: 2000,
-          });
-          return;
-        }
-        setList(response);
-      }
-    });
-  };
-
-  const resetFilter = () => {
-    setFiltroBoleto(defaultFilter);
-    filter(filtroBoleto);
-    handleCloseFiter();
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        boletoService
-          .filtrarBoletos(filtroBoleto, showAlert)
-          .then((response) => {
-            if (response) {
-              setList(response);
-            }
-          });
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  /*
-   "id": 228,
-      "uuid": "033014c3-e171-492e-9201-450e5cfa2fb1",
-      "bancoNome": "ITAÚ UNIBANCO S.A.",
-      "bancoAgencia": "0233",
-      "bancoConta": 37223,
-      "bancoContaDigito": "4",
-      "valor": 50,
-      "dataVencimento": "2024-11-18T12:00:00Z",
-      "dataEmissao": "2024-11-18T12:00:00Z",
-      "carteira": "109",
-      "pessoaIdentificacao": "72366875000112",
-      "pessoaNome": "AVIAMENTOS VERA CRUZ LTDA",
-      "estabelecimentoNome": "VINICIUS CRAVEIRO TECNOLOGIA",
-      "estabelecimentoIdentificacao": "96834234000103",
-      "totalParcela": 1,
-      "descricaoCobranca": "COMPRA DE DOMINIO",
-      "numeroDocumento": 10,
-      "parcela": 1,
-      "parcelaDescricao": "1/1",
-      "statusParcela": "ABERTA",
-      "urlBoleto": "https://homologacao.plugboleto.com.br/api/v1/boletos/impressao/a0ed95e0-920d-b8f9-6330-7e9e1a597452",
-      "saldo": 50
-    },
-    {
-  */
-
   return (
     <Box className="p-8">
       <Box className="flex justify-center">
@@ -115,47 +22,82 @@ const BoletoDetail = () => {
           Boleto
         </Typography>
       </Box>
-      <Box
-        className="gap-4 grid grid-cols-2 justify-between"
-        component="form"
-        noValidate
-        autoComplete="off"
+      <Grid
+        item
+        xs={12}
+        sm={8}
+        md={8}
+        component={Paper}
+        elevation={4}
+        sx={{
+          mx: "auto",
+          backgroundColor: "#fff",
+        }}
       >
-        <Box className="gap-4 grid grid-cols-1 justify-between items-center">
-          <Box>
-            <TextField
-              fullWidth
-              id="search"
-              label="Banco"
-              defaultValue="Hello World"
-              name="filsearchtro"
-              variant="standard"
-              size="small"
-              color="primary"
-              InputProps={{
-                readOnly: true,
-              }}
-            />
-          </Box>
-          <Box className="gap-4 grid grid-cols-2 justify-between">
-            <TextField
-              fullWidth
-              id="search"
-              label="Agencia"
-              defaultValue="Hello World"
-              name="filsearchtro"
-              variant="standard"
-              size="small"
-              color="primary"
-              InputProps={{
-                readOnly: true,
-              }}
-            />
-            <Box className="gap-4 grid grid-cols-5">
+        <Box
+          className="mb-5 gap-5 grid grid-cols-2 justify-between p-4"
+          component="form"
+          noValidate
+          autoComplete="off"
+        >
+          <Box className="gap-5 grid grid-cols-1 justify-between">
+            <Box className="gap-5 grid grid-cols-2">
+              <TextField
+                id="search"
+                label="Numero"
+                defaultValue="123"
+                name="filsearchtro"
+                variant="standard"
+                size="small"
+                color="primary"
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+              <TextField
+                id="search"
+                label="Estabelecimento"
+                defaultValue="Teclado.INC"
+                name="filsearchtro"
+                variant="standard"
+                size="small"
+                color="primary"
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+            </Box>
+            <Box className="gap-5 grid grid-cols-2">
+              <TextField
+                id="search"
+                label="Banco"
+                defaultValue="ITAU"
+                name="filsearchtro"
+                variant="standard"
+                size="small"
+                color="primary"
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+              <TextField
+                id="search"
+                label="Agencia"
+                defaultValue="12345"
+                name="filsearchtro"
+                variant="standard"
+                size="small"
+                color="primary"
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+            </Box>
+            <Box className="gap-5 grid grid-cols-5">
               <TextField
                 id="search"
                 label="Conta"
-                defaultValue="Hello World"
+                defaultValue="12345"
                 name="filsearchtro"
                 variant="standard"
                 size="small"
@@ -168,7 +110,86 @@ const BoletoDetail = () => {
               <TextField
                 id="search"
                 label="Digito"
-                defaultValue="Hello World"
+                defaultValue="2"
+                name="filsearchtro"
+                variant="standard"
+                size="small"
+                color="primary"
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+            </Box>
+            <Box className="gap-5 grid grid-cols-3">
+              <Box className="flex justify-center w-full">
+                <Chip
+                  className="flex justify-center w-4/5"
+                  label={StatusBoleto.ABERTO}
+                  color={handleStyleChips(StatusBoleto.ABERTO)}
+                  sx={{
+                    minHeight: 40,
+                  }}
+                />
+              </Box>
+              <TextField
+                id="search"
+                label="Emissao"
+                defaultValue="2024-11-18"
+                name="filsearchtro"
+                variant="standard"
+                size="small"
+                color="primary"
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+              <TextField
+                id="search"
+                label="Vencimento"
+                defaultValue="2024-11-18"
+                name="filsearchtro"
+                variant="standard"
+                size="small"
+                color="primary"
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+            </Box>
+            <Box className="gap-5 grid grid-cols-2">
+              <TextField
+                id="search"
+                label="Valor"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">R$</InputAdornment>
+                  ),
+                  readOnly: true,
+                }}
+                defaultValue="250,00"
+                name="filsearchtro"
+                variant="standard"
+                size="small"
+                color="primary"
+              />
+              <TextField
+                id="search"
+                label="Parcela"
+                defaultValue="1 / 12"
+                name="filsearchtro"
+                variant="standard"
+                size="small"
+                color="primary"
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+            </Box>
+            <Box className="gap-5 grid grid-cols-1">
+              <TextField
+                id="search"
+                label="Descricao"
+                defaultValue="123"
                 name="filsearchtro"
                 variant="standard"
                 size="small"
@@ -179,100 +200,65 @@ const BoletoDetail = () => {
               />
             </Box>
           </Box>
-          <Box>
-            <TextField
-              fullWidth
-              id="search"
-              label="Buscar por número"
-              defaultValue="Hello World"
-              name="filsearchtro"
-              variant="standard"
-              size="small"
-              color="primary"
-              InputProps={{
-                readOnly: true,
-              }}
-            />
-          </Box>
-          <Box>
-            <TextField
-              fullWidth
-              id="search"
-              label="Digito"
-              defaultValue="Hello World"
-              name="filsearchtro"
-              variant="standard"
-              size="small"
-              color="primary"
-              InputProps={{
-                readOnly: true,
-              }}
-            />
-          </Box>
-        </Box>
-        <Box className="gap-4 grid grid-cols-1 justify-center items-center">
-          <Card sx={{ maxWidth: 200 }}>
-            <CardMedia
-              component="img"
-              image={qr}
-            />
-          </Card>
-        </Box>
-      </Box>
 
-      asdasdas
-      <Box
-        className="gap-4 grid grid-cols-2 justify-between"
-        component="form"
-        noValidate
-        autoComplete="off"
-      >
-        <Box className="grid grid-cols-1 justify-between items-center">
-          <Box>
-            <TextField
-              fullWidth
-              id="search"
-              label="Banco"
-              defaultValue="Hello World"
-              name="filsearchtro"
-              variant="standard"
-              size="small"
-              color="primary"
-              InputProps={{
-                readOnly: true,
+          <Box className="gap-5 grid grid-cols-1 justify-center">
+            <Box className="flex justify-center">
+              <QRCodeComponent url="https://homologacao.plugboleto.com.br/api/v1/boletos/impressao/a0ed95e0-920d-b8f9-6330-7e9e1a597452" />
+            </Box>
+            <Box
+              className="flex justify-center"
+              sx={{
+                gap: 5,
               }}
-            />
+            >
+              <Button
+                className="flex-initial w-1/4"
+                variant="outlined"
+                color="primary"
+                startIcon={<ContentCopyIcon />}
+                sx={{
+                  borderRadius: 4,
+                  p: 1,
+                  minHeight: 40,
+                  maxHeight: 40,
+                }}
+              >
+                <Typography variant="body1">Copiar</Typography>
+              </Button>
+
+              <Button
+                className="flex-initial  w-1/4"
+                variant="outlined"
+                color="primary"
+                startIcon={<PrintIcon />}
+                sx={{
+                  borderRadius: 4,
+                  p: 1,
+                  minHeight: 40,
+                  maxHeight: 40,
+                }}
+              >
+                <Typography variant="body1">Imprimir</Typography>
+              </Button>
+
+              <Button
+                className="flex-initial w-1/4"
+                variant="outlined"
+                color="primary"
+                startIcon={<DownloadIcon />}
+                sx={{
+                  borderRadius: 4,
+                  p: 1,
+                  minHeight: 40,
+                  maxHeight: 40,
+                }}
+              >
+                <Typography variant="body1">Download</Typography>
+              </Button>
+            </Box>
           </Box>
         </Box>
-        <Box className="gap-4 grid grid-cols-1 justify-between items-center ">
-          <Box className="gap-4 grid grid-cols-2">
-            <TextField
-              id="search"
-              label="Conta"
-              defaultValue="Hello World"
-              name="filsearchtro"
-              variant="standard"
-              size="small"
-              color="primary"
-              InputProps={{
-                readOnly: true,
-              }}
-            />
-            <TextField
-              id="search"
-              label="Digito"
-              defaultValue="Hello World"
-              name="filsearchtro"
-              variant="standard"
-              size="small"
-              color="primary"
-              InputProps={{
-                readOnly: true,
-              }}
-            />
-          </Box>
-        </Box>
-      </Box>
+      </Grid>
     </Box>
   );
 };

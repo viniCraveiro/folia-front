@@ -1,4 +1,3 @@
-import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
@@ -21,51 +20,105 @@ import {
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import AuthService from "../../../services/AuthServices";
-import BoletoService from "../../../services/boletos/BoletoUsuarioService";
+import BoletoService from "../../../services/boletos/BoletoService";
 import { useAlert } from "../../components/AlertProvider";
 import TableHeader from "../../components/TableHeader";
-import { BoletoList, IFiltroBoletoUsuario } from "../BoletoCollection";
-import { FiltroBoletosUsuario } from "../FiltroBoletosUsuario";
-import { handleStyleChips } from "../StatusBoleto";
+import { BoletoStatusModal, IBoletoStatus } from "../BoletoStatusModal";
+import { FiltroBoletosEmpresa } from "../FiltroBoletosEmpresa";
+import { handleStyleChips, StatusBoleto } from "../StatusBoleto";
+import {
+  EmpresaBoletoData,
+  IFiltroBoleto,
+  newFiltro,
+} from "./BoletoCollection";
 
 const boletoService = new BoletoService();
 
 const columns: GridColDef[] = [
   { field: "status", headerName: "Status", width: 100 },
+  { field: "identificacao", headerName: "Identificação", width: 120 },
+  { field: "nome", headerName: "Nome", width: 250 },
   { field: "banco", headerName: "Banco", width: 200 },
-  { field: "parcela", headerName: "Parcela", width: 100 },
+  { field: "parcela", headerName: "Parcela", width: 60 },
   { field: "dataEmissao", headerName: "Data de emissão", width: 140 },
   { field: "dataVencimento", headerName: "Data de vencimento", width: 140 },
   { field: "valor", headerName: "Valor", width: 80, type: "number" },
   { field: "acoes", headerName: "", cellClassName: "justify-end", width: 130 },
 ];
 
-
-
-const EmpresaBoleto = () => {
-  const userUuid = AuthService.getInstance().getUserUuid();
-  const defaultFilter = {
-    userUuid: userUuid,
-    banco: null,
-    dataInicialEmissao: null,
-    dataFinalEmissao: null,
-    dataInicialVencimento: null,
-    dataFinalVencimento: null,
-    status: null,
-  }
-  const [list, setList] = useState<BoletoList[]>([]);
-  const [filtroBoleto, setFiltroBoleto] = useState<IFiltroBoletoUsuario>(defaultFilter);
-
-  const [isFilterOpen, setFilterOpen] = useState(false);
+const EmpresaBoletoList = () => {
+  const { showAlert } = useAlert();
+  const empresaUuid = AuthService.getInstance().getEmpresa()?.uuid ?? null;
+  const [list, setList] = useState<EmpresaBoletoData[]>([]);
+  const [filtroBoleto, setFiltroBoleto] = useState<IFiltroBoleto>(newFiltro());
+  const [statusBoletoModal, setStatusBoletoModal] = useState<IBoletoStatus>({
+    novoStatus: StatusBoleto.ABERTO,
+    uuid: "",
+  });
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [statusOpen, setStatusOpen] = useState(false);
 
   const handleOpenFilter = () => setFilterOpen(true);
-  const handleCloseFiter = () => setFilterOpen(false);
-  const { showAlert } = useAlert();
+  const handleOpenStatus = (status: StatusBoleto, uuid: string) => {
+    setStatusBoletoModal({
+      novoStatus: status,
+      uuid: uuid,
+    });
+    setStatusOpen(true);
+  };
+  const handleCloseFilter = () => setFilterOpen(false);
+  const handleCloseStatus = () => setStatusOpen(false);
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      filter(filtroBoleto);
+    }
+  };
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
 
-  const filter = (filtro: IFiltroBoletoUsuario) => {
-    boletoService.filtrarBoletos(filtro, showAlert).then((response) => {
+    setFiltroBoleto((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+  const handleDownload = async (url: string) => {
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {},
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao baixar o arquivo");
+      }
+
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = "arquivo.pdf";
+      document.body.appendChild(link);
+      link.click();
+
+      link.remove();
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      showAlert({
+        title: "Erro ao baixar o arquivo",
+        message: `O boleto não esta em um formato valido: ${url}`,
+        type: "warning",
+        hideDuration: 3000,
+      });
+      console.error("Erro ao baixar o arquivo:", error);
+    }
+  };
+
+  const filter = (filtro: IFiltroBoleto) => {
+    filtro.empresaUUID = empresaUuid;
+    boletoService.filtrarBoletosEmpresa(filtro, showAlert).then((response) => {
       if (response) {
         if (response.length === 0) {
           showAlert({
@@ -74,7 +127,6 @@ const EmpresaBoleto = () => {
             type: "info",
             hideDuration: 2000,
           });
-          return;
         }
         setList(response);
       }
@@ -82,43 +134,45 @@ const EmpresaBoleto = () => {
   };
 
   const resetFilter = () => {
-    setFiltroBoleto(defaultFilter);
+    setFiltroBoleto(newFiltro());
     filter(filtroBoleto);
-    handleCloseFiter();
+    handleCloseFilter();
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        boletoService.filtrarBoletos(filtroBoleto , showAlert).then((response) => {
-          if (response) {
-            setList(response);
-          }
-        });
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
+    filter(filtroBoleto);
+  }, [statusBoletoModal]);
 
   return (
     <Box className="p-8">
+      <div>
+        <BoletoStatusModal
+          open={statusOpen}
+          onClose={handleCloseStatus}
+          boletosProps={statusBoletoModal}
+          filter={() => filter(filtroBoleto)}
+        />
+      </div>
       <Box className="mb-2 gap-4 grid grid-cols-2 justify-between items-center">
         <Box>
           <TextField
             fullWidth
-            id="search"
-            label="Buscar por número"
-            name="filsearchtro"
+            id="identificacao"
+            label="Buscar por identificação"
+            name="identificacao"
             variant="standard"
             size="small"
             color="primary"
+            value={filtroBoleto.identificacao}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton className="mb-4">
+                  <IconButton
+                    className="mb-4"
+                    onClick={() => filter(filtroBoleto)}
+                  >
                     <SearchIcon />
                   </IconButton>
                 </InputAdornment>
@@ -147,13 +201,12 @@ const EmpresaBoleto = () => {
               />
             </IconButton>
             <div>
-              <FiltroBoletosUsuario
-                open={isFilterOpen}
+              <FiltroBoletosEmpresa
+                open={filterOpen}
                 onReset={resetFilter}
-                onClose={handleCloseFiter}
+                onClose={handleCloseFilter}
                 filtroProps={filtroBoleto}
                 onSubmit={filter}
-                uuidUser={userUuid}
               />
             </div>
           </Box>
@@ -198,7 +251,7 @@ const EmpresaBoleto = () => {
               }}
             >
               {list.map((row, index) => (
-                <TableRow key={row.nome + index}>
+                <TableRow key={row.uuid + index}>
                   <TableCell>
                     <Chip
                       label={row.status}
@@ -209,6 +262,8 @@ const EmpresaBoleto = () => {
                       }}
                     />
                   </TableCell>
+                  <TableCell>{row.identificacao}</TableCell>
+                  <TableCell>{row.nome}</TableCell>
                   <TableCell>{row.banco}</TableCell>
                   <TableCell>{row.parcela}</TableCell>
                   <TableCell>
@@ -228,20 +283,16 @@ const EmpresaBoleto = () => {
                     <IconButton
                       size="small"
                       sx={{ width: 20, height: 20, p: 0, m: 0, mr: 1.5 }}
+                      onClick={() => handleOpenStatus(row.status, row.uuid)}
                     >
                       <EditIcon />
                     </IconButton>
                     <IconButton
                       size="small"
                       sx={{ width: 20, height: 20, p: 0, m: 0, mr: 1.5 }}
+                      onClick={() => handleDownload(row.url)}
                     >
                       <DownloadIcon />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      sx={{ width: 20, height: 20, p: 0, m: 0, mr: 1.5 }}
-                    >
-                      <DeleteIcon />
                     </IconButton>
                   </TableCell>
                 </TableRow>
@@ -254,4 +305,4 @@ const EmpresaBoleto = () => {
   );
 };
 
-export default EmpresaBoleto;
+export default EmpresaBoletoList;
