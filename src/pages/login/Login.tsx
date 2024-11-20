@@ -6,7 +6,7 @@ import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo/logo.svg";
 import AuthService from "../../services/AuthServices";
@@ -30,7 +30,7 @@ export default function Login() {
     senha: "",
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
     setLoginForm((prevState) => ({

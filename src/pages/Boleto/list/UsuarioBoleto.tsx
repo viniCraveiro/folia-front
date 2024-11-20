@@ -139,7 +139,7 @@ const UsuarioBoletoList = () => {
 
   useEffect(() => {
     filter(filtroBoleto);
-  }, []);
+  });
 
   return (
     <Box className="p-8">

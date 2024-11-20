@@ -55,7 +55,7 @@ export class UsuarioBoletoData {
         url: string,
         status: StatusBoleto
     ) {
-        this.uuid = nome;
+        this.uuid = uuid;
         this.nome = nome;
         this.usuario = usuario;
         this.banco = banco;
@@ -94,8 +94,8 @@ export class EmpresaBoletoData {
         url: string,
         status: StatusBoleto
     ) {
-        this.uuid = nome;
-        this.identificacao = usuario;
+        this.uuid = uuid;
+        this.identificacao = identificacao;
         this.nome = nome;
         this.usuario = usuario;
         this.banco = banco;
