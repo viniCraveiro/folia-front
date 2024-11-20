@@ -1,10 +1,11 @@
-import { Box, TextField, Typography } from "@mui/material";
+import { Box, Card, CardMedia, TextField, Typography } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import AuthService from "../../../services/AuthServices";
 import BoletoService from "../../../services/boletos/BoletoUsuarioService";
 import { useAlert } from "../../components/AlertProvider";
 import { BoletoList, IFiltroBoletoUsuario } from "../BoletoCollection";
+import qr from "../../../assets/placeholder/qr_code.png";
 
 const boletoService = new BoletoService();
 
@@ -209,51 +210,29 @@ const BoletoDetail = () => {
             />
           </Box>
         </Box>
-        <Box className="gap-4 grid grid-cols-1 justify-between items-center">
-          <TextField
-            fullWidth
-            id="search"
-            label="Agencia"
-            defaultValue="Hello World"
-            name="filsearchtro"
-            variant="standard"
-            size="small"
-            color="primary"
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-
-          <TextField
-            fullWidth
-            id="search"
-            label="Agencia"
-            defaultValue="Hello World"
-            name="filsearchtro"
-            variant="standard"
-            size="small"
-            color="primary"
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-
-          <Box className="gap-4 grid grid-cols-2">
-            <TextField
-              id="search"
-              label="Conta"
-              defaultValue="Hello World"
-              name="filsearchtro"
-              variant="standard"
-              size="small"
-              color="primary"
-              InputProps={{
-                readOnly: true,
-              }}
+        <Box className="gap-4 grid grid-cols-1 justify-center items-center">
+          <Card sx={{ maxWidth: 200 }}>
+            <CardMedia
+              component="img"
+              image={qr}
             />
+          </Card>
+        </Box>
+      </Box>
+
+      asdasdas
+      <Box
+        className="gap-4 grid grid-cols-2 justify-between"
+        component="form"
+        noValidate
+        autoComplete="off"
+      >
+        <Box className="grid grid-cols-1 justify-between items-center">
+          <Box>
             <TextField
+              fullWidth
               id="search"
-              label="Digito"
+              label="Banco"
               defaultValue="Hello World"
               name="filsearchtro"
               variant="standard"
@@ -264,7 +243,8 @@ const BoletoDetail = () => {
               }}
             />
           </Box>
-
+        </Box>
+        <Box className="gap-4 grid grid-cols-1 justify-between items-center ">
           <Box className="gap-4 grid grid-cols-2">
             <TextField
               id="search"
