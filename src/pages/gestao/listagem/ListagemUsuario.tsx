@@ -19,12 +19,20 @@ import {
   Typography,
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import { useRef, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import AuthService from "../../../services/AuthServices";
+import UsuarioService from "../../../services/usuario/UsuarioService";
+import { useAlert } from "../../components/AlertProvider";
 import { normalise, ProgressBar } from "../../components/ProgressBar";
 import TableHeader from "../../components/TableHeader";
-import { FiltroBoletosEmpresa } from "../../Boleto/FiltroBoletosEmpresa";
-import { getBarColor, UsuarioList } from "./UsuarioCollections";
-
+import {
+  getBarColor,
+  IFiltroUsuario,
+  IUsuarioList,
+  newFiltro,
+  UsuarioList,
+} from "./UsuarioCollections";
 
 const columns: GridColDef[] = [
   { field: "idendificacao", headerName: "Idendificação", width: 180 },
@@ -35,13 +43,62 @@ const columns: GridColDef[] = [
   { field: "acoes", headerName: "", cellClassName: "justify-end", width: 100 },
 ];
 
+const usuarioService = new UsuarioService();
+
 const ListagemUsuario = () => {
-  const [listUsuario] = useState<UsuarioList>(new UsuarioList());
-  const [isFilterOpen, setFilterOpen] = useState(false);
-  const tableRef = useRef<HTMLDivElement>(null);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [listUsuario, setListUsuario] = useState<IUsuarioList[]>([]);
+  const [filtroUsuario, setFiltroUsuario] = useState<IFiltroUsuario>(newFiltro());
 
   const handleOpenFilter = () => setFilterOpen(true);
-  const handleCloseFiter = () => setFilterOpen(false);
+  const handleCloseFilter = () => setFilterOpen(false);
+
+  const navigate = useNavigate();
+  const { showAlert } = useAlert();
+
+  const empresaUuid = AuthService.getInstance().getEmpresa()?.uuid ?? null;
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      filter(filtroUsuario);
+    }
+  };
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setFiltroUsuario((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const filter = (filtro: IFiltroUsuario) => {
+    filtro.empresaUUID = empresaUuid;
+    usuarioService.filtrar(filtro, showAlert).then((response) => {
+      if (response) {
+        setListUsuario(response);
+        if (response.length === 0) {
+          showAlert({
+            message: "Verifique seus filtros",
+            title: "Nenhum resultado encontrado.",
+            type: "info",
+            hideDuration: 2000,
+          });
+        }
+      }
+    });
+  };
+
+  const resetFilter = () => {
+    setFiltroUsuario(newFiltro());
+    filter(filtroUsuario);
+    handleCloseFilter();
+  };
+
+  useEffect(() => {
+    filter(filtroUsuario);
+  }, []);
 
   return (
     <Box className="p-8">
@@ -86,7 +143,6 @@ const ListagemUsuario = () => {
                 }}
               />
             </IconButton>
-            
           </Box>
           <Box>
             <Box className="gap-2 flex flex-row-reverse items-center">
@@ -109,6 +165,7 @@ const ListagemUsuario = () => {
                   borderRadius: 4,
                   p: 1,
                 }}
+                onClick={() => {}}
               >
                 <Typography variant="body2">Criar usuário</Typography>
               </Button>
@@ -139,9 +196,9 @@ const ListagemUsuario = () => {
                 "&:last-child td, &:last-child th": { border: 0 },
               }}
             >
-              {listUsuario.list.map((row) => (
-                <TableRow key={row.idendificacao}>
-                  <TableCell>{row.idendificacao}</TableCell>
+              {listUsuario.map((row, index) => (
+                <TableRow key={row.identificacao + index}>
+                  <TableCell>{row.identificacao}</TableCell>
                   <TableCell>{row.nome}</TableCell>
                   <TableCell>{row.boletosPagos}</TableCell>
                   <TableCell>{row.boletosTotal}</TableCell>

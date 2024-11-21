@@ -21,10 +21,13 @@ import {
 import { GridColDef } from "@mui/x-data-grid";
 import dayjs from "dayjs";
 import { ChangeEvent, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AuthService from "../../../services/AuthServices";
 import BoletoService from "../../../services/boletos/BoletoService";
 import { useAlert } from "../../components/AlertProvider";
+import { monetarioValue } from "../../components/MonetarioUtil";
 import TableHeader from "../../components/TableHeader";
+import { downloadURL } from "../../components/UrlAPIUtil";
 import { BoletoStatusModal, IBoletoStatus } from "../BoletoStatusModal";
 import { FiltroBoletosEmpresa } from "../FiltroBoletosEmpresa";
 import { handleStyleChips, StatusBoleto } from "../StatusBoleto";
@@ -49,6 +52,7 @@ const columns: GridColDef[] = [
 ];
 
 const EmpresaBoletoList = () => {
+  const navigate = useNavigate();
   const { showAlert } = useAlert();
   const empresaUuid = AuthService.getInstance().getEmpresa()?.uuid ?? null;
   const [list, setList] = useState<EmpresaBoletoData[]>([]);
@@ -82,38 +86,6 @@ const EmpresaBoletoList = () => {
       ...prevState,
       [name]: value,
     }));
-  };
-  const handleDownload = async (url: string) => {
-    try {
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {},
-      });
-
-      if (!response.ok) {
-        throw new Error("Erro ao baixar o arquivo");
-      }
-
-      const blob = await response.blob();
-      const downloadUrl = window.URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-      link.href = downloadUrl;
-      link.download = "arquivo.pdf";
-      document.body.appendChild(link);
-      link.click();
-
-      link.remove();
-      window.URL.revokeObjectURL(downloadUrl);
-    } catch (error) {
-      showAlert({
-        title: "Erro ao baixar o arquivo",
-        message: `O boleto não esta em um formato valido: ${url}`,
-        type: "warning",
-        hideDuration: 3000,
-      });
-      console.error("Erro ao baixar o arquivo:", error);
-    }
   };
 
   const filter = (filtro: IFiltroBoleto) => {
@@ -265,18 +237,25 @@ const EmpresaBoletoList = () => {
                   <TableCell>{row.identificacao}</TableCell>
                   <TableCell>{row.nome}</TableCell>
                   <TableCell>{row.banco}</TableCell>
-                  <TableCell>{row.parcela}</TableCell>
+                  <TableCell>
+                    {row.parcela} / {row.totalParcelas}
+                  </TableCell>
                   <TableCell>
                     {dayjs(row.dataEmissao).format("DD/MM/YYYY").toString()}
                   </TableCell>
                   <TableCell>
                     {dayjs(row.dataVencimento).format("DD/MM/YYYY").toString()}
                   </TableCell>
-                  <TableCell>R$ {row.valor}</TableCell>
+                  <TableCell>{monetarioValue(row.valor)} </TableCell>
                   <TableCell sx={{ textAlign: "end" }}>
                     <IconButton
                       size="small"
                       sx={{ width: 20, height: 20, p: 0, m: 0, mr: 1.5 }}
+                      onClick={() =>
+                        navigate("/boleto/detail", {
+                          state: { uuid: row.uuid },
+                        })
+                      }
                     >
                       <VisibilityIcon />
                     </IconButton>
@@ -290,7 +269,7 @@ const EmpresaBoletoList = () => {
                     <IconButton
                       size="small"
                       sx={{ width: 20, height: 20, p: 0, m: 0, mr: 1.5 }}
-                      onClick={() => handleDownload(row.url)}
+                      onClick={() => downloadURL(row.url, showAlert)}
                     >
                       <DownloadIcon />
                     </IconButton>

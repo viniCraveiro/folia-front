@@ -51,8 +51,8 @@ class BoletoService {
             });
     }
 
-    informacoesBoletos(uuid: string, showAlert: (props: IAlertProps) => void): Promise<string> {
-        return http.put(`${this.DEFAULT_URL}/dadosBoletos/${uuid}`)
+    buscarBoleto(uuid: string, showAlert: (props: IAlertProps) => void): Promise<Any> {
+        return http.get(`${this.DEFAULT_URL}/${uuid}`)
             .then((response) => {
                 return response.data;
             }).catch((error) => {

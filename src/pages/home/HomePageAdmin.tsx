@@ -22,13 +22,14 @@ import { useDrawingArea } from "@mui/x-charts/hooks";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SkeletonDefault from "../components/SkeletoComponent";
 import DashboardServices from "../../services/home/DashboardServices";
 import { getCurrentYearMonth } from "../components/DateUtils";
 import {
   DashboardDataSet,
   GraficoTypeEnum,
+  IUserBoletosData,
   TimeRangeEnum,
 } from "./DashboardCollections";
 import { normalise, ProgressBar } from "../components/ProgressBar";
@@ -48,8 +49,10 @@ const graficoTypeLabels: Record<GraficoTypeEnum, string> = {
 };
 
 const HomePageAdmin = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [dashboardDataSet] = useState<DashboardDataSet>(new DashboardDataSet());
+  const [clientesData, setClientesData] = useState<IUserBoletosData[]>([]);
   const [timeRange, setTimeRange] = useState<string>(TimeRangeEnum.mes);
   const [graficoType, setGraficoType] = useState<string>(GraficoTypeEnum.bar);
   const [dateBalanco, setDateBalanco] = useState<Dayjs | null>(
@@ -57,7 +60,7 @@ const HomePageAdmin = () => {
   );
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchBoletoData = async () => {
       try {
         dashboardServices.getBoletosDataSet().then((response) => {
           if (response) {
@@ -70,15 +73,21 @@ const HomePageAdmin = () => {
       }
     };
 
-    fetchData();
-  }, []);
+    const fetchUsuarioData = async () => {
+      try {
+        dashboardServices.getUserDataSet().then((response) => {
+          if (response) {
+            setClientesData(response)
+          }
+        });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
-  const clientesData = [
-    { id: 0, name: "Pessoa 1", boletosTotal: 14, boletosPagos: 6 },
-    { id: 1, name: "Pessoa 2", boletosTotal: 11, boletosPagos: 4 },
-    { id: 2, name: "Pessoa 3", boletosTotal: 22, boletosPagos: 20 },
-    { id: 3, name: "Pessoa 4", boletosTotal: 14, boletosPagos: 8 },
-  ];
+    fetchBoletoData();
+    fetchUsuarioData();
+  },[]);
 
   const StyledText = muiStyled("text")(({ theme }) => ({
     fill: theme.palette.text.primary,
@@ -250,7 +259,7 @@ const HomePageAdmin = () => {
             <Typography variant="body1" className="items-center">
               Clientes
             </Typography>
-            <Link href="#"> {"Ver Todos >"} </Link>
+            <Link to={"/listagemusuario"}> {"Ver Todos >"} </Link>
           </div>
           {Object.values(clientesData).map((cliente, index) => (
             <Box key={index} className="rounded-md w-full h-16 mt-6">
@@ -258,16 +267,16 @@ const HomePageAdmin = () => {
                 <Box>
                   <Avatar
                     className="ml-2 h-14 w-14 mr-4 items-center flex-none"
-                    alt={cliente.name}
+                    alt={cliente.nome}
                     src="/static/images/avatar/1.jpg"
                   />
                 </Box>
                 <Box className="h-16 flex-1">
                   <Typography variant="h6" className="">
-                    {cliente.name}
+                    {cliente.nome}
                   </Typography>
                   <Typography variant="body2" className="text-gray-400">
-                    {`${cliente.boletosPagos} de ${cliente.boletosTotal} boletos pagos.`}
+                    {`${cliente.quantidadeBoletos - cliente.quantidadeBoletosAbertos} de ${cliente.quantidadeBoletos} boletos pagos.`}
                   </Typography>
                 </Box>
 
@@ -277,8 +286,8 @@ const HomePageAdmin = () => {
                       barheight={32}
                       variant="determinate"
                       value={normalise(
-                        cliente.boletosPagos,
-                        cliente.boletosTotal
+                        (cliente.quantidadeBoletos - cliente.quantidadeBoletosAbertos),
+                        cliente.quantidadeBoletos
                       )}
                     />
                   </Stack>
@@ -288,7 +297,7 @@ const HomePageAdmin = () => {
           ))}
         </div>
       </div>
-      <div className="gap-4">
+      <div className="mt-6">
         <Box component={Paper} elevation={6} className="p-2">
           <div className="flex flex-row justify-between items-center mb-4">
             <Typography variant="h6" className="items-center">

@@ -15,7 +15,7 @@ class CadastroUsuarioService {
     try {
       const response = await http.post(`${this.DEFAULT_URL}/empresauuid:${this.empresaUiid}`, usuario);
       return response.data as UsuarioToken;
-    } catch (error: any) {
+    } catch (error) {
       console.error("Erro ao cadastrar usuário:", error);
       throw new Error("Erro ao realizar o cadastro");
     }
