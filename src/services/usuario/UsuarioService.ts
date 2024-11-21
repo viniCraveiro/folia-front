@@ -65,11 +65,27 @@ class UsuarioService {
         }
     }
 
-    async atualizar(uuid: string, usuario: CadastroUsuarioForm): Promise<UsuarioToken> {
+    async atualizar(uuid: string, usuario: CadastroUsuarioForm, showAlert: (props: IAlertProps) => void): Promise<CadastroUsuarioForm> {
         try {
-            const response = await http.put(`${this.DEFAULT_URL}/${uuid}`, usuario);
-            return response.data as UsuarioToken;
+            return http.put(`${this.DEFAULT_URL}/${uuid}`, usuario).then((response) => {
+                console.log(response.data)
+                showAlert({
+                    title: "Usuario atualizado",
+                    message: (`Usuario: ${response.data.nome} atualizado`) ,
+                    type: "success",
+                    hideDuration: 4000,
+                });
+                return response.data;
+            }).catch((error) => {
+                showAlert({
+                    message: error?.message || "Ocorreu um erro inesperado.",
+                    title: error?.errorCode || "Erro",
+                    type: "error",
+                    hideDuration: 4000,
+                });
+            });
         } catch (error) {
+
             console.error("Erro ao cadastrar usuário:", error);
             throw new Error("Erro ao realizar o cadastro");
         }

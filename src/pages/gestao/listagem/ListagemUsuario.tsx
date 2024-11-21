@@ -254,14 +254,14 @@ const ListagemUsuario = () => {
                     <IconButton
                       size="small"
                       sx={{ width: 20, height: 20, p: 0, m: 0, mr: 1.5 }}
-                      onClick={() => navigate("/usuario/detail", { state: {isEdit: false,isView: true, uuid: row.id}})}
+                      onClick={() => navigate("/usuario/detail", { state: {isEdit: false,isView: false, uuid: row.id}})}
                     >
                       <VisibilityIcon />
                     </IconButton>
                     <IconButton
                       size="small"
                       sx={{ width: 20, height: 20, p: 0, m: 0, mr: 1.5 }}
-                      onClick={() => navigate("/usuario/detail", { state: {isEdit: true,isView: false, uuid: row.id}})}
+                      onClick={() => navigate("/usuario/detail", { state: {isEdit: true,isView: true, uuid: row.id}})}
                     >
                       <EditIcon />
                     </IconButton>

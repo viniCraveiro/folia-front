@@ -14,12 +14,14 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { UserRole } from "../../../models/UserRole";
 import UsuarioService from "../../../services/usuario/UsuarioService";
+import { useAlert } from "../../components/AlertProvider";
+import theme from "../../../layout/Theme";
 
 export interface CadastroUsuarioForm {
   identificacao: string;
   nome: string;
   email: string;
-  usuario: string;
+  username: string;
   senha: string;
   confirmarSenha: string;
   tipoUsuario: UserRole;
@@ -28,6 +30,7 @@ export interface CadastroUsuarioForm {
 const usuarioService = new UsuarioService();
 
 export default function UsuarioDetail() {
+  const { showAlert } = useAlert();
   const navigate = useNavigate();
   const location = useLocation();
   const { isEdit, isView, uuid } = location.state || {};
@@ -36,7 +39,7 @@ export default function UsuarioDetail() {
     identificacao: "",
     nome: "",
     email: "",
-    usuario: "",
+    username: "",
     senha: "",
     confirmarSenha: "",
     tipoUsuario: UserRole.USER,
@@ -103,7 +106,7 @@ export default function UsuarioDetail() {
       !form.identificacao ||
       !form.nome ||
       !form.email ||
-      !form.usuario ||
+      !form.username ||
       !form.senha ||
       !form.confirmarSenha
     ) {
@@ -127,10 +130,8 @@ export default function UsuarioDetail() {
     }
 
     try {
-      if (isEdit) {
-        const response = await usuarioService.atualizar(uuid,form);
-        setSuccessMessage(response.mensagem);
-        setAlertState(true);
+      if (isView) {
+        await usuarioService.atualizar(uuid,form, showAlert);
         return;
       }
       const response = await usuarioService.cadastrar(form);
@@ -142,7 +143,7 @@ export default function UsuarioDetail() {
         identificacao: "",
         nome: "",
         email: "",
-        usuario: "",
+        username: "",
         senha: "",
         confirmarSenha: "",
         tipoUsuario: UserRole.USER,
@@ -166,15 +167,16 @@ export default function UsuarioDetail() {
       component="form"
       onSubmit={handleSubmit}
       sx={{
-        width: "80%",
+        width: "90%",
         mx: "auto",
-        p: 2,
-        border: "1px solid #ccc",
+        p: 4,
+        border: "1px solid",
+        borderColor: theme.palette.primary.main,
         borderRadius: "8px",
-        mt: 5,
+        mt: 4,
       }}
     >
-      <Grid container spacing={2}>
+      <Grid container spacing={3}>
         <Grid item xs={6}>
           <TextField
             fullWidth
@@ -183,9 +185,6 @@ export default function UsuarioDetail() {
             value={form.identificacao}
             onChange={handleChange}
             required
-            InputLabelProps={{
-              shrink: !!uuid,
-            }}
             InputProps={{
               readOnly: !isEdit,
             }}
@@ -199,9 +198,6 @@ export default function UsuarioDetail() {
             value={form.nome}
             onChange={handleChange}
             required
-            InputLabelProps={{
-              shrink: !!uuid,
-            }}
             InputProps={{
               readOnly: !isEdit,
             }}
@@ -216,9 +212,6 @@ export default function UsuarioDetail() {
             value={form.email}
             onChange={handleChange}
             required
-            InputLabelProps={{
-              shrink: !!uuid,
-            }}
             InputProps={{
               readOnly: !isEdit,
             }}
@@ -253,13 +246,10 @@ export default function UsuarioDetail() {
           <TextField
             fullWidth
             label="Usuário"
-            name="usuario"
-            value={form.usuario}
+            name="username"
+            value={form.username}
             onChange={handleChange}
             required
-            InputLabelProps={{
-              shrink: !!uuid,
-            }}
             InputProps={{
               readOnly: !isEdit,
             }}
@@ -267,7 +257,7 @@ export default function UsuarioDetail() {
         </Grid>
       </Grid>
       {isEdit && (
-        <Grid container spacing={2} className="mt-1">
+        <Grid container spacing={3} className="mt-1">
           <Grid item xs={6}>
             <TextField
               fullWidth
@@ -306,7 +296,7 @@ export default function UsuarioDetail() {
       )}
       {/* Caixa para os botões */}
       <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-        <Box sx={{ display: "flex", gap: 85 }}>
+        <Box sx={{ display: "flex", gap: 3 }}>
           <Button
             variant="outlined"
             color="secondary"
@@ -321,7 +311,7 @@ export default function UsuarioDetail() {
               type="submit"
               sx={{ minWidth: "175px" }}
             >
-              Cadastrar
+              {!isView ? "Cadastrar" : "Atualizar"} 
             </Button>
           )}
         </Box>
