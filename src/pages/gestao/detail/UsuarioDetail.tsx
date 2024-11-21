@@ -1,8 +1,19 @@
-import React, { ChangeEvent, useState } from 'react';
-import { Grid, TextField, Button, Box, Select, MenuItem, InputLabel, FormControl, Snackbar, Alert } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import CadastroUsuarioService from "../../services/cadastroUsuario/CadastroUsuarioService";
-import { UserRole } from '../../models/UserRole';
+import {
+  Alert,
+  Box,
+  Button,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  Snackbar,
+  TextField,
+} from "@mui/material";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { UserRole } from "../../../models/UserRole";
+import UsuarioService from "../../../services/usuario/UsuarioService";
 
 export interface CadastroUsuarioForm {
   identificacao: string;
@@ -10,12 +21,16 @@ export interface CadastroUsuarioForm {
   email: string;
   usuario: string;
   senha: string;
-  confirmarSenha: string; 
+  confirmarSenha: string;
   tipoUsuario: UserRole;
 }
 
-export default function CadastroUsuario() {
+const usuarioService = new UsuarioService();
+
+export default function UsuarioDetail() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isEdit, isView, uuid } = location.state || {};
 
   const [form, setForm] = useState<CadastroUsuarioForm>({
     identificacao: "",
@@ -23,8 +38,8 @@ export default function CadastroUsuario() {
     email: "",
     usuario: "",
     senha: "",
-    confirmarSenha: "", 
-    tipoUsuario: UserRole.DEFAULT,
+    confirmarSenha: "",
+    tipoUsuario: UserRole.USER,
   });
 
   const [alertState, setAlertState] = useState(false);
@@ -37,6 +52,20 @@ export default function CadastroUsuario() {
       [name]: value,
     }));
   };
+
+  const findUser = () => {
+    usuarioService.find(uuid).then((response) => {
+      if (response) {
+        setForm(response);
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (uuid) {
+      findUser();
+    }
+  }, [uuid]);
 
   const validarSenha = (senha: string): boolean => {
     const temNumero = /\d/; // Verifica se contém números
@@ -53,13 +82,15 @@ export default function CadastroUsuario() {
     // Validação dos dígitos verificadores
     let soma = 0;
     let resto;
-    for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+    for (let i = 1; i <= 9; i++)
+      soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
     resto = (soma * 10) % 11;
     if (resto === 10 || resto === 11) resto = 0;
     if (resto !== parseInt(cpf.substring(9, 10))) return false;
 
     soma = 0;
-    for (let i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+    for (let i = 1; i <= 10; i++)
+      soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
     resto = (soma * 10) % 11;
     if (resto === 10 || resto === 11) resto = 0;
     return resto === parseInt(cpf.substring(10, 11));
@@ -67,34 +98,46 @@ export default function CadastroUsuario() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-  
-    if (!form.identificacao || !form.nome || !form.email || !form.usuario || !form.senha || !form.confirmarSenha) {
+
+    if (
+      !form.identificacao ||
+      !form.nome ||
+      !form.email ||
+      !form.usuario ||
+      !form.senha ||
+      !form.confirmarSenha
+    ) {
       alert("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
-  
+
     if (!validarCPF(form.identificacao)) {
       alert("CPF inválido.");
       return;
     }
-  
+
     if (form.senha !== form.confirmarSenha) {
       alert("As senhas não coincidem.");
       return;
     }
-  
+
     if (!validarSenha(form.senha)) {
       alert("A senha deve conter pelo menos um número e uma letra maiúscula.");
       return;
     }
-  
+
     try {
-      const cadastroService = new CadastroUsuarioService();
-      const response = await cadastroService.cadastrar(form);
-      
+      if (isEdit) {
+        const response = await usuarioService.atualizar(uuid,form);
+        setSuccessMessage(response.mensagem);
+        setAlertState(true);
+        return;
+      }
+      const response = await usuarioService.cadastrar(form);
+
       setSuccessMessage(response.mensagem);
       setAlertState(true);
-  
+
       setForm({
         identificacao: "",
         nome: "",
@@ -102,7 +145,7 @@ export default function CadastroUsuario() {
         usuario: "",
         senha: "",
         confirmarSenha: "",
-        tipoUsuario: UserRole.DEFAULT,
+        tipoUsuario: UserRole.USER,
       });
     } catch (error) {
       console.error("Erro ao cadastrar usuário:", error);
@@ -111,7 +154,7 @@ export default function CadastroUsuario() {
   };
 
   const handleCancel = () => {
-    navigate(-1); 
+    navigate(-1);
   };
 
   const handleClose = () => {
@@ -119,7 +162,18 @@ export default function CadastroUsuario() {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ width: '80%', mx: 'auto', p: 2, border: '1px solid #ccc', borderRadius: '8px', mt: 5 }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        width: "80%",
+        mx: "auto",
+        p: 2,
+        border: "1px solid #ccc",
+        borderRadius: "8px",
+        mt: 5,
+      }}
+    >
       <Grid container spacing={2}>
         <Grid item xs={6}>
           <TextField
@@ -129,6 +183,12 @@ export default function CadastroUsuario() {
             value={form.identificacao}
             onChange={handleChange}
             required
+            InputLabelProps={{
+              shrink: !!uuid,
+            }}
+            InputProps={{
+              readOnly: !isEdit,
+            }}
           />
         </Grid>
         <Grid item xs={6}>
@@ -139,6 +199,12 @@ export default function CadastroUsuario() {
             value={form.nome}
             onChange={handleChange}
             required
+            InputLabelProps={{
+              shrink: !!uuid,
+            }}
+            InputProps={{
+              readOnly: !isEdit,
+            }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -150,6 +216,12 @@ export default function CadastroUsuario() {
             value={form.email}
             onChange={handleChange}
             required
+            InputLabelProps={{
+              shrink: !!uuid,
+            }}
+            InputProps={{
+              readOnly: !isEdit,
+            }}
           />
         </Grid>
         <Grid item xs={6}>
@@ -167,6 +239,7 @@ export default function CadastroUsuario() {
                 }))
               }
               label="Tipo de Usuário"
+              disabled={!isEdit}
             >
               {Object.values(UserRole).map((tipo) => (
                 <MenuItem key={tipo} value={tipo}>
@@ -184,55 +257,79 @@ export default function CadastroUsuario() {
             value={form.usuario}
             onChange={handleChange}
             required
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            fullWidth
-            label="Senha"
-            name="senha"
-            type="password"
-            value={form.senha}
-            onChange={handleChange}
-            required
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            fullWidth
-            label="Confirmar Senha"
-            name="confirmarSenha"
-            type="password"
-            value={form.confirmarSenha}
-            onChange={handleChange}
-            required
+            InputLabelProps={{
+              shrink: !!uuid,
+            }}
+            InputProps={{
+              readOnly: !isEdit,
+            }}
           />
         </Grid>
       </Grid>
+      {isEdit && (
+        <Grid container spacing={2} className="mt-1">
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              label="Senha"
+              name="senha"
+              type="password"
+              value={form.senha}
+              onChange={handleChange}
+              required
+              InputLabelProps={{
+                shrink: !!uuid,
+              }}
+              InputProps={{
+                readOnly: !isEdit,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              label="Confirmar Senha"
+              name="confirmarSenha"
+              type="password"
+              value={form.confirmarSenha}
+              onChange={handleChange}
+              required
+              InputLabelProps={{
+                shrink: !!uuid,
+              }}
+              InputProps={{
+                readOnly: !isEdit,
+              }}
+            />
+          </Grid>
+        </Grid>
+      )}
       {/* Caixa para os botões */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-        <Box sx={{ display: 'flex', gap: 85 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+        <Box sx={{ display: "flex", gap: 85 }}>
           <Button
             variant="outlined"
             color="secondary"
             onClick={handleCancel}
-            sx={{ minWidth: '175px' }}
+            sx={{ minWidth: "175px" }}
           >
-            Cancelar
+            {isEdit ? "Cancelar" : "Voltar"}
           </Button>
-          <Button
-            variant="contained"
-            type="submit"
-            sx={{ minWidth: '175px' }}
-          >
-            Cadastrar
-          </Button>
+          {isEdit && (
+            <Button
+              variant="contained"
+              type="submit"
+              sx={{ minWidth: "175px" }}
+            >
+              Cadastrar
+            </Button>
+          )}
         </Box>
       </Box>
 
       {/* Mensagem de sucesso */}
       <Snackbar open={alertState} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
           {successMessage}
         </Alert>
       </Snackbar>

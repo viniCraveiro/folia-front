@@ -31,11 +31,11 @@ import {
   IFiltroUsuario,
   IUsuarioList,
   newFiltro,
-  UsuarioList,
 } from "./UsuarioCollections";
+import { FiltroUsuario } from "./FiltroUsuario";
 
 const columns: GridColDef[] = [
-  { field: "idendificacao", headerName: "Idendificação", width: 180 },
+  { field: "identificacao", headerName: "Identificação", width: 180 },
   { field: "nome", headerName: "Nome", width: 400 },
   { field: "abertos", headerName: "Boletos pagos", width: 150 },
   { field: "total", headerName: "Total de Boletos", width: 150 },
@@ -48,7 +48,9 @@ const usuarioService = new UsuarioService();
 const ListagemUsuario = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const [listUsuario, setListUsuario] = useState<IUsuarioList[]>([]);
-  const [filtroUsuario, setFiltroUsuario] = useState<IFiltroUsuario>(newFiltro());
+  const [filtroUsuario, setFiltroUsuario] = useState<IFiltroUsuario>(
+    newFiltro()
+  );
 
   const handleOpenFilter = () => setFilterOpen(true);
   const handleCloseFilter = () => setFilterOpen(false);
@@ -104,18 +106,24 @@ const ListagemUsuario = () => {
     <Box className="p-8">
       <Box className="mb-2 gap-4 grid grid-cols-2 justify-between items-center">
         <Box>
-          <TextField
+        <TextField
             fullWidth
-            id="search"
-            label="Buscar por nome ou idendificação"
-            name="filsearchtro"
+            id="nome"
+            label="Buscar por nome"
+            name="nome"
             variant="standard"
             size="small"
             color="primary"
+            value={filtroUsuario.nome}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton className="mb-4">
+                  <IconButton
+                    className="mb-4"
+                    onClick={() => filter(filtroUsuario)}
+                  >
                     <SearchIcon />
                   </IconButton>
                 </InputAdornment>
@@ -165,7 +173,7 @@ const ListagemUsuario = () => {
                   borderRadius: 4,
                   p: 1,
                 }}
-                onClick={() => {}}
+                onClick={() => navigate("/usuario/detail", { state: {isEdit: true,isView: false, uuid: ""}})}
               >
                 <Typography variant="body2">Criar usuário</Typography>
               </Button>
@@ -246,12 +254,14 @@ const ListagemUsuario = () => {
                     <IconButton
                       size="small"
                       sx={{ width: 20, height: 20, p: 0, m: 0, mr: 1.5 }}
+                      onClick={() => navigate("/usuario/detail", { state: {isEdit: false,isView: true, uuid: row.id}})}
                     >
                       <VisibilityIcon />
                     </IconButton>
                     <IconButton
                       size="small"
                       sx={{ width: 20, height: 20, p: 0, m: 0, mr: 1.5 }}
+                      onClick={() => navigate("/usuario/detail", { state: {isEdit: true,isView: false, uuid: row.id}})}
                     >
                       <EditIcon />
                     </IconButton>
@@ -262,6 +272,15 @@ const ListagemUsuario = () => {
           </Table>
         </TableContainer>
       </Box>
+      <div>
+        <FiltroUsuario
+          open={filterOpen}
+          onReset={resetFilter}
+          onClose={handleCloseFilter}
+          filtroProps={filtroUsuario}
+          onSubmit={filter}
+        />
+      </div>
     </Box>
   );
 };

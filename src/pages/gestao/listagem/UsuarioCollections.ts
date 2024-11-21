@@ -37,7 +37,7 @@ export const newFiltro = () => {
     return {
         empresaUUID: AuthService.getInstance().getEmpresa()?.uuid ?? null,
         nome: "",
-        idendificacao: "",
+        identificacao: "",
         tipoUsuario: null,
     };
 };
@@ -69,7 +69,8 @@ const generateUsuarioList = (): IUsuarioList[] => {
         const boletosPagos = getRandomInt(0, boletosTotal);
 
         return {
-            idendificacao: `user_${index + 1}`,
+            id: `${index + 1}`,
+            identificacao: `user_${index + 1}`,
             nome: getRandomName(),
             boletosTotal,
             boletosPagos,
