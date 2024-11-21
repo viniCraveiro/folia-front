@@ -250,7 +250,7 @@ const HomePageAdmin = () => {
             <Typography variant="body1" className="items-center">
               Clientes
             </Typography>
-            <Link href="#"> {"Ver Todos >"} </Link>
+            <Link ref="#" to={""}> {"Ver Todos >"} </Link>
           </div>
           {Object.values(clientesData).map((cliente, index) => (
             <Box key={index} className="rounded-md w-full h-16 mt-6">
