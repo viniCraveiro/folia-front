@@ -41,9 +41,7 @@ const BoletoDetail = () => {
   const buscarBoleto = () => {
     boletoService.buscarBoleto(uuid, showAlert).then((response) => {
       if (response) {
-        console.log(response);
         setBoletoData(response);
-        console.log(boletoData);
       }
     });
   };
@@ -293,20 +291,22 @@ const BoletoDetail = () => {
             </Box>
           </Box>
 
-          <Box className="gap-5 grid grid-cols-1 justify-center">
-            <Box className="flex justify-center">
-              <QRCodeComponent url={boletoData?.url ?? ""} />
+          <Box className="gap-4 grid grid-cols-1 justify-center">
+            <Box>
+              <Box className="flex justify-center">
+                <QRCodeComponent url={boletoData?.url ?? ""} />
+              </Box>
             </Box>
             <Box
               className="flex justify-center"
               sx={{
-                gap: 5,
+                gap: 4,
               }}
             >
               <Button
                 className="flex-initial w-1/4"
                 variant="outlined"
-                color="primary"
+                color="secondary"
                 startIcon={<ContentCopyIcon />}
                 sx={{
                   borderRadius: 4,
@@ -322,7 +322,7 @@ const BoletoDetail = () => {
               <Box className="flex-initial w-1/4 justify-center">
                 <Button
                   variant="outlined"
-                  color="primary"
+                  color="secondary"
                   startIcon={<PrintIcon />}
                   sx={{
                     borderRadius: 4,
@@ -338,7 +338,7 @@ const BoletoDetail = () => {
                     <CircularProgress
                       size={24}
                       sx={{
-                        color: theme.palette.primary.main,
+                        color: theme.palette.secondary.main,
                         position: "absolute",
                       }}
                     />
@@ -349,7 +349,7 @@ const BoletoDetail = () => {
               <Button
                 className="flex-initial w-1/4"
                 variant="outlined"
-                color="primary"
+                color="secondary"
                 startIcon={<DownloadIcon />}
                 sx={{
                   borderRadius: 4,
@@ -373,7 +373,7 @@ const BoletoDetail = () => {
                   <CircularProgress
                     size={24}
                     sx={{
-                      color: theme.palette.primary.main,
+                      color: theme.palette.secondary.main,
                       position: "absolute",
                     }}
                   />
