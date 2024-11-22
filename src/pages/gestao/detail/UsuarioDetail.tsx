@@ -267,9 +267,6 @@ export default function UsuarioDetail() {
               value={form.senha}
               onChange={handleChange}
               required
-              InputLabelProps={{
-                shrink: !!uuid,
-              }}
               InputProps={{
                 readOnly: !isEdit,
               }}
@@ -284,9 +281,6 @@ export default function UsuarioDetail() {
               value={form.confirmarSenha}
               onChange={handleChange}
               required
-              InputLabelProps={{
-                shrink: !!uuid,
-              }}
               InputProps={{
                 readOnly: !isEdit,
               }}

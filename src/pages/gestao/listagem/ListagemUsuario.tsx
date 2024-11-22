@@ -19,38 +19,41 @@ import {
   Typography,
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthService from "../../../services/AuthServices";
 import UsuarioService from "../../../services/usuario/UsuarioService";
 import { useAlert } from "../../components/AlertProvider";
 import { normalise, ProgressBar } from "../../components/ProgressBar";
 import TableHeader from "../../components/TableHeader";
+import { FiltroUsuario } from "./FiltroUsuario";
 import {
   getBarColor,
   IFiltroUsuario,
   IUsuarioList,
   newFiltro,
 } from "./UsuarioCollections";
-import { FiltroUsuario } from "./FiltroUsuario";
 
 const columns: GridColDef[] = [
-  { field: "identificacao", headerName: "Identificação", width: 180 },
-  { field: "nome", headerName: "Nome", width: 400 },
-  { field: "abertos", headerName: "Boletos pagos", width: 150 },
-  { field: "total", headerName: "Total de Boletos", width: 150 },
-  { field: "balanco", headerName: "Resumo de Boletos", width: 300 },
-  { field: "acoes", headerName: "", cellClassName: "justify-end", width: 100 },
+  { field: "identificacao", headerName: "Identificação", width: 180, sortable: true },
+  { field: "nome", headerName: "Nome", width: 400, sortable: true },
+  { field: "abertos", headerName: "Boletos pagos", width: 150, sortable: false },
+  { field: "total", headerName: "Total de Boletos", width: 150, sortable: false },
+  { field: "balanco", headerName: "Resumo de Boletos", width: 300, sortable: false },
+  { field: "acoes", headerName: "", cellClassName: "justify-end", width: 120, sortable: false,
+  },
 ];
 
 const usuarioService = new UsuarioService();
 
 const ListagemUsuario = () => {
   const [filterOpen, setFilterOpen] = useState(false);
-  const [listUsuario, setListUsuario] = useState<IUsuarioList[]>([]);
+  const [list, setList] = useState<IUsuarioList[]>([]);
   const [filtroUsuario, setFiltroUsuario] = useState<IFiltroUsuario>(
     newFiltro()
   );
+  const [orderBy, setOrderBy] = useState<string | null>(null);
+  const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc");
 
   const handleOpenFilter = () => setFilterOpen(true);
   const handleCloseFilter = () => setFilterOpen(false);
@@ -75,11 +78,20 @@ const ListagemUsuario = () => {
     }));
   };
 
+  const handleSort = (column: string) => {
+    if (orderBy === column) {
+      setOrderDirection(orderDirection === "asc" ? "desc" : "asc");
+    } else {
+      setOrderBy(column);
+      setOrderDirection("asc");
+    }
+  };
+
   const filter = (filtro: IFiltroUsuario) => {
     filtro.empresaUUID = empresaUuid;
     usuarioService.filtrar(filtro, showAlert).then((response) => {
       if (response) {
-        setListUsuario(response);
+        setList(response);
         if (response.length === 0) {
           showAlert({
             message: "Verifique seus filtros",
@@ -102,11 +114,24 @@ const ListagemUsuario = () => {
     filter(filtroUsuario);
   }, []);
 
+  const sortedList = useMemo(() => {
+    if (!orderBy) return list;
+
+    return [...list].sort((a, b) => {
+      const valueA = a[orderBy];
+      const valueB = b[orderBy];
+
+      if (valueA < valueB) return orderDirection === "asc" ? -1 : 1;
+      if (valueA > valueB) return orderDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [list, orderBy, orderDirection]);
+
   return (
     <Box className="p-8">
       <Box className="mb-2 gap-4 grid grid-cols-2 justify-between items-center">
         <Box>
-        <TextField
+          <TextField
             fullWidth
             id="nome"
             label="Buscar por nome"
@@ -157,23 +182,16 @@ const ListagemUsuario = () => {
               <Button
                 className="w-2/5"
                 variant="contained"
-                startIcon={<SearchIcon />}
-                sx={{
-                  borderRadius: 4,
-                  p: 1,
-                }}
-              >
-                <Typography variant="body2">Ações</Typography>
-              </Button>
-              <Button
-                className="w-2/5"
-                variant="contained"
                 startIcon={<AddCircleIcon />}
                 sx={{
                   borderRadius: 4,
                   p: 1,
                 }}
-                onClick={() => navigate("/usuario/detail", { state: {isEdit: true,isView: false, uuid: ""}})}
+                onClick={() =>
+                  navigate("/usuario/detail", {
+                    state: { isEdit: true, isView: false, uuid: "" },
+                  })
+                }
               >
                 <Typography variant="body2">Criar usuário</Typography>
               </Button>
@@ -198,13 +216,18 @@ const ListagemUsuario = () => {
           }}
         >
           <Table stickyHeader size="small">
-            <TableHeader columns={columns} />
+            <TableHeader
+              columns={columns}
+              orderBy={orderBy}
+              orderDirection={orderDirection}
+              onSort={handleSort}
+            />
             <TableBody
               sx={{
                 "&:last-child td, &:last-child th": { border: 0 },
               }}
             >
-              {listUsuario.map((row, index) => (
+              {sortedList.map((row, index) => (
                 <TableRow key={row.identificacao + index}>
                   <TableCell>{row.identificacao}</TableCell>
                   <TableCell>{row.nome}</TableCell>
@@ -254,14 +277,22 @@ const ListagemUsuario = () => {
                     <IconButton
                       size="small"
                       sx={{ width: 20, height: 20, p: 0, m: 0, mr: 1.5 }}
-                      onClick={() => navigate("/usuario/detail", { state: {isEdit: false,isView: false, uuid: row.id}})}
+                      onClick={() =>
+                        navigate("/usuario/detail", {
+                          state: { isEdit: false, isView: false, uuid: row.id },
+                        })
+                      }
                     >
                       <VisibilityIcon />
                     </IconButton>
                     <IconButton
                       size="small"
                       sx={{ width: 20, height: 20, p: 0, m: 0, mr: 1.5 }}
-                      onClick={() => navigate("/usuario/detail", { state: {isEdit: true,isView: true, uuid: row.id}})}
+                      onClick={() =>
+                        navigate("/usuario/detail", {
+                          state: { isEdit: true, isView: true, uuid: row.id },
+                        })
+                      }
                     >
                       <EditIcon />
                     </IconButton>

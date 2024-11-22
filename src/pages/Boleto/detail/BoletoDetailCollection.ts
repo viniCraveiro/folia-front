@@ -12,6 +12,7 @@ export interface IBanco {
 
 export class BoletoData {
     uuid: string;
+    numero: string;
     banco: IBanco;
     estabelecimento: string;
     status: StatusBoleto;

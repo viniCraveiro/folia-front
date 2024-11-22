@@ -5,7 +5,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
   Box,
-  Button,
   Chip,
   IconButton,
   InputAdornment,
@@ -15,12 +14,11 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-  TextField,
-  Typography,
+  TextField
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import dayjs from "dayjs";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthService from "../../../services/AuthServices";
 import BoletoService from "../../../services/boletos/BoletoService";
@@ -40,15 +38,15 @@ import {
 const boletoService = new BoletoService();
 
 const columns: GridColDef[] = [
-  { field: "status", headerName: "Status", width: 100 },
-  { field: "identificacao", headerName: "Identificação", width: 120 },
-  { field: "nome", headerName: "Nome", width: 250 },
-  { field: "banco", headerName: "Banco", width: 200 },
-  { field: "parcela", headerName: "Parcela", width: 60 },
-  { field: "dataEmissao", headerName: "Data de emissão", width: 140 },
-  { field: "dataVencimento", headerName: "Data de vencimento", width: 140 },
-  { field: "valor", headerName: "Valor", width: 80, type: "number" },
-  { field: "acoes", headerName: "", cellClassName: "justify-end", width: 130 },
+  { field: "status", headerName: "Status", width: 150 ,sortable: true},
+  { field: "identificacao", headerName: "Identificação", width: 150 ,sortable: true},
+  { field: "nome", headerName: "Nome", width: 250 ,sortable: true},
+  { field: "banco", headerName: "Banco", width: 200 ,sortable: true},
+  { field: "parcela", headerName: "Parcela", width: 150 ,sortable: true},
+  { field: "dataEmissao", headerName: "Data de emissão", width: 150 ,sortable: true},
+  { field: "dataVencimento", headerName: "Data de vencimento", width: 150 ,sortable: true},
+  { field: "valor", headerName: "Valor", width: 150, type: "number" ,sortable: true},
+  { field: "acoes", headerName: "", cellClassName: "justify-end", width: 120 ,sortable: false},
 ];
 
 const EmpresaBoletoList = () => {
@@ -63,6 +61,8 @@ const EmpresaBoletoList = () => {
   });
   const [filterOpen, setFilterOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
+  const [orderBy, setOrderBy] = useState<string | null>(null);
+  const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc");
 
   const handleOpenFilter = () => setFilterOpen(true);
   const handleOpenStatus = (status: StatusBoleto, uuid: string) => {
@@ -87,7 +87,14 @@ const EmpresaBoletoList = () => {
       [name]: value,
     }));
   };
-
+  const handleSort = (column: string) => {
+    if (orderBy === column) {
+      setOrderDirection(orderDirection === "asc" ? "desc" : "asc");
+    } else {
+      setOrderBy(column);
+      setOrderDirection("asc");
+    }
+  };
   const filter = (filtro: IFiltroBoleto) => {
     filtro.empresaUUID = empresaUuid;
     boletoService.filtrarBoletosEmpresa(filtro, showAlert).then((response) => {
@@ -114,6 +121,19 @@ const EmpresaBoletoList = () => {
   useEffect(() => {
     filter(filtroBoleto);
   }, [statusBoletoModal]);
+
+  const sortedList = useMemo(() => {
+    if (!orderBy) return list;
+  
+    return [...list].sort((a, b) => {
+      const valueA = a[orderBy];
+      const valueB = b[orderBy];
+  
+      if (valueA < valueB) return orderDirection === "asc" ? -1 : 1;
+      if (valueA > valueB) return orderDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [list, orderBy, orderDirection]);
 
   return (
     <Box className="p-8">
@@ -182,21 +202,6 @@ const EmpresaBoletoList = () => {
               />
             </div>
           </Box>
-          <Box>
-            <Box className="gap-2 flex flex-row-reverse items-center">
-              <Button
-                className="w-2/5"
-                variant="contained"
-                startIcon={<SearchIcon />}
-                sx={{
-                  borderRadius: 4,
-                  p: 1,
-                }}
-              >
-                <Typography variant="body2">Ações</Typography>
-              </Button>
-            </Box>
-          </Box>
         </Box>
       </Box>
       <Box
@@ -216,13 +221,18 @@ const EmpresaBoletoList = () => {
           className="rounded-b-lg mt-1"
         >
           <Table stickyHeader size="small">
-            <TableHeader columns={columns} />
+          <TableHeader
+              columns={columns}
+              orderBy={orderBy}
+              orderDirection={orderDirection}
+              onSort={handleSort}
+            />
             <TableBody
               sx={{
                 "&:last-child td, &:last-child th": { border: 0 },
               }}
             >
-              {list.map((row, index) => (
+              {sortedList.map((row, index) => (
                 <TableRow key={row.uuid + index}>
                   <TableCell>
                     <Chip

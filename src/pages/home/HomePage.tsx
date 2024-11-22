@@ -9,10 +9,10 @@ import "react-datepicker/dist/react-datepicker.css";
 
 const generateRandomData = (numPoints: number, labels: string[]) => {
   const data = [];
-  let lastValue = 100;
+  let lastValue = 20;
 
   for (let i = 0; i < numPoints; i++) {
-    const randomChange = Math.floor(Math.random() * 100) - 50;
+    const randomChange = Math.floor(Math.random() * 20) - 5;
     lastValue = Math.max(0, lastValue + randomChange);
     data.push({ label: labels[i], value: lastValue });
   }
@@ -28,18 +28,18 @@ const HomePage: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null); // Estado para a data selecionada
 
   const monthlyData = {
-    'Novembro 2023': { totalValue: 211, totalOpen: 0, totalPaid: 205, totalOverdue: 6 },
-    'Dezembro 2023': { totalValue: 254, totalOpen: 1, totalPaid: 241, totalOverdue: 12 },
-    'Janeiro 2024': { totalValue: 256, totalOpen: 2, totalPaid: 250, totalOverdue: 4 },
-    'Fevereiro 2024': { totalValue: 213, totalOpen: 2, totalPaid: 205, totalOverdue: 8 },
-    'Março 2024': { totalValue: 226, totalOpen: 0, totalPaid: 218, totalOverdue: 8 },
-    'Abril 2024': { totalValue: 219, totalOpen: 2, totalPaid: 207, totalOverdue: 10 },
-    'Maio 2024': { totalValue: 242, totalOpen: 0, totalPaid: 235, totalOverdue: 7 },
-    'Junho 2024': { totalValue: 224, totalOpen: 0, totalPaid: 213, totalOverdue: 11 },
-    'Julho 2024': { totalValue: 231, totalOpen: 2, totalPaid: 225, totalOverdue: 4 },
-    'Agosto 2024': { totalValue: 216, totalOpen: 3, totalPaid: 212, totalOverdue: 1 },
-    'Setembro 2024': { totalValue: 208, totalOpen: 53, totalPaid: 150, totalOverdue: 5 },
-    'Outubro 2024': { totalValue: 220, totalOpen: 201, totalPaid: 19, totalOverdue: 0 },
+    'Novembro 2023': { totalValue: 11, totalOpen: 0, totalPaid: 2, totalOverdue: 1 },
+    'Dezembro 2023': { totalValue: 7, totalOpen: 1, totalPaid: 3, totalOverdue: 2 },
+    'Janeiro 2024': { totalValue: 22, totalOpen: 13, totalPaid: 6, totalOverdue: 2 },
+    'Fevereiro 2024': { totalValue: 5, totalOpen: 2, totalPaid: 4, totalOverdue: 2 },
+    'Março 2024': { totalValue: 6, totalOpen: 0, totalPaid: 5, totalOverdue: 3 },
+    'Abril 2024': { totalValue: 12, totalOpen: 2, totalPaid: 6, totalOverdue: 4 },
+    'Maio 2024': { totalValue: 14, totalOpen: 0, totalPaid: 8, totalOverdue: 8 },
+    'Junho 2024': { totalValue: 11, totalOpen: 0, totalPaid: 9, totalOverdue: 5 },
+    'Julho 2024': { totalValue: 2, totalOpen: 2, totalPaid: 225, totalOverdue: 4 },
+    'Agosto 2024': { totalValue: 3, totalOpen: 3, totalPaid: 1, totalOverdue: 1 },
+    'Setembro 2024': { totalValue: 4, totalOpen: 2, totalPaid: 2, totalOverdue: 5 },
+    'Outubro 2024': { totalValue: 16, totalOpen: 5, totalPaid: 3, totalOverdue: 7 },
   };
 
   const [totalValue, setTotalValue] = useState(monthlyData[selectedMonth]?.totalValue || 0);
@@ -232,7 +232,7 @@ const ProgressBar = ({ label, value, color, isTotal }: { label: string; value: n
     <div className="mb-4">
       <LinearProgress
         variant="determinate"
-        value={isTotal ? 100 : (value / 256) * 100}
+        value={isTotal ? 100 : (value / 22) * 100}
         style={{ backgroundColor: '#D3D3D3', height: 6 }}
         sx={{ '& .MuiLinearProgress-bar': { backgroundColor: color } }}
       />

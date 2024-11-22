@@ -33,10 +33,7 @@ const BoletoDetail = () => {
   const { uuid } = location.state || {};
   const { showAlert } = useAlert();
   const [boletoData, setBoletoData] = useState<BoletoData>();
-  const [loading, setLoading] = useState({
-    download: false,
-    imprimir: false,
-  });
+  const [loading, setLoading] = useState({ download: false, imprimir: false, });
 
   const buscarBoleto = () => {
     boletoService.buscarBoleto(uuid, showAlert).then((response) => {
@@ -85,7 +82,7 @@ const BoletoDetail = () => {
                 InputProps={{
                   readOnly: true,
                 }}
-                value={boletoData?.uuid ?? ""}
+                value={boletoData?.numero ?? ""}
                 InputLabelProps={{
                   shrink: !!uuid,
                 }}
