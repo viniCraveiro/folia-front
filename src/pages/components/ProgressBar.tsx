@@ -15,7 +15,7 @@ export const ProgressBar = styled(LinearProgress)<ProgressProps>(
     height: barheight ?? 10,
     borderRadius: 20,
     [`&.${linearProgressClasses.colorPrimary}`]: {
-      backgroundColor: theme.palette.grey[400],
+      // backgroundColor: theme.palette.grey[400],
     },
     [`& .${linearProgressClasses.bar}`]: {
       borderRadius: 14,

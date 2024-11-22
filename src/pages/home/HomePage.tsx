@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { LinearProgress, Typography, Box, Divider } from '@mui/material';
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
@@ -168,7 +169,7 @@ const HomePage: React.FC = () => {
               if (isSelectedDay) return "bg-[#ffabab]"; // Dia selecionado
             }}
             calendarClassName="border-none"
-            prevMonthButtonLabel="←"
+            previousMonthButtonLabel="←"
             nextMonthButtonLabel="→"
             shouldCloseOnSelect={false}
             renderDayContents={(day) => <span>{day}</span>}
