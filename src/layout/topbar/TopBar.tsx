@@ -1,10 +1,8 @@
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import AssignmentIcon from "@mui/icons-material/Assignment";
 import BadgeIcon from "@mui/icons-material/Badge";
 import HomeIcon from "@mui/icons-material/Home";
 import ReceiptIcon from "@mui/icons-material/Receipt";
-import RequestPageIcon from "@mui/icons-material/RequestPage";
 
 import {
   AppBar,
@@ -62,12 +60,18 @@ const TopBar = () => {
     <AppBar position="static" className="bg-white shadow-md">
       <Toolbar className="flex justify-between items-center">
         <div className="flex items-center space-x-4">
-          <img
+          {(window.origin.includes("localhost")) ? < img
             src="/src/assets/logo/logo.svg"
             alt="Logo"
             className="h-8 cursor-pointer"
             onClick={() => navigate("/")}
+          /> : <img
+            src="/assets/logo-BbS5tpDt.svg"
+            alt="Logo"
+            className="h-8 cursor-pointer"
+            onClick={() => navigate("/")}
           />
+          }
 
           <MenuLink
             key={'Início'}
