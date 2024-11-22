@@ -122,7 +122,7 @@ const TopBar = () => {
                   <MenuItem
                     onClick={() => {
                       handleCloseGestao();
-                      navigate("/listagemusuario");
+                      navigate("/usuario");
                     }}
                   >
                     Usuários

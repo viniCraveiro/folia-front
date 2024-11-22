@@ -37,6 +37,15 @@ export interface IBoletosData {
     quantidadeBoletosProximosVencimento: number;
 }
 
+export interface IUserBoletosData {
+    identificacao: string;
+    nome: string;
+    usuario: string;
+    quantidadeBoletos: number;
+    quantidadeBoletosAbertos: number;
+    quantidadeBoletosVencidos: number;
+}
+
 export class DashboardDataSet {
     public data: IBoletosData;
 

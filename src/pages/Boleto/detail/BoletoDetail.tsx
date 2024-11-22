@@ -5,23 +5,56 @@ import {
   Box,
   Button,
   Chip,
+  CircularProgress,
   Grid,
-  InputAdornment,
   Paper,
   TextField,
   Typography,
 } from "@mui/material";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import theme from "../../../layout/Theme";
+import BoletoService from "../../../services/boletos/BoletoService";
+import { useAlert } from "../../components/AlertProvider";
 import QRCodeComponent from "../../components/QRCodeComponent";
+import {
+  copiarUrl,
+  downloadURL,
+  imprimirURL,
+} from "../../components/UrlAPIUtil";
 import { handleStyleChips, StatusBoleto } from "../StatusBoleto";
+import { BoletoData } from "./BoletoDetailCollection";
+
+const boletoService = new BoletoService();
 
 const BoletoDetail = () => {
+  const location = useLocation();
+  const { uuid } = location.state || {};
+  const { showAlert } = useAlert();
+  const [boletoData, setBoletoData] = useState<BoletoData>();
+  const [loading, setLoading] = useState({
+    download: false,
+    imprimir: false,
+  });
+
+  const buscarBoleto = () => {
+    boletoService.buscarBoleto(uuid, showAlert).then((response) => {
+      if (response) {
+        setBoletoData(response);
+      }
+    });
+  };
+
+  useEffect(() => {
+    console.log(uuid);
+    if (uuid) {
+      buscarBoleto();
+    }
+  }, [uuid]);
+
   return (
     <Box className="p-8">
-      <Box className="flex justify-center">
-        <Typography variant="h5" gutterBottom>
-          Boleto
-        </Typography>
-      </Box>
       <Grid
         item
         xs={12}
@@ -43,25 +76,31 @@ const BoletoDetail = () => {
           <Box className="gap-5 grid grid-cols-1 justify-between">
             <Box className="gap-5 grid grid-cols-2">
               <TextField
-                id="search"
+                id="Numero"
                 label="Numero"
-                defaultValue="123"
-                name="filsearchtro"
+                name="Numero"
                 variant="standard"
                 size="small"
                 color="primary"
                 InputProps={{
                   readOnly: true,
                 }}
+                value={boletoData?.uuid ?? ""}
+                InputLabelProps={{
+                  shrink: !!uuid,
+                }}
               />
               <TextField
-                id="search"
+                id="estabelecimento"
                 label="Estabelecimento"
-                defaultValue="Teclado.INC"
-                name="filsearchtro"
+                name="estabelecimento"
                 variant="standard"
                 size="small"
                 color="primary"
+                value={boletoData?.estabelecimento ?? ""}
+                InputLabelProps={{
+                  shrink: !!uuid,
+                }}
                 InputProps={{
                   readOnly: true,
                 }}
@@ -69,25 +108,33 @@ const BoletoDetail = () => {
             </Box>
             <Box className="gap-5 grid grid-cols-2">
               <TextField
-                id="search"
+                id="banco"
                 label="Banco"
-                defaultValue="ITAU"
-                name="filsearchtro"
+                name="banco"
                 variant="standard"
                 size="small"
                 color="primary"
+                value={boletoData?.banco.nome ?? ""}
+                InputLabelProps={{
+                  shrink: !!uuid,
+                }}
                 InputProps={{
                   readOnly: true,
                 }}
               />
               <TextField
-                id="search"
+                id="agencia"
                 label="Agencia"
-                defaultValue="12345"
-                name="filsearchtro"
+                name="agencia"
                 variant="standard"
                 size="small"
                 color="primary"
+                value={`${boletoData?.banco.agencia ?? ""} - ${
+                  boletoData?.banco.agenciaDigito ?? ""
+                }`}
+                InputLabelProps={{
+                  shrink: !!uuid,
+                }}
                 InputProps={{
                   readOnly: true,
                 }}
@@ -95,62 +142,88 @@ const BoletoDetail = () => {
             </Box>
             <Box className="gap-5 grid grid-cols-5">
               <TextField
-                id="search"
+                id="conta"
                 label="Conta"
-                defaultValue="12345"
-                name="filsearchtro"
+                name="conta"
                 variant="standard"
                 size="small"
                 color="primary"
+                value={boletoData?.banco.conta ?? ""}
+                InputLabelProps={{
+                  shrink: !!uuid,
+                }}
                 InputProps={{
                   readOnly: true,
                 }}
                 className="col-span-4"
               />
               <TextField
-                id="search"
+                id="digito"
                 label="Digito"
-                defaultValue="2"
-                name="filsearchtro"
+                name="digito"
                 variant="standard"
                 size="small"
                 color="primary"
+                value={boletoData?.banco.contaDigito ?? ""}
+                InputLabelProps={{
+                  shrink: !!uuid,
+                }}
                 InputProps={{
                   readOnly: true,
                 }}
               />
             </Box>
-            <Box className="gap-5 grid grid-cols-3">
+            <Box className="gap-5 grid grid-cols-3 items-center">
               <Box className="flex justify-center w-full">
                 <Chip
                   className="flex justify-center w-4/5"
-                  label={StatusBoleto.ABERTO}
-                  color={handleStyleChips(StatusBoleto.ABERTO)}
+                  label={boletoData?.status ?? "ERROR"}
+                  color={handleStyleChips(
+                    boletoData?.status ?? StatusBoleto.ABERTO
+                  )}
                   sx={{
-                    minHeight: 40,
+                    minHeight: 35,
                   }}
                 />
               </Box>
               <TextField
-                id="search"
+                id="emissao"
                 label="Emissao"
-                defaultValue="2024-11-18"
-                name="filsearchtro"
+                name="emissao"
                 variant="standard"
                 size="small"
                 color="primary"
+                value={
+                  boletoData
+                    ? dayjs(boletoData.dataEmissao)
+                        .format("DD/MM/YYYY")
+                        .toString()
+                    : ""
+                }
+                InputLabelProps={{
+                  shrink: !!uuid,
+                }}
                 InputProps={{
                   readOnly: true,
                 }}
               />
               <TextField
-                id="search"
+                id="vencimento"
                 label="Vencimento"
-                defaultValue="2024-11-18"
-                name="filsearchtro"
+                name="vencimento"
                 variant="standard"
                 size="small"
                 color="primary"
+                value={
+                  boletoData
+                    ? dayjs(boletoData.dataVencimento)
+                        .format("DD/MM/YYYY")
+                        .toString()
+                    : ""
+                }
+                InputLabelProps={{
+                  shrink: !!uuid,
+                }}
                 InputProps={{
                   readOnly: true,
                 }}
@@ -158,28 +231,40 @@ const BoletoDetail = () => {
             </Box>
             <Box className="gap-5 grid grid-cols-2">
               <TextField
-                id="search"
+                id="valor"
                 label="Valor"
+                name="valor"
+                variant="standard"
+                size="small"
+                color="primary"
+                value={
+                  boletoData
+                    ? new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      }).format(Number(boletoData.valor))
+                    : ""
+                }
+                InputLabelProps={{
+                  shrink: !!uuid,
+                }}
                 InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">R$</InputAdornment>
-                  ),
                   readOnly: true,
                 }}
-                defaultValue="250,00"
-                name="filsearchtro"
-                variant="standard"
-                size="small"
-                color="primary"
               />
               <TextField
-                id="search"
+                id="parcela"
                 label="Parcela"
-                defaultValue="1 / 12"
-                name="filsearchtro"
+                name="parcela"
                 variant="standard"
                 size="small"
                 color="primary"
+                value={`${boletoData?.parcela ?? "0"} / ${
+                  boletoData?.totalParcelas ?? "0"
+                }`}
+                InputLabelProps={{
+                  shrink: !!uuid,
+                }}
                 InputProps={{
                   readOnly: true,
                 }}
@@ -187,34 +272,41 @@ const BoletoDetail = () => {
             </Box>
             <Box className="gap-5 grid grid-cols-1">
               <TextField
-                id="search"
-                label="Descricao"
-                defaultValue="123"
-                name="filsearchtro"
+                id="descricao"
+                label="Descrição"
+                name="descricao"
                 variant="standard"
                 size="small"
                 color="primary"
+                value={boletoData?.descricao ?? ""}
+                InputLabelProps={{
+                  shrink: !!uuid,
+                }}
                 InputProps={{
                   readOnly: true,
                 }}
+                multiline
+                rows={3}
               />
             </Box>
           </Box>
 
-          <Box className="gap-5 grid grid-cols-1 justify-center">
-            <Box className="flex justify-center">
-              <QRCodeComponent url="https://homologacao.plugboleto.com.br/api/v1/boletos/impressao/a0ed95e0-920d-b8f9-6330-7e9e1a597452" />
+          <Box className="gap-4 grid grid-cols-1 justify-center">
+            <Box>
+              <Box className="flex justify-center">
+                <QRCodeComponent url={boletoData?.url ?? ""} />
+              </Box>
             </Box>
             <Box
               className="flex justify-center"
               sx={{
-                gap: 5,
+                gap: 4,
               }}
             >
               <Button
                 className="flex-initial w-1/4"
                 variant="outlined"
-                color="primary"
+                color="secondary"
                 startIcon={<ContentCopyIcon />}
                 sx={{
                   borderRadius: 4,
@@ -222,29 +314,42 @@ const BoletoDetail = () => {
                   minHeight: 40,
                   maxHeight: 40,
                 }}
+                onClick={() => copiarUrl(boletoData?.url ?? "", showAlert)}
               >
                 <Typography variant="body1">Copiar</Typography>
               </Button>
 
-              <Button
-                className="flex-initial  w-1/4"
-                variant="outlined"
-                color="primary"
-                startIcon={<PrintIcon />}
-                sx={{
-                  borderRadius: 4,
-                  p: 1,
-                  minHeight: 40,
-                  maxHeight: 40,
-                }}
-              >
-                <Typography variant="body1">Imprimir</Typography>
-              </Button>
+              <Box className="flex-initial w-1/4 justify-center">
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  startIcon={<PrintIcon />}
+                  sx={{
+                    borderRadius: 4,
+                    p: 1,
+                    minHeight: 40,
+                    maxHeight: 40,
+                  }}
+                  disabled={loading.imprimir}
+                  onClick={() => imprimirURL(boletoData?.url ?? "", showAlert)}
+                >
+                  <Typography variant="body1">Imprimir</Typography>
+                  {loading.imprimir && (
+                    <CircularProgress
+                      size={24}
+                      sx={{
+                        color: theme.palette.secondary.main,
+                        position: "absolute",
+                      }}
+                    />
+                  )}
+                </Button>
+              </Box>
 
               <Button
                 className="flex-initial w-1/4"
                 variant="outlined"
-                color="primary"
+                color="secondary"
                 startIcon={<DownloadIcon />}
                 sx={{
                   borderRadius: 4,
@@ -252,8 +357,27 @@ const BoletoDetail = () => {
                   minHeight: 40,
                   maxHeight: 40,
                 }}
+                disabled={loading.download}
+                onClick={() => {
+                  setLoading((prevState) => ({ ...prevState, download: true }));
+                  downloadURL(boletoData?.url ?? "", showAlert).then(() => {
+                    setLoading((prevState) => ({
+                      ...prevState,
+                      download: false,
+                    }));
+                  });
+                }}
               >
                 <Typography variant="body1">Download</Typography>
+                {loading.download && (
+                  <CircularProgress
+                    size={24}
+                    sx={{
+                      color: theme.palette.secondary.main,
+                      position: "absolute",
+                    }}
+                  />
+                )}
               </Button>
             </Box>
           </Box>
@@ -262,5 +386,4 @@ const BoletoDetail = () => {
     </Box>
   );
 };
-
 export default BoletoDetail;

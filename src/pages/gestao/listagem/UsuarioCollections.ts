@@ -1,3 +1,6 @@
+import { UserRole } from "../../../models/UserRole";
+import AuthService from "../../../services/AuthServices";
+
 export enum ResumoStatus {
     RUIM = "#F93535",
     MEDIO = "#F9AB35",
@@ -16,11 +19,28 @@ export const getBarColor = (value: number) => {
 };
 
 export interface IUsuarioList {
-    idendificacao: string,
+    id: string,
+    identificacao: string,
     nome: string,
     boletosTotal: number,
     boletosPagos: number,
 }
+
+export interface IFiltroUsuario {
+    empresaUUID: string | null,
+    identificacao: string | null,
+    nome: string | null,
+    tipoUsuario: UserRole | null,
+}
+
+export const newFiltro = () => {
+    return {
+        empresaUUID: AuthService.getInstance().getEmpresa()?.uuid ?? null,
+        nome: "",
+        identificacao: "",
+        tipoUsuario: null,
+    };
+};
 
 export interface IResumoHeader {
     cor: string,
@@ -34,14 +54,6 @@ export interface IBoletoData {
     pagos: number;
 }
 
-const BoletoHeader: Record<string, IResumoHeader> = {
-    total: { cor: "#34C759", label: "Total" },
-    abertos: { cor: "#F9AB35", label: "Abertos" },
-    vencidos: { cor: "#356CF9", label: "Vencidos" },
-    pagos: { cor: "#F93535", label: "Pagos" },
-};
-
-// Helpers de test:
 const getRandomInt = (min: number, max: number): number => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
@@ -57,7 +69,8 @@ const generateUsuarioList = (): IUsuarioList[] => {
         const boletosPagos = getRandomInt(0, boletosTotal);
 
         return {
-            idendificacao: `user_${index + 1}`,
+            id: `${index + 1}`,
+            identificacao: `user_${index + 1}`,
             nome: getRandomName(),
             boletosTotal,
             boletosPagos,

@@ -38,6 +38,7 @@ export class UsuarioBoletoData {
     banco: string;
     valor: string;
     parcela: string;
+    totalParcelas: string;
     dataEmissao: Dayjs;
     dataVencimento: Dayjs;
     url: string;
@@ -50,6 +51,7 @@ export class UsuarioBoletoData {
         banco: string,
         valor: string,
         parcela: string,
+        totalParcelas: string,
         dataEmissao: Dayjs,
         dataVencimento: Dayjs,
         url: string,
@@ -61,6 +63,7 @@ export class UsuarioBoletoData {
         this.banco = banco;
         this.valor = valor;
         this.parcela = parcela;
+        this.totalParcelas = totalParcelas;
         this.dataEmissao = dataEmissao;
         this.dataVencimento = dataVencimento;
         this.url = url;
@@ -76,6 +79,7 @@ export class EmpresaBoletoData {
     banco: string;
     valor: string;
     parcela: string;
+    totalParcelas: string;
     dataEmissao: Dayjs;
     dataVencimento: Dayjs;
     status: StatusBoleto;
@@ -89,6 +93,7 @@ export class EmpresaBoletoData {
         banco: string,
         valor: string,
         parcela: string,
+        totalParcelas: string,
         dataEmissao: Dayjs,
         dataVencimento: Dayjs,
         url: string,
@@ -101,6 +106,7 @@ export class EmpresaBoletoData {
         this.banco = banco;
         this.valor = valor;
         this.parcela = parcela;
+        this.totalParcelas = totalParcelas;
         this.dataEmissao = dataEmissao;
         this.dataVencimento = dataVencimento;
         this.url = url;

@@ -19,15 +19,23 @@ import {
   Typography,
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import { useRef, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import AuthService from "../../../services/AuthServices";
+import UsuarioService from "../../../services/usuario/UsuarioService";
+import { useAlert } from "../../components/AlertProvider";
 import { normalise, ProgressBar } from "../../components/ProgressBar";
 import TableHeader from "../../components/TableHeader";
-import { FiltroBoletosEmpresa } from "../../Boleto/FiltroBoletosEmpresa";
-import { getBarColor, UsuarioList } from "./UsuarioCollections";
-
+import {
+  getBarColor,
+  IFiltroUsuario,
+  IUsuarioList,
+  newFiltro,
+} from "./UsuarioCollections";
+import { FiltroUsuario } from "./FiltroUsuario";
 
 const columns: GridColDef[] = [
-  { field: "idendificacao", headerName: "Idendificação", width: 180 },
+  { field: "identificacao", headerName: "Identificação", width: 180 },
   { field: "nome", headerName: "Nome", width: 400 },
   { field: "abertos", headerName: "Boletos pagos", width: 150 },
   { field: "total", headerName: "Total de Boletos", width: 150 },
@@ -35,30 +43,87 @@ const columns: GridColDef[] = [
   { field: "acoes", headerName: "", cellClassName: "justify-end", width: 100 },
 ];
 
+const usuarioService = new UsuarioService();
+
 const ListagemUsuario = () => {
-  const [listUsuario] = useState<UsuarioList>(new UsuarioList());
-  const [isFilterOpen, setFilterOpen] = useState(false);
-  const tableRef = useRef<HTMLDivElement>(null);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [listUsuario, setListUsuario] = useState<IUsuarioList[]>([]);
+  const [filtroUsuario, setFiltroUsuario] = useState<IFiltroUsuario>(
+    newFiltro()
+  );
 
   const handleOpenFilter = () => setFilterOpen(true);
-  const handleCloseFiter = () => setFilterOpen(false);
+  const handleCloseFilter = () => setFilterOpen(false);
+
+  const navigate = useNavigate();
+  const { showAlert } = useAlert();
+
+  const empresaUuid = AuthService.getInstance().getEmpresa()?.uuid ?? null;
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      filter(filtroUsuario);
+    }
+  };
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setFiltroUsuario((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const filter = (filtro: IFiltroUsuario) => {
+    filtro.empresaUUID = empresaUuid;
+    usuarioService.filtrar(filtro, showAlert).then((response) => {
+      if (response) {
+        setListUsuario(response);
+        if (response.length === 0) {
+          showAlert({
+            message: "Verifique seus filtros",
+            title: "Nenhum resultado encontrado.",
+            type: "info",
+            hideDuration: 2000,
+          });
+        }
+      }
+    });
+  };
+
+  const resetFilter = () => {
+    setFiltroUsuario(newFiltro());
+    filter(filtroUsuario);
+    handleCloseFilter();
+  };
+
+  useEffect(() => {
+    filter(filtroUsuario);
+  }, []);
 
   return (
     <Box className="p-8">
       <Box className="mb-2 gap-4 grid grid-cols-2 justify-between items-center">
         <Box>
-          <TextField
+        <TextField
             fullWidth
-            id="search"
-            label="Buscar por nome ou idendificação"
-            name="filsearchtro"
+            id="nome"
+            label="Buscar por nome"
+            name="nome"
             variant="standard"
             size="small"
             color="primary"
+            value={filtroUsuario.nome}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton className="mb-4">
+                  <IconButton
+                    className="mb-4"
+                    onClick={() => filter(filtroUsuario)}
+                  >
                     <SearchIcon />
                   </IconButton>
                 </InputAdornment>
@@ -86,7 +151,6 @@ const ListagemUsuario = () => {
                 }}
               />
             </IconButton>
-            
           </Box>
           <Box>
             <Box className="gap-2 flex flex-row-reverse items-center">
@@ -109,6 +173,7 @@ const ListagemUsuario = () => {
                   borderRadius: 4,
                   p: 1,
                 }}
+                onClick={() => navigate("/usuario/detail", { state: {isEdit: true,isView: false, uuid: ""}})}
               >
                 <Typography variant="body2">Criar usuário</Typography>
               </Button>
@@ -139,9 +204,9 @@ const ListagemUsuario = () => {
                 "&:last-child td, &:last-child th": { border: 0 },
               }}
             >
-              {listUsuario.list.map((row) => (
-                <TableRow key={row.idendificacao}>
-                  <TableCell>{row.idendificacao}</TableCell>
+              {listUsuario.map((row, index) => (
+                <TableRow key={row.identificacao + index}>
+                  <TableCell>{row.identificacao}</TableCell>
                   <TableCell>{row.nome}</TableCell>
                   <TableCell>{row.boletosPagos}</TableCell>
                   <TableCell>{row.boletosTotal}</TableCell>
@@ -189,12 +254,14 @@ const ListagemUsuario = () => {
                     <IconButton
                       size="small"
                       sx={{ width: 20, height: 20, p: 0, m: 0, mr: 1.5 }}
+                      onClick={() => navigate("/usuario/detail", { state: {isEdit: false,isView: false, uuid: row.id}})}
                     >
                       <VisibilityIcon />
                     </IconButton>
                     <IconButton
                       size="small"
                       sx={{ width: 20, height: 20, p: 0, m: 0, mr: 1.5 }}
+                      onClick={() => navigate("/usuario/detail", { state: {isEdit: true,isView: true, uuid: row.id}})}
                     >
                       <EditIcon />
                     </IconButton>
@@ -205,6 +272,15 @@ const ListagemUsuario = () => {
           </Table>
         </TableContainer>
       </Box>
+      <div>
+        <FiltroUsuario
+          open={filterOpen}
+          onReset={resetFilter}
+          onClose={handleCloseFilter}
+          filtroProps={filtroUsuario}
+          onSubmit={filter}
+        />
+      </div>
     </Box>
   );
 };
