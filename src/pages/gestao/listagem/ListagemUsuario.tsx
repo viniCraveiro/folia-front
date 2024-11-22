@@ -40,7 +40,7 @@ const columns: GridColDef[] = [
   { field: "abertos", headerName: "Boletos pagos", width: 150, sortable: false },
   { field: "total", headerName: "Total de Boletos", width: 150, sortable: false },
   { field: "balanco", headerName: "Resumo de Boletos", width: 300, sortable: false },
-  { field: "acoes", headerName: "", cellClassName: "justify-end", width: 120, sortable: false,
+  { field: "acoes", headerName: "", cellClassName: "justify-end", width: 160, sortable: false,
   },
 ];
 

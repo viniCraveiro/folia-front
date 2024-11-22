@@ -2,7 +2,7 @@
 export enum StatusBoleto {
     PAGO = "PAGO",
     VENCIDO = "VENCIDO",
-    ABERTO = "ABERTA",
+    ABERTO = "ABERTO",
 }
 
 export const handleStyleChips = (status: StatusBoleto) => {

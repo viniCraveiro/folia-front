@@ -44,7 +44,7 @@ const columns: GridColDef[] = [
   { field: "dataEmissao", headerName: "Data de emissão", width: 150 ,sortable: true},
   { field: "dataVencimento", headerName: "Data de vencimento", width: 150 ,sortable: true},
   { field: "valor", headerName: "Valor", width: 150, type: "number" ,sortable: true},
-  { field: "acoes", headerName: "", cellClassName: "justify-end", width: 120 ,sortable: false},
+  { field: "acoes", headerName: "", cellClassName: "justify-end", width: 160 ,sortable: false},
 ];
 
 const UsuarioBoletoList = () => {

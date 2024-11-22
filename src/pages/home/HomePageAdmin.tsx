@@ -272,11 +272,11 @@ const HomePageAdmin = () => {
                   />
                 </Box>
                 <Box className="h-16 flex-1">
-                  <Typography variant="h6" className="">
+                  <Typography variant="body1" className="">
                     {cliente.nome}
                   </Typography>
                   <Typography variant="body2" className="text-gray-400">
-                    {`${cliente.quantidadeBoletos - cliente.quantidadeBoletosAbertos} de ${cliente.quantidadeBoletos} boletos pagos.`}
+                    {`${cliente.quantidadeBoletosPagos} de ${cliente.quantidadeBoletos} boletos pagos.`}
                   </Typography>
                 </Box>
 
@@ -286,7 +286,7 @@ const HomePageAdmin = () => {
                       barheight={32}
                       variant="determinate"
                       value={normalise(
-                        (cliente.quantidadeBoletos - cliente.quantidadeBoletosAbertos),
+                        cliente.quantidadeBoletosPagos,
                         cliente.quantidadeBoletos
                       )}
                     />

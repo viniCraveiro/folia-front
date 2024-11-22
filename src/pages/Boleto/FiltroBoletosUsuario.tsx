@@ -57,7 +57,7 @@ export const FiltroBoletosUsuario = ({
     dataFinalEmissao: filtroProps.dataFinalEmissao ?? null,
     dataInicialVencimento: filtroProps.dataInicialVencimento ?? null,
     dataFinalVencimento: filtroProps.dataFinalVencimento ?? null,
-    status: filtroProps.status ?? StatusBoleto.ABERTO,
+    status: filtroProps.status,
   });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +93,7 @@ export const FiltroBoletosUsuario = ({
       dataFinalEmissao: null,
       dataInicialVencimento: null,
       dataFinalVencimento: null,
-      status: StatusBoleto.ABERTO,
+      status: null,
     };
     setFiltro(filtroInicial);
     onReset();
@@ -150,7 +150,9 @@ export const FiltroBoletosUsuario = ({
                 className="leading-normal"
                 label={"Emissão até"}
                 views={["day", "month", "year"]}
-                onChange={(value) => handleDateChange("dataFinalEmissao", value)}
+                onChange={(value) =>
+                  handleDateChange("dataFinalEmissao", value)
+                }
                 value={filtro.dataFinalEmissao}
                 sx={{
                   width: 1 / 2,
