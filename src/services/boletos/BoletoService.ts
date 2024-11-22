@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { EmpresaBoletoData, IFiltroBoleto, UsuarioBoletoData } from "../../pages/Boleto/list/BoletoCollection";
 import { StatusBoleto } from "../../pages/Boleto/StatusBoleto";
 import { IAlertProps } from "../../pages/components/AlertProvider";
@@ -51,7 +52,7 @@ class BoletoService {
             });
     }
 
-    buscarBoleto(uuid: string, showAlert: (props: IAlertProps) => void): Promise<Any> {
+    buscarBoleto(uuid: string, showAlert: (props: IAlertProps) => void): Promise<any> {
         return http.get(`${this.DEFAULT_URL}/${uuid}`)
             .then((response) => {
                 return response.data;

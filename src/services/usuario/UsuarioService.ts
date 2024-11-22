@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IAlertProps } from "../../pages/components/AlertProvider";
 import { CadastroUsuarioForm } from "../../pages/gestao/detail/UsuarioDetail";
 import { IFiltroUsuario, IUsuarioList } from "../../pages/gestao/listagem/UsuarioCollections";
@@ -30,7 +31,7 @@ class UsuarioService {
             });
     }
 
-    buscarBoleto(uuid: string, showAlert: (props: IAlertProps) => void): Promise<Any> {
+    buscarBoleto(uuid: string, showAlert: (props: IAlertProps) => void): Promise<any> {
         return http.get(`${this.DEFAULT_URL}/${uuid}`)
             .then((response) => {
                 return response.data;
