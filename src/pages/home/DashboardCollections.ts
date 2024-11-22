@@ -33,6 +33,7 @@ export enum GraficoTypeEnum {
 export interface IBoletosData {
     quantidadeBoletos: number;
     quantidadeBoletosAberto: number;
+    quantidadeBoletosPago: number;
     quantidadeBoletosVencido: number;
     quantidadeBoletosProximosVencimento: number;
 }
@@ -42,6 +43,7 @@ export interface IUserBoletosData {
     nome: string;
     usuario: string;
     quantidadeBoletos: number;
+    quantidadeBoletosPagos: number;
     quantidadeBoletosAbertos: number;
     quantidadeBoletosVencidos: number;
 }
@@ -53,6 +55,7 @@ export class DashboardDataSet {
         this.data = {
             quantidadeBoletos: 0,
             quantidadeBoletosAberto: 0,
+            quantidadeBoletosPago: 0,
             quantidadeBoletosVencido: 0,
             quantidadeBoletosProximosVencimento: 0
         };
@@ -60,7 +63,7 @@ export class DashboardDataSet {
 
     get dataSet() {
         const dataGraph = [
-            { id: 0, color: BoletoStatusConfig["pagos"].cor, value: this.data.quantidadeBoletos - this.data.quantidadeBoletosAberto, label: BoletoStatusConfig["pagos"].status },
+            { id: 0, color: BoletoStatusConfig["pagos"].cor, value: this.data.quantidadeBoletosPago, label: BoletoStatusConfig["pagos"].status },
             { id: 1, color: BoletoStatusConfig["proximosDoVencimento"].cor, value: this.data.quantidadeBoletosProximosVencimento, label: BoletoStatusConfig["proximosDoVencimento"].status },
             { id: 2, color: BoletoStatusConfig["emAberto"].cor, value: this.data.quantidadeBoletosAberto, label: BoletoStatusConfig["emAberto"].status },
             { id: 3, color: BoletoStatusConfig["vencidos"].cor, value: this.data.quantidadeBoletosVencido, label: BoletoStatusConfig["vencidos"].status }
@@ -71,7 +74,7 @@ export class DashboardDataSet {
     get balancodataSet() {
         const dataGraph = [
             { id: 0, color: BalancoStatusConfig["total"].cor, value: this.data.quantidadeBoletos, label: BalancoStatusConfig["total"].status },
-            { id: 1, color: BalancoStatusConfig["pagos"].cor, value: this.data.quantidadeBoletos - this.data.quantidadeBoletosAberto, label: BalancoStatusConfig["pagos"].status },
+            { id: 1, color: BalancoStatusConfig["pagos"].cor, value: this.data.quantidadeBoletosPago , label: BalancoStatusConfig["pagos"].status },
             { id: 3, color: BalancoStatusConfig["vencidos"].cor, value: this.data.quantidadeBoletosVencido, label: BalancoStatusConfig["vencidos"].status }
         ];
         return dataGraph;
